@@ -1,0 +1,21 @@
+services:
+  api-server:
+    build:
+      context: .
+    container_name: api-server
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./apps/api-server:/apps
+    environment:
+      - NODE_ENV=development
+
+  nginx:
+    image: nginx:latest
+    container_name: clinic-nginx
+    ports:
+      - '80:80'
+    volumes:
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api-server

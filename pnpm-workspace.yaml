@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@mindfiredigital/eslint-plugin-hub'
+  - '@scarf/scarf'
+  - unrs-resolver

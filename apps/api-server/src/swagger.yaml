@@ -1,0 +1,13 @@
+openapi: 3.0.0
+info:
+  title: Clinic API Documentation
+  version: 1.0.0
+  description: Patient Appointment & Clinical Intelligence System APIs
+
+paths:
+  /health:
+    get:
+      summary: Health Check API
+      responses:
+        '200':
+          description: API server is running successfully

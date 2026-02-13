@@ -1,0 +1,42 @@
+{
+  "name": "Patient Appointment and Clinical Intelligence System",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.29.3",
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "@typescript-eslint/eslint-plugin": "^8.55.0",
+    "@typescript-eslint/parser": "^8.55.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.3.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1"
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "**/*.json": [
+      "prettier --write"
+    ],
+    "**/*.md": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "husky": "^9.1.7"
+  }
+}
