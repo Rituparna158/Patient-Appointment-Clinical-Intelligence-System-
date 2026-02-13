@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 
 app.get('/health', (_req, res) => {
-  res.json({ status: 'API is running' });
+  res.status(200).send('API is running');
 });
 const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "CommonJS",
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true
-  }
+  },
+
+  "include": ["src"],
+
+  "exclude": ["vitest.config.ts", "node_modules"]
 }
