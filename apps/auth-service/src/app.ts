@@ -1,14 +1,16 @@
 import express from 'express';
+import authRoutes from './routes/auth.routes';
+import healthRoutes from './routes/health.routes';
 //import swaggerUi from 'swagger-ui-express';
 //import YAML from 'yamljs';
 import path from 'path';
+import { he } from 'zod/v4/locales';
 
 const app = express();
 app.use(express.json());
 
-app.get('/health', (_req, res) => {
-  res.status(200).send('Auth service is running');
-});
+app.use('/health', healthRoutes);
+app.use('/api/auth', authRoutes);
 /*const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));*/
 export default app;
