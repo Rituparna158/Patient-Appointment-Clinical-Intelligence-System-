@@ -5,11 +5,13 @@ import { findByEmail, saveUser } from '../repositories/user.repo';
 import { comparePassword } from '../utils/compare';
 import { generateToken } from '../utils/jwt';
 import { ROLES } from '../constants/roles';
+import { AppError } from '../utils/app-error';
+import { HTTP_STATUS } from '../constants/http-status';
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
   const existing = await findByEmail(data.email);
   if (existing) {
-    throw new Error(MESSAGES.EMAIL_ALREADY_EXISTS);
+    throw new AppError(MESSAGES.EMAIL_ALREADY_EXISTS, HTTP_STATUS.CONFLICT);
   }
   const hashedPassword = await hashPassword(data.password);
   const newUserRecord = await saveUser({
@@ -22,12 +24,12 @@ const registerUser = async (data: RegisterDTO): Promise<User> => {
 const loginUser = async (data: RegisterDTO) => {
   const userRecord = await findByEmail(data.email);
   if (!userRecord) {
-    throw new Error(MESSAGES.USER_NOT_FOUND);
+    throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
   }
   const user = userRecord.toJSON() as User;
   const match = await comparePassword(data.password, user.password);
   if (!match) {
-    throw new Error(MESSAGES.INVALID_CREDENTIALS);
+    throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
   }
   const token = generateToken({
     id: user.id,
