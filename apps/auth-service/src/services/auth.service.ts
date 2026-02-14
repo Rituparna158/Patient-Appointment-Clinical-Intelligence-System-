@@ -4,6 +4,7 @@ import { MESSAGES } from '../constants/messages';
 import { findByEmail, saveUser } from '../repositories/user.repo';
 import { comparePassword } from '../utils/compare';
 import { generateToken } from '../utils/jwt';
+import { ROLES } from '../constants/roles';
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
   const existing = await findByEmail(data.email);
@@ -15,6 +16,7 @@ const registerUser = async (data: RegisterDTO): Promise<User> => {
     id: crypto.randomUUID(),
     email: data.email,
     password: hashedPassword,
+    role: ROLES.PATIENT,
   };
   return saveUser(newUser);
 };
@@ -30,6 +32,7 @@ const loginUser = async (data: RegisterDTO) => {
   const token = generateToken({
     id: user.id,
     email: user.email,
+    role: user.role,
   });
   return { token };
 };
