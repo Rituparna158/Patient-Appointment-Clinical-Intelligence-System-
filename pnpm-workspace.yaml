@@ -5,4 +5,6 @@ packages:
 onlyBuiltDependencies:
   - '@mindfiredigital/eslint-plugin-hub'
   - '@scarf/scarf'
+  - bcrypt
+  - esbuild
   - unrs-resolver

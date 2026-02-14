@@ -16,6 +16,7 @@ const register: RequestHandler = async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (err: any) {

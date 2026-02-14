@@ -12,19 +12,19 @@ const registerUser = async (data: RegisterDTO): Promise<User> => {
     throw new Error(MESSAGES.EMAIL_ALREADY_EXISTS);
   }
   const hashedPassword = await hashPassword(data.password);
-  const newUser: User = {
-    id: crypto.randomUUID(),
+  const newUserRecord = await saveUser({
     email: data.email,
     password: hashedPassword,
     role: ROLES.PATIENT,
-  };
-  return saveUser(newUser);
+  });
+  return newUserRecord.toJSON() as User;
 };
 const loginUser = async (data: RegisterDTO) => {
-  const user = await findByEmail(data.email);
-  if (!user) {
+  const userRecord = await findByEmail(data.email);
+  if (!userRecord) {
     throw new Error(MESSAGES.USER_NOT_FOUND);
   }
+  const user = userRecord.toJSON() as User;
   const match = await comparePassword(data.password, user.password);
   if (!match) {
     throw new Error(MESSAGES.INVALID_CREDENTIALS);

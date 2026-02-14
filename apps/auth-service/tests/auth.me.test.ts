@@ -1,13 +1,9 @@
 import request from 'supertest';
 import { beforeEach, describe, it, expect } from 'vitest';
 import app from '../src/app';
-import { clearUsers } from '../src/repositories/user.repo';
 import { HTTP_STATUS } from '../src/constants/http-status';
 
 describe('Auth service-Protected Route /me', () => {
-  beforeEach(() => {
-    clearUsers();
-  });
   it('should return 401 if token is missing', async () => {
     const res = await request(app).get('/api/auth/me');
     expect(res.status).toBe(HTTP_STATUS.UNAUTHORIZED);
