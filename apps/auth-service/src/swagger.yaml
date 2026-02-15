@@ -1,0 +1,96 @@
+openapi: 3.0.0
+ 
+info:
+  title: Auth Service API
+  version: 1.0.0
+  description: Authentication & Authorization APIs for Clinic System
+ 
+
+ 
+paths:
+  /api/auth/register:
+    post:
+      summary: Register new patient user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: patient@test.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        "201":
+          description: User registered successfully
+        "409":
+          description: Email already exists
+        "400":
+          description: Validation error
+ 
+  /api/auth/login:
+    post:
+      summary: Login user and return JWT token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  example: patient@test.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        "200":
+          description: Login success with token
+        "401":
+          description: Invalid credentials
+        "404":
+          description: User not found
+ 
+  /api/auth/me:
+    get:
+      summary: Get current logged-in user profile
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile returned
+        "401":
+          description: Missing or invalid token
+ 
+  /api/auth/doctor-only:
+    get:
+      summary: Doctor-only protected route
+      tags:
+        - Roles
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Doctor access granted
+        "403":
+          description: Forbidden (not doctor)
+ 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

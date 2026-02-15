@@ -1,6 +1,5 @@
 import { beforeAll } from 'vitest';
 import { sequelize } from '../src/config/database';
-import { UserModel } from '../src/models/user.model';
 
 beforeAll(async () => {
   try {
