@@ -1,13 +1,21 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.middleware';
 import { reuireRole, requireAnyRole } from '../middleware/role.middleware';
-import { register, login, me } from '../controllers/auth.controller';
+import {
+  register,
+  login,
+  refreshToken,
+  logout,
+  me,
+} from '../controllers/auth.controller';
 import { HTTP_STATUS } from '../constants/http-status';
 import { ROLES } from '../constants/roles';
 
 const router = Router();
 router.post('/register', register);
 router.post('/login', login);
+router.post('/refresh', refreshToken);
+router.post('/logout', logout);
 router.get('/me', requireAuth, me);
 router.get(
   '/doctor-only',

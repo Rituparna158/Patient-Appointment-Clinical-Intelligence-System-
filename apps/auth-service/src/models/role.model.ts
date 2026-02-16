@@ -3,42 +3,21 @@ import { ROLES } from '../constants/roles';
 import { sequelize } from '../config/database';
 //import { object } from 'zod';
 
-const UserModel = sequelize.define(
-  'User',
+const RoleModel = sequelize.define(
+  'Role',
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    full_name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true, // admin,doctor ,patient
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    gender: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    date_of_birth: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    passwordHash: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    isActive: {
+    is_active: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -50,8 +29,8 @@ const UserModel = sequelize.define(
     },
   },
   {
-    tableName: 'users',
+    tableName: 'roles',
     timestamps: true,
   }
 );
-export { UserModel };
+export { RoleModel };

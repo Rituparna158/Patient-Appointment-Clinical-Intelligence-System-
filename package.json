@@ -23,6 +23,7 @@
     "globals": "^17.3.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
+    "sequelize-cli": "^6.6.5",
     "typescript": "^5.9.3"
   },
   "lint-staged": {

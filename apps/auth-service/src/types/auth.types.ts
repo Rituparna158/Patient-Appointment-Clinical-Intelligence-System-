@@ -1,5 +1,13 @@
 import { ROLES } from '../constants/roles';
 interface RegisterDTO {
+  full_name: string;
+  email: string;
+  phone?: string;
+  gender?: string;
+  date_of_birth?: Date;
+  password: string;
+}
+interface LoginDTO {
   email: string;
   password: string;
 }
@@ -8,7 +16,11 @@ type Role = (typeof ROLES)[keyof typeof ROLES];
 interface User {
   id: string;
   email: string;
-  password: string;
-  role: Role;
+  full_name: string;
+  phone?: string;
+  gender?: string;
+  date_of_birth?: Date;
+  passwordHash: string;
+  isActive: boolean;
 }
-export type { RegisterDTO, User, Role };
+export type { RegisterDTO, LoginDTO, User, Role };

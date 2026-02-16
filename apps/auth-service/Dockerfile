@@ -4,7 +4,6 @@ WORKDIR /app
  
 RUN npm install -g pnpm
  
-# ✅ Disable husky inside Docker
 ENV HUSKY=0
 ENV CI=true
 
