@@ -20,32 +20,38 @@ module.exports = {
       {
         id: uuid(),
         roleId: roleMap.admin,
-        permissionId: perMap.manage_users,
+        permissionId: perMap['create_doctors'],
         createdAt: new Date(),
       },
       {
         id: uuid(),
         roleId: roleMap.admin,
-        permissionId: perMap.manage_appointments,
+        permissionId: perMap['manage_users'],
         createdAt: new Date(),
       },
       {
         id: uuid(),
         roleId: roleMap.admin,
-        permissionId: perMap.view_appointments,
+        permissionId: perMap['manage_appointments'],
+        createdAt: new Date(),
+      },
+      {
+        id: uuid(),
+        roleId: roleMap.admin,
+        permissionId: perMap['view_appointments'],
         createdAt: new Date(),
       },
 
       {
         id: uuid(),
         roleId: roleMap.doctor,
-        permissionId: perMap.view_appointments,
+        permissionId: perMap['view_appointments'],
         createdAt: new Date(),
       },
       {
         id: uuid(),
         roleId: roleMap.patient,
-        permissionId: perMap.view_appointments,
+        permissionId: perMap['view_appointments'],
         createdAt: new Date(),
       },
     ]);

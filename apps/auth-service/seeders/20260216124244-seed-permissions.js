@@ -7,6 +7,12 @@ module.exports = {
     await queryInterface.bulkInsert('permissions', [
       {
         id: uuid(),
+        name: 'create_doctors',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: uuid(),
         name: 'manage_users',
         createdAt: new Date(),
         updatedAt: new Date(),

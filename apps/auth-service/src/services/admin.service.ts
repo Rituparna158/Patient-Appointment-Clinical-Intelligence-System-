@@ -2,7 +2,7 @@ import { hashPassword } from '../utils/hash';
 import { AppError } from '../utils/app-error';
 import { HTTP_STATUS } from '../constants/http-status';
 import { MESSAGES } from '../constants/messages';
-import { User, UserRole } from '../models';
+import { User, UserRole, Doctor } from '../models';
 import { Role } from '../models';
 import { CreateDoctorDTO } from '../types/admin.types';
 
@@ -20,7 +20,6 @@ const createDoctorUser = async (data: CreateDoctorDTO) => {
     passwordHash: hashedPassword,
     full_name: data.full_name,
     phone: data.phone ?? null,
-    isActive: true,
   });
   const doctorRole = await Role.findOne({
     where: { name: 'doctor' },
@@ -32,6 +31,13 @@ const createDoctorUser = async (data: CreateDoctorDTO) => {
     userId: user.id,
     roleId: doctorRole.id,
   });
-  return user;
+  const doctorProfile = await Doctor.create({
+    userId: user.id,
+    specialization: data.specialization,
+    licence_no: data.licence_no,
+    consultation_fee: data.consultation_fee,
+    is_active: true,
+  });
+  return { user, doctorProfile };
 };
 export { createDoctorUser };

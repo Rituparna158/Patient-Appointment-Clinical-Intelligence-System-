@@ -3,6 +3,7 @@ import { Role } from './role.model';
 import { Permission } from './permission.model';
 import { UserRole } from './userRole.model';
 import { RolePermission } from './rolePermission.model';
+import { Doctor } from './doctor.model';
 
 User.belongsToMany(Role, {
   through: UserRole,
@@ -24,4 +25,12 @@ Permission.belongsToMany(Role, {
   as: 'roles',
   foreignKey: 'permissionId',
 });
-export { User, Role, Permission, UserRole, RolePermission };
+User.hasOne(Doctor, {
+  foreignKey: 'userId',
+  as: 'doctorprofile',
+});
+Doctor.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user',
+});
+export { User, Role, Permission, UserRole, RolePermission, Doctor };

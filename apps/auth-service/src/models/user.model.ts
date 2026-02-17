@@ -7,6 +7,7 @@ import {
 } from 'sequelize';
 import { ROLES } from '../constants/roles';
 import { sequelize } from '../config/database';
+import { Role } from '../models/role.model';
 
 export class User extends Model<
   InferAttributes<User>,
@@ -22,6 +23,7 @@ export class User extends Model<
   declare isActive: CreationOptional<boolean>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare roles?: Role[];
 }
 
 //import { object } from 'zod';
@@ -63,11 +65,11 @@ User.init(
     },
     createdAt: {
       type: DataTypes.DATE,
-      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
     updatedAt: {
       type: DataTypes.DATE,
-      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

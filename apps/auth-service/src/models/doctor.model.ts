@@ -5,35 +5,49 @@ import {
   InferCreationAttributes,
   CreationOptional,
 } from 'sequelize';
-import { ROLES } from '../constants/roles';
 import { sequelize } from '../config/database';
-import type { Permission } from './permission.model';
-//import { object } from 'zod';
-export class Role extends Model<
-  InferAttributes<Role>,
-  InferCreationAttributes<Role>
+
+export class Doctor extends Model<
+  InferAttributes<Doctor>,
+  InferCreationAttributes<Doctor>
 > {
   declare id: CreationOptional<string>;
-  declare name: string;
-  declare is_active: CreationOptional<boolean>;
+  declare userId: string;
+  declare specialization: string;
+  declare licence_no: string;
+  declare consultation_fee: number;
+  declare is_active: boolean;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
-  declare permissions?: Permission[];
 }
-Role.init(
+Doctor.init(
   {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    name: {
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: true,
+    },
+    specialization: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true, // admin,doctor ,patient
+    },
+    licence_no: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    consultation_fee: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     is_active: {
       type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -46,7 +60,7 @@ Role.init(
   },
   {
     sequelize,
-    tableName: 'roles',
+    tableName: 'doctors',
     timestamps: true,
   }
 );

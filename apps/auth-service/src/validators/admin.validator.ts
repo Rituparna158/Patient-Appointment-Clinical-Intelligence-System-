@@ -25,4 +25,11 @@ export const createDoctorSchema = z.object({
     .string()
     .regex(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits')
     .optional(),
+  specialization: z.string().min(2, 'Specialization is requiresd'),
+
+  licence_no: z.string().min(3, 'Licence number is required'),
+
+  consultation_fee: z.coerce.number().min(1, 'Consultation fee is required'),
+
+  is_active: z.coerce.boolean().optional(),
 });

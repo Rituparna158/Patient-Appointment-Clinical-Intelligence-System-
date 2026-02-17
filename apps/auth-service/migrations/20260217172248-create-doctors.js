@@ -1,39 +1,38 @@
 'use strict';
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('doctors', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      full_name: {
+      userId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        unique: true,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
+      specialization: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      email: {
+      licence_no: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      phone: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      gender: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      date_of_birth: {
-        type: Sequelize.DATE,
-        allowNull: true,
-      },
-      passwordHash: {
-        type: Sequelize.STRING,
+      consultation_fee: {
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
-      isActive: {
+      is_active: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
       },
@@ -50,7 +49,12 @@ module.exports = {
     });
   },
 
-  async down(queryInterface) {
-    await queryInterface.dropTable('users');
+  async down(queryInterface, Sequelize) {
+    /**
+     * Add reverting commands here.
+     *
+     * Example:
+     * await queryInterface.dropTable('users');
+     */
   },
 };

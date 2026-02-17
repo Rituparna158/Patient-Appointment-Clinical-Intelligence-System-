@@ -1,6 +1,7 @@
 import express from 'express';
 import authRoutes from './routes/auth.routes';
 import healthRoutes from './routes/health.routes';
+import adminRoutes from './routes/admin.routes';
 import { errorHandler } from './middleware/error.middleware';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
@@ -10,6 +11,7 @@ app.use(express.json());
 
 app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 const swaggerDocument = YAML.load('src/swagger.yaml');
 console.log('swagger loaded:', swaggerDocument.info.title);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

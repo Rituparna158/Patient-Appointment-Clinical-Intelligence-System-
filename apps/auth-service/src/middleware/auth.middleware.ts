@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { verifyToken } from '../utils/jwt';
 import { User } from '../models';
-import { Role } from '../models';
+import { Role, Permission } from '../models';
 import { HTTP_STATUS } from '../constants/http-status';
 
 //const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
@@ -27,6 +27,13 @@ const requireAuth: RequestHandler = async (req, res, next) => {
           model: Role,
           as: 'roles',
           through: { attributes: [] },
+          include: [
+            {
+              model: Permission,
+              as: 'permissions',
+              through: { attributes: [] },
+            },
+          ],
         },
       ],
     });
@@ -36,12 +43,18 @@ const requireAuth: RequestHandler = async (req, res, next) => {
       });
     }
 
-    //const permissions=roles.flatMap
-    const roles = (user as any).roles?.map((r: any) => r.name) || [];
+    const roles = user.roles?.map((r) => r.name) || [];
+
+    const permissions =
+      user.roles?.flatMap(
+        (role) => role.permissions?.map((p) => p.name) || []
+      ) || [];
+
     (req as any).user = {
       id: user.id,
       email: user.email,
       roles,
+      permissions,
     };
     next();
   } catch (err) {
