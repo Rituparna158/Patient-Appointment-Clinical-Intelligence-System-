@@ -26,7 +26,6 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      createdAt: Sequelize.DATE,
     });
   },
 

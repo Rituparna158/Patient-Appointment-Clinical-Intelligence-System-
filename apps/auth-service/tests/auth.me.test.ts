@@ -10,19 +10,20 @@ describe('Auth service-Protected Route /me', () => {
   });
   it('should return user profile if token is valid', async () => {
     await request(app).post('/api/auth/register').send({
-      email: 'me@test.com',
-      password: 'password23',
+      full_name: 'Me user',
+      email: 'me@gmail.com',
+      password: 'Password@123',
     });
     const loginRes = await request(app).post('/api/auth/login').send({
-      email: 'me@test.com',
-      password: 'password23',
+      email: 'me@gmail.com',
+      password: 'Password@123',
     });
-    const token = loginRes.body.token;
+    const token = loginRes.body.accessToken;
 
     const res = await request(app)
       .get('/api/auth/me')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(HTTP_STATUS.OK);
-    expect(res.body).toHaveProperty('email', 'me@test.com');
+    expect(res.body).toHaveProperty('email', 'me@gmail.com');
   });
 });

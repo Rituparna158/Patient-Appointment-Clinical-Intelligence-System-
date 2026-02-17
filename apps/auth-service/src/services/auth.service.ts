@@ -40,6 +40,7 @@ const loginUser = async (data: LoginDTO) => {
     email: user.email,
   };
   const accessToken = generateToken(payload);
+  console.log('accesstoken:', accessToken);
   const refreshToken = generateRefreshToken(payload);
   return { accessToken, refreshToken };
 };

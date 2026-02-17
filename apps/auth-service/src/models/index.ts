@@ -1,29 +1,27 @@
-import { UserModel } from './user.model';
-import { RoleModel } from './role.model';
-import { PermissionModel } from './permission.model';
-import { UserRoleModel } from './userRole.model';
-import { RolePermissionModel } from './rolePermission.model';
+import { User } from './user.model';
+import { Role } from './role.model';
+import { Permission } from './permission.model';
+import { UserRole } from './userRole.model';
+import { RolePermission } from './rolePermission.model';
 
-UserModel.belongsToMany(RoleModel, {
-  through: UserRoleModel,
+User.belongsToMany(Role, {
+  through: UserRole,
+  as: 'roles',
   foreignKey: 'userId',
 });
-RoleModel.belongsToMany(UserModel, {
-  through: UserRoleModel,
+Role.belongsToMany(User, {
+  through: UserRole,
+  as: 'users',
   foreignKey: 'roleId',
 });
-RoleModel.belongsToMany(PermissionModel, {
-  through: RolePermissionModel,
+Role.belongsToMany(Permission, {
+  through: RolePermission,
+  as: 'permissions',
   foreignKey: 'roleId',
 });
-PermissionModel.belongsToMany(RoleModel, {
-  through: RolePermissionModel,
+Permission.belongsToMany(Role, {
+  through: RolePermission,
+  as: 'roles',
   foreignKey: 'permissionId',
 });
-export {
-  UserModel,
-  RoleModel,
-  PermissionModel,
-  UserRoleModel,
-  RolePermissionModel,
-};
+export { User, Role, Permission, UserRole, RolePermission };

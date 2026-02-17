@@ -19,7 +19,6 @@ module.exports = {
         id: uuid(),
         userId: admin.id,
         roleId: role.id,
-        createdAt: new Date(),
       },
     ]);
   },

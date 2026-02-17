@@ -1,10 +1,31 @@
-import { DataType, DataTypes } from 'sequelize';
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { ROLES } from '../constants/roles';
 import { sequelize } from '../config/database';
-//import { object } from 'zod';
 
-const UserModel = sequelize.define(
-  'User',
+export class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
+> {
+  declare id: CreationOptional<string>;
+  declare full_name: string;
+  declare email: string;
+  declare phone: string | null;
+  declare gender: string | null;
+  declare date_of_birth: Date | null;
+  declare passwordHash: string;
+  declare isActive: CreationOptional<boolean>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+}
+
+//import { object } from 'zod';
+User.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -50,8 +71,8 @@ const UserModel = sequelize.define(
     },
   },
   {
+    sequelize,
     tableName: 'users',
     timestamps: true,
   }
 );
-export { UserModel };

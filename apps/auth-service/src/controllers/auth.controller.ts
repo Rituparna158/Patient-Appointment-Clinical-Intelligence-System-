@@ -52,18 +52,18 @@ const refreshToken: RequestHandler = async (req, res, next) => {
       id: decode.id,
       email: decode.email,
     });
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       accessToken: newAccessToken,
     });
   } catch (err) {
-    return res.status(401).json({
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
       error: 'Invalid or expired refresh token',
     });
   }
 };
 
 const logout: RequestHandler = async (req, res) => {
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     message: 'Logged out successfully (client must delete the tokens)',
   });
 };

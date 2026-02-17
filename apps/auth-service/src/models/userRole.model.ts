@@ -1,10 +1,22 @@
-import { DataType, DataTypes } from 'sequelize';
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { ROLES } from '../constants/roles';
 import { sequelize } from '../config/database';
 //import { object } from 'zod';
-
-const UserRoleModel = sequelize.define(
-  'UserRole',
+export class UserRole extends Model<
+  InferAttributes<UserRole>,
+  InferCreationAttributes<UserRole>
+> {
+  declare id: CreationOptional<string>;
+  declare userId: string;
+  declare roleId: string;
+}
+UserRole.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -19,14 +31,10 @@ const UserRoleModel = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
   },
   {
+    sequelize,
     tableName: 'user_roles',
-    timestamps: true,
+    timestamps: false,
   }
 );
-export { UserRoleModel };

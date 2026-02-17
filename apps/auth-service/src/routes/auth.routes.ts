@@ -17,20 +17,15 @@ router.post('/login', login);
 router.post('/refresh', refreshToken);
 router.post('/logout', logout);
 router.get('/me', requireAuth, me);
-router.get(
-  '/doctor-only',
-  requireAuth,
-  reuireRole(ROLES.DOCTOR),
-  (req, res) => {
-    return res.status(HTTP_STATUS.OK).json({
-      message: 'Welcome Doctor',
-    });
-  }
-);
+router.get('/doctor-only', requireAuth, reuireRole('doctor'), (req, res) => {
+  return res.status(HTTP_STATUS.OK).json({
+    message: 'Welcome Doctor',
+  });
+});
 router.get(
   '/staff-only',
   requireAuth,
-  requireAnyRole([ROLES.DOCTOR, ROLES.ADMIN]),
+  requireAnyRole(['doctor', 'admin']),
   (req, res) => {
     return res.status(HTTP_STATUS.OK).json({
       message: 'Welcome Staff',

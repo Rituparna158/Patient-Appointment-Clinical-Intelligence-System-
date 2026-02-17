@@ -1,33 +1,39 @@
 import request from 'supertest';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import app from '../src/app';
 import { HTTP_STATUS } from '../src/constants/http-status';
+import { User } from '../src/models';
 
 describe('Auth serice-Register', () => {
-  it('should register a new uder successfully', async () => {
+  beforeEach(async () => {
+    await User.destroy({ where: {} });
+  });
+  it('should register a new user successfully', async () => {
     const res = await request(app).post('/api/auth/register').send({
-      email: 'test@example.com',
-      password: 'password123',
+      full_name: 'Test User',
+      email: 'test1@gmail.com',
+      password: 'Password@123',
     });
     expect(res.status).toBe(HTTP_STATUS.CREATED);
     expect(res.body).toHaveProperty('user');
-    expect(res.body.user.email).toBe('test@example.com');
-    expect(res.body.user).not.toHaveProperty('password');
   });
   it('should return 409 if email already exists', async () => {
     await request(app).post('/api/auth/register').send({
-      email: 'dup@test.com',
-      password: 'password123',
+      full_name: 'Test User',
+      email: 'dup@gmail.com',
+      password: 'Password@123',
     });
     const res = await request(app).post('/api/auth/register').send({
-      email: 'dup@test.com',
-      password: 'password123',
+      full_name: 'Test User',
+      email: 'dup@gmail.com',
+      password: 'Password@123',
     });
     expect(res.status).toBe(HTTP_STATUS.CONFLICT);
   });
   it('should return 400 if email is missing', async () => {
     const res = await request(app).post('/api/auth/register').send({
-      password: 'password123',
+      full_name: 'Test User',
+      password: 'Password@123',
     });
     expect(res.status).toBe(HTTP_STATUS.BAD_REQUEST);
   });

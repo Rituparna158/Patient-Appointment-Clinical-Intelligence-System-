@@ -1,9 +1,23 @@
-import { DataTypes } from 'sequelize';
+import {
+  Model,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../config/database';
 //import { object } from 'zod';
 
-const PermissionModel = sequelize.define(
-  'Permission',
+export class Permission extends Model<
+  InferAttributes<Permission>,
+  InferCreationAttributes<Permission>
+> {
+  declare id: CreationOptional<string>;
+  declare name: string;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+}
+Permission.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -25,8 +39,8 @@ const PermissionModel = sequelize.define(
     },
   },
   {
+    sequelize,
     tableName: 'permissions',
     timestamps: true,
   }
 );
-export { PermissionModel };

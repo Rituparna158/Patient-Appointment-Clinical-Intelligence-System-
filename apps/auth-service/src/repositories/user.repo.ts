@@ -1,13 +1,12 @@
-import { User } from '../types/auth.types';
 import { ROLES } from '../constants/roles';
-import { UserModel } from '../models/user.model';
+import { User } from '../models/user.model';
 
 const findByEmail = async (email: string) => {
-  return UserModel.findOne({
+  return User.findOne({
     where: { email },
   });
 };
 const saveUser = async (user: any) => {
-  return UserModel.create(user);
+  return User.create(user);
 };
 export { findByEmail, saveUser };
