@@ -8,6 +8,8 @@ import { ROLES } from '../constants/roles';
 import { AppError } from '../utils/app-error';
 import { HTTP_STATUS } from '../constants/http-status';
 import { saveRefreshToken } from '../utils/token-store';
+import { Role } from '../models/role.model';
+import { UserRole } from '../models';
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
   const existing = await findByEmail(data.email);
@@ -23,6 +25,16 @@ const registerUser = async (data: RegisterDTO): Promise<User> => {
     date_of_birth: data.date_of_birth,
     passwordHash: hashedPassword,
     isActive: true,
+  });
+  const patientRole = await Role.findOne({
+    where: { name: 'patient' },
+  });
+  if (!patientRole) {
+    throw new AppError('Doctor role not found', HTTP_STATUS.INTERNAL_ERROR);
+  }
+  await UserRole.create({
+    userId: newUserRecord.id,
+    roleId: patientRole.id,
   });
   return newUserRecord.toJSON() as User;
 };

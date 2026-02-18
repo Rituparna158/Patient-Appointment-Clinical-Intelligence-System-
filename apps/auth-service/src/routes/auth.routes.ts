@@ -19,6 +19,11 @@ router.post('/login', login);
 router.post('/refresh', refreshTok);
 router.post('/logout', logout);
 router.get('/me', requireAuth, me);
+router.get('/patient-only', requireAuth, reuireRole('patient'), (req, res) => {
+  return res.status(HTTP_STATUS.OK).json({
+    message: 'Welcome Patient',
+  });
+});
 router.get('/doctor-only', requireAuth, reuireRole('doctor'), (req, res) => {
   return res.status(HTTP_STATUS.OK).json({
     message: 'Welcome Doctor',

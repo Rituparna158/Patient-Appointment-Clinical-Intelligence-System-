@@ -12,13 +12,14 @@ const reuireRole = (role: string): RequestHandler => {
     }
     if (!user.roles.includes(role)) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({
-        error: 'Access denied',
+        error: 'Access denied(Role missing)',
       });
     }
     next();
   };
 };
-const requireAnyRole = (roles: Role[]): RequestHandler => {
+
+const requireAnyRole = (role: String[]): RequestHandler => {
   return (req, res, next) => {
     const user = (req as any).user;
 
@@ -27,11 +28,11 @@ const requireAnyRole = (roles: Role[]): RequestHandler => {
         error: 'Access denied(No roles found)',
       });
     }
-    const allowed = roles.some((r) => user.roles.includes(r));
+    const allowed = role.some((r: any) => user.roles.includes(r));
 
     if (!allowed) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({
-        error: 'Access denied',
+        error: 'Access denied(Role not allowed)',
       });
     }
     next();
