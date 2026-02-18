@@ -5,10 +5,18 @@ import adminRoutes from './routes/admin.routes';
 import { errorHandler } from './middleware/error.middleware';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
 const app = express();
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:8080'],
+    credentials: true,
+  })
+);
 app.use(express.json());
-
+app.use(cookieParser());
 app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);

@@ -9,16 +9,15 @@ import { HTTP_STATUS } from '../constants/http-status';
 
 const requireAuth: RequestHandler = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const token = req.cookies.accessToken;
+
+    if (!token) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        error: 'Token missing',
+        error: 'Access token missing',
       });
     }
-
-    const token = authHeader.split(' ')[1];
-    console.log('token:', token);
     const decode = verifyToken(token) as any;
+
     console.log('decode:', decode);
 
     const user = await User.findByPk(decode.id, {
@@ -59,7 +58,7 @@ const requireAuth: RequestHandler = async (req, res, next) => {
     next();
   } catch (err) {
     return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-      error: 'Invalid Token',
+      error: 'Invalid or expired Token',
     });
   }
 };

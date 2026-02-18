@@ -7,6 +7,7 @@ import { generateToken, generateRefreshToken } from '../utils/jwt';
 import { ROLES } from '../constants/roles';
 import { AppError } from '../utils/app-error';
 import { HTTP_STATUS } from '../constants/http-status';
+import { saveRefreshToken } from '../utils/token-store';
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
   const existing = await findByEmail(data.email);
@@ -42,6 +43,16 @@ const loginUser = async (data: LoginDTO) => {
   const accessToken = generateToken(payload);
   console.log('accesstoken:', accessToken);
   const refreshToken = generateRefreshToken(payload);
-  return { accessToken, refreshToken };
+
+  await saveRefreshToken(user.id, refreshToken);
+
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+    accessToken,
+    refreshToken,
+  };
 };
 export { registerUser, loginUser };

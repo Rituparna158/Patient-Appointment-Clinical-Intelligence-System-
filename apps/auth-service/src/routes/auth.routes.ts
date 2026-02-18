@@ -4,7 +4,7 @@ import { reuireRole, requireAnyRole } from '../middleware/role.middleware';
 import {
   register,
   login,
-  refreshToken,
+  refreshTok,
   logout,
   me,
   forgotPassword,
@@ -16,7 +16,7 @@ import { ROLES } from '../constants/roles';
 const router = Router();
 router.post('/register', register);
 router.post('/login', login);
-router.post('/refresh', refreshToken);
+router.post('/refresh', refreshTok);
 router.post('/logout', logout);
 router.get('/me', requireAuth, me);
 router.get('/doctor-only', requireAuth, reuireRole('doctor'), (req, res) => {

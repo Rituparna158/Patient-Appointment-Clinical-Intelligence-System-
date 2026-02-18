@@ -15,6 +15,7 @@ import {
 import { RequestHandler } from 'express';
 import { registerSchema, loginSchema } from '../validators/auth.validator';
 import { validateHeaderValue } from 'node:http';
+import { deleteRefreshToken, getRefreshToken } from '../utils/token-store';
 const register: RequestHandler = async (req, res, next) => {
   try {
     const body = registerSchema.parse(req.body);
@@ -36,29 +37,58 @@ const login: RequestHandler = async (req, res, next) => {
 
     const result = await loginUser(body);
 
-    return res.status(HTTP_STATUS.OK).json(result);
+    res.cookie('accessToken', result.accessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Login successful',
+      user: result.user,
+    });
   } catch (err) {
     next(err);
   }
 };
 
-const refreshToken: RequestHandler = async (req, res, next) => {
+const refreshTok: RequestHandler = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         error: 'Refresh Token is required',
       });
     }
     const decode = verifyRefreshToken(refreshToken) as any;
 
+    const stored = await getRefreshToken(decode.id);
+
+    if (!stored || stored !== refreshToken) {
+      return res.status(401).json({
+        error: 'Token invalidated',
+      });
+    }
+
     const newAccessToken = generateToken({
       id: decode.id,
       email: decode.email,
     });
+
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000,
+    });
+
     return res.status(HTTP_STATUS.OK).json({
-      accessToken: newAccessToken,
+      message: 'Access token refreshed successfully!',
     });
   } catch (err) {
     return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -67,11 +97,30 @@ const refreshToken: RequestHandler = async (req, res, next) => {
   }
 };
 
-const logout: RequestHandler = async (req, res) => {
-  return res.status(HTTP_STATUS.OK).json({
-    message: 'Logged out successfully (client must delete the tokens)',
-  });
+const logout: RequestHandler = async (req, res, next) => {
+  const token = req.cookies?.refreshToken;
+
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
+
+  console.log('Refresh token:', token);
+
+  if (!token) {
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Logged out successfully',
+    });
+  }
+  try {
+    const decode = verifyRefreshToken(token) as any;
+    console.log('decode user:', decode);
+    const deleted = await deleteRefreshToken(decode.id);
+    console.log('refresh token deleted from redis:', deleted);
+  } catch (err) {
+    console.log('logout: refresh token already invalid');
+  }
+  return res.json({ message: 'logout successful' });
 };
+
 const me: RequestHandler = async (req, res) => {
   return res.status(HTTP_STATUS.OK).json({
     ...(req as any).user,
@@ -122,6 +171,7 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
+
 const resetPassword: RequestHandler = async (req, res, next) => {
   try {
     const { email, otp, newPassword } = req.body;
@@ -165,7 +215,7 @@ const resetPassword: RequestHandler = async (req, res, next) => {
 export {
   register,
   login,
-  refreshToken,
+  refreshTok,
   logout,
   me,
   forgotPassword,
