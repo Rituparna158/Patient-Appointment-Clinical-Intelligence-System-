@@ -7,6 +7,8 @@ import {
   refreshToken,
   logout,
   me,
+  forgotPassword,
+  resetPassword,
 } from '../controllers/auth.controller';
 import { HTTP_STATUS } from '../constants/http-status';
 import { ROLES } from '../constants/roles';
@@ -32,4 +34,6 @@ router.get(
     });
   }
 );
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 export default router;

@@ -4,14 +4,17 @@ services:
       context: .
       dockerfile: apps/auth-service/Dockerfile
     container_name: auth-service
-    expose:
-      - '4001'
+    ports:
+      - "4001:4001"
     env_file:
       - apps/auth-service/.env
     environment:
       DB_HOST: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - postgres
+      - redis
 
   postgres:
     image: postgres:15
@@ -25,6 +28,13 @@ services:
       POSTGRES_DB: clinic_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: client-redis
+    restart: always
+    ports:
+    - "6379:6379"
 
 
   nginx:
