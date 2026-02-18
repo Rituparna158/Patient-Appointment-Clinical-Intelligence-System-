@@ -1,10 +1,13 @@
 import { RequestHandler } from 'express';
-import { createDoctorSchema } from '../validators/admin.validator';
-import { createDoctorUser } from '../services/admin.service';
+import {
+  createDoctorSchema,
+  createAdminSchema,
+} from '../validators/admin.validator';
+import { createDoctorUser, createAdminUser } from '../services/admin.service';
 import { HTTP_STATUS } from '../constants/http-status';
 import { listenerCount } from 'node:cluster';
 
-export const createDoctor: RequestHandler = async (req, res, next) => {
+const createDoctor: RequestHandler = async (req, res, next) => {
   try {
     const body = createDoctorSchema.parse(req.body);
 
@@ -27,3 +30,25 @@ export const createDoctor: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
+
+const createAdmin: RequestHandler = async (req, res, next) => {
+  try {
+    const body = createAdminSchema.parse(req.body);
+
+    const user = await createAdminUser(body);
+
+    return res.status(HTTP_STATUS.CREATED).json({
+      message: 'Adminr account created successfully',
+      admin: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        //phone: user.phone,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export { createDoctor, createAdmin };

@@ -1,4 +1,4 @@
-export interface CreateDoctorDTO {
+interface CreateDoctorDTO {
   email: string;
   password: string;
   full_name: string;
@@ -9,3 +9,10 @@ export interface CreateDoctorDTO {
   consultation_fee: number;
   is_active?: boolean;
 }
+interface CreateAdminDTO {
+  email: string;
+  password: string;
+  full_name: string;
+  phone?: string;
+}
+export { CreateDoctorDTO, CreateAdminDTO };

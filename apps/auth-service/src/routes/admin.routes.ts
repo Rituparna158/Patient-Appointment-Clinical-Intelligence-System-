@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createDoctor } from '../controllers/admin.controller';
+import { createDoctor, createAdmin } from '../controllers/admin.controller';
 import { requireAuth } from '../middleware/auth.middleware';
 import { requirePermission } from '../middleware/permission.middleware';
 
@@ -10,5 +10,12 @@ router.post(
   requireAuth,
   requirePermission('create_doctors'),
   createDoctor
+);
+
+router.post(
+  '/create-admin',
+  requireAuth,
+  requirePermission('create_admin'),
+  createAdmin
 );
 export default router;
