@@ -5,8 +5,8 @@ type Role=
 
 interface User{
     id:string;
-    name:string;
-    role:Role;
+    email:string;
+
 }
 
 export type {Role,User}

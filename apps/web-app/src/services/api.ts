@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:4001/api";
+const API_BASE = "http://localhost:8080/api";
 
 export async function api(endpoint:string,options:RequestInit={}){
     const res = await fetch(`${API_BASE}${endpoint}`,{
@@ -8,9 +8,18 @@ export async function api(endpoint:string,options:RequestInit={}){
         credentials:"include",
         ...options,
     });
-    const data = await res.json();
+    let data;
 
-    if(!res.ok) throw new Error(data.message);
+    try{
+        data=await res.json();
+    }catch{
+        throw new Error("Server did not return json")
+    }
+  
+
+    if(!res.ok){ 
+        console.log("Backend error:",data);
+        throw new Error(data.message || "Request failed");}
 
     return data;
 }

@@ -1,23 +1,16 @@
-import {create} from "zustand";
-
-import type {AuthState,AuthActions} from "./auth.types";
-
-type AuthStore = AuthState & AuthActions;
-
-const useAuthStore = create<AuthStore>((set)=>({
-    user:null,
-    token:null,
-
-    login:(user)=>
-        set({
-            user,
-        }),
-    
-    logout:()=>
-        set({
-            user:null,
-            token:null,
-        })
-
+import { create } from "zustand";
+import type { User } from "@/types/auth.types";
+ 
+interface AuthStore {
+  user: User | null;
+  setUser: (user: User) => void;
+  logout: () => void;
+}
+ 
+export const useAuthStore = create<AuthStore>((set) => ({
+  user: null,
+ 
+  setUser: (user) => set({ user }),
+ 
+  logout: () => set({ user: null }),
 }));
-export {useAuthStore};
