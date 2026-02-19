@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link ,useNavigate,useLocation} from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 
 import { Card,CardHeader,CardTitle,CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,30 +11,40 @@ export default function ResetPassword(){
     const navigate=useNavigate();
 
     const email=localStorage.getItem("resetEmail");
-
+    
     const [otp,setOtp]=useState("");
-    const [password,setPassword]=useState("");
+    const [newPassword,setnewPassword]=useState("");
 
      const [error,setError]=useState("");
+     const [message,setMessage]=useState("");
     const [loading, setLoading] = useState(false);
 
     async function handleReset(){
         if(!email){
-            setError("Email not found! Please restart forgot password flow.")
+            setError("Email not found! Please restart forgot password flow.");
+            return;
+
         }
+         if(!otp || !newPassword){
+            setError("OTP and new password are required");
+            return;
+        }
+
         setLoading(true);
         setError("");
+        setMessage("")
 
         try{
-            await AuthService.resetPassword(otp,password);
-
+            const res=await AuthService.resetPassword(email,otp,newPassword);
+            setMessage(res.message|| "Password reset successfull")
+            localStorage.removeItem("resetEmail");
             navigate("/login");
         }catch(err:any){
-            setError(err.message)
+            setError(err.message|| "Reset Failed")
         }finally{
             setLoading(false);
         }
-
+        
     }
     return (
         <div className="min-h-screen flex justify-center items-center bg-slate-50">
@@ -58,8 +68,8 @@ export default function ResetPassword(){
                     <Input
                     placeholder="Enter New Password"
                     type="password"
-                    value={password}
-                    onChange={(e)=> setPassword(e.target.value)}
+                    value={newPassword}
+                    onChange={(e)=> setnewPassword(e.target.value)}
                     />
 
                     {error && <p className="text-red-600 text-sm">{error}</p>}

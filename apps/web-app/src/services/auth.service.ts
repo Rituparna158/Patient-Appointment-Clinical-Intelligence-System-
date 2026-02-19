@@ -43,10 +43,10 @@ export const AuthService = {
     });
   },
 
-  resetPassword(otp:string,newPassword:string) {
+  resetPassword(email:string,otp:string,newPassword:string) {
     return api("/auth/reset-password", {
       method: "POST",
-      body: JSON.stringify({otp,newPassword }),
+      body: JSON.stringify({email,otp,newPassword }),
     });
   },
 };
