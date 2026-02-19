@@ -1,4 +1,4 @@
-import { registerUser, loginUser } from '../services/auth.service';
+import { registerUser, loginUser,refreshTokenService } from '../services/auth.service';
 import { HTTP_STATUS } from '../constants/http-status';
 import { MESSAGES } from '../constants/messages';
 import { redis } from '../config/redis';
@@ -61,25 +61,7 @@ const refreshTok: RequestHandler = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
-    if (!refreshToken) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({
-        error: 'Refresh Token is required',
-      });
-    }
-    const decode = verifyRefreshToken(refreshToken) as any;
-
-    const stored = await getRefreshToken(decode.id);
-
-    if (!stored || stored !== refreshToken) {
-      return res.status(401).json({
-        error: 'Token invalidated',
-      });
-    }
-
-    const newAccessToken = generateToken({
-      id: decode.id,
-      email: decode.email,
-    });
+    const newAccessToken=await refreshTokenService(refreshToken)
 
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
@@ -87,13 +69,12 @@ const refreshTok: RequestHandler = async (req, res, next) => {
       maxAge: 15 * 60 * 1000,
     });
 
-    return res.status(HTTP_STATUS.OK).json({
+    return res.json({
       message: 'Access token refreshed successfully!',
     });
+
   } catch (err) {
-    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-      error: 'Invalid or expired refresh token',
-    });
+    next(err)
   }
 };
 

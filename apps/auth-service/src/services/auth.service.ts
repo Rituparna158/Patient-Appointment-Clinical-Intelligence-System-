@@ -3,13 +3,15 @@ import { hashPassword } from '../utils/hash';
 import { MESSAGES } from '../constants/messages';
 import { findByEmail, saveUser } from '../repositories/user.repo';
 import { comparePassword } from '../utils/compare';
-import { generateToken, generateRefreshToken } from '../utils/jwt';
+import {verifyRefreshToken, generateToken, generateRefreshToken } from '../utils/jwt';
 import { ROLES } from '../constants/roles';
 import { AppError } from '../utils/app-error';
 import { HTTP_STATUS } from '../constants/http-status';
 import { saveRefreshToken } from '../utils/token-store';
 import { Role } from '../models/role.model';
 import { UserRole } from '../models';
+import { getRefreshToken } from '../utils/token-store';
+
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
   const existing = await findByEmail(data.email);
@@ -67,4 +69,32 @@ const loginUser = async (data: LoginDTO) => {
     refreshToken,
   };
 };
-export { registerUser, loginUser };
+
+const refreshTokenService = async (refreshToken:string) => {
+    if (!refreshToken) {
+      throw new AppError(
+        "Refresh Token is required",
+        HTTP_STATUS.BAD_REQUEST)
+    }
+    const decode:any = verifyRefreshToken(refreshToken) 
+
+    const stored = await getRefreshToken(decode.id);
+
+    if (!stored || stored !== refreshToken) {
+      throw new AppError(
+        "Token invalidated",
+        HTTP_STATUS.UNAUTHORIZED
+      )
+    }
+
+    const newAccessToken = generateToken({
+      id: decode.id,
+      email: decode.email,
+    });
+
+   return newAccessToken
+}
+
+
+
+export { registerUser, loginUser,refreshTokenService };
