@@ -1,4 +1,8 @@
-import { registerUser, loginUser,refreshTokenService } from '../services/auth.service';
+import {
+  registerUser,
+  loginUser,
+  refreshTokenService,
+} from '../services/auth.service';
 import { HTTP_STATUS } from '../constants/http-status';
 import { MESSAGES } from '../constants/messages';
 import { redis } from '../config/redis';
@@ -39,13 +43,13 @@ const login: RequestHandler = async (req, res, next) => {
     const result = await loginUser(body);
 
     res.cookie('accessToken', result.accessToken, {
-      httpOnly: true,
+      httpOnly: false,
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: true,
+      httpOnly: false,
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -62,7 +66,7 @@ const refreshTok: RequestHandler = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
-    const newAccessToken=await refreshTokenService(refreshToken)
+    const newAccessToken = await refreshTokenService(refreshToken);
 
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
@@ -73,9 +77,8 @@ const refreshTok: RequestHandler = async (req, res, next) => {
     return res.json({
       message: 'Access token refreshed successfully!',
     });
-
   } catch (err) {
-    next(err)
+    next(err);
   }
 };
 
@@ -106,34 +109,34 @@ const logout: RequestHandler = async (req, res, next) => {
 const me: RequestHandler = async (req, res, next) => {
   try {
     const userId = (req as any).user.id;
- 
+
     const user = await User.findByPk(userId, {
       attributes: [
-        "id",
-        "email",
-        "full_name",
-        "phone",
-        "gender",
-        "date_of_birth",
-        "isActive",
+        'id',
+        'email',
+        'full_name',
+        'phone',
+        'gender',
+        'date_of_birth',
+        'isActive',
       ],
       include: [
         {
           model: Role,
-          as: "roles",
-          attributes: ["name"],
+          as: 'roles',
+          attributes: ['name'],
         },
       ],
     });
- 
+
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: 'User not found',
       });
     }
- 
+
     const userJson = user.toJSON() as any;
- 
+
     return res.json({
       id: userJson.id,
       email: userJson.email,
@@ -144,7 +147,7 @@ const me: RequestHandler = async (req, res, next) => {
       role:
         userJson.roles && userJson.roles.length > 0
           ? userJson.roles[0].name
-          : "patient",
+          : 'patient',
     });
   } catch (err) {
     next(err);
@@ -199,9 +202,9 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
 const resetPassword: RequestHandler = async (req, res, next) => {
   try {
     const { email, otp, newPassword } = req.body;
-    console.log("email:",email);
-    console.log("otp:",otp);
-    console.log("new pssword:",newPassword);
+    console.log('email:', email);
+    console.log('otp:', otp);
+    console.log('new pssword:', newPassword);
     if (!email || !otp || !newPassword) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         error: 'Otp and newPassword are required',
