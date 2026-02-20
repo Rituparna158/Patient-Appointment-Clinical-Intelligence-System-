@@ -48,6 +48,9 @@ export default function Register() {
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
             Patient Registration
+            <p className="text-sm text-slate-500">
+                Only Patients can self register. Doctors are added by Admin
+            </p>
           </CardTitle>
         </CardHeader>
  

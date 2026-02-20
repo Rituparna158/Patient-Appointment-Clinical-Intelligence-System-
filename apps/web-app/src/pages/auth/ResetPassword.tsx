@@ -53,12 +53,13 @@ export default function ResetPassword(){
                     <CardTitle className="text-xl font-bold">
                         Reset Password
                     </CardTitle>
+                    {email && (
+                        <p className="text-sm text-slate-500">
+                            OTP sent to : <span className="font-medium">{email}</span>
+                        </p>
+                    )}
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <p className="text-sm text-slate-600">
-                        OTP sent to : <b>{email}</b>
-                    </p>
-
                     <Input
                     placeholder="Enter OTP"
                     value={otp}
@@ -73,6 +74,12 @@ export default function ResetPassword(){
                     />
 
                     {error && <p className="text-red-600 text-sm">{error}</p>}
+
+                    {message && (
+                        <p className="text-sm text-green-600 font-medium">
+                            {message}
+                        </p>
+                    )}
 
                     <Button 
                     className="w-full"

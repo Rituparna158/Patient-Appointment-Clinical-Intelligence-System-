@@ -23,10 +23,19 @@ export default function Login() {
  
     try {
       const res = await AuthService.login(email, password);
- 
-      setUser(res.user);
- 
-      navigate("/dashboard");
+    
+      const user=res.user;
+
+      setUser(user);
+        
+      if(user.role === "admin"){
+        navigate("/admin/dashboard");
+      }else if(user.role == "doctor"){
+        navigate("/doctor/dashboard");
+      }else{
+         navigate("/patient/dashboard");
+      }
+     
     } catch (err: any) {
       setError(err.message || "Login Failed");
     } finally {

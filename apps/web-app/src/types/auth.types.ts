@@ -4,6 +4,8 @@ type Role=
 | "admin"
 
 interface User{
+    role: string;
+    roles(roles: any): unknown;
     id:string;
     email:string;
 
