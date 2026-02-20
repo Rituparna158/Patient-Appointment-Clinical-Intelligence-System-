@@ -87,6 +87,182 @@ paths:
           description: Doctor access granted
         "403":
           description: Forbidden (not doctor)
+
+
+    /api/auth/refresh:
+    post:
+      summary: Refresh access token using refresh token cookie
+      tags:
+        - Auth
+      responses:
+        "200":
+          description: Access token refreshed successfully
+        "400":
+          description: Refresh token missing
+        "401":
+          description: Invalid or expired refresh token
+ 
+  /api/auth/logout:
+    post:
+      summary: Logout user and clear cookies
+      tags:
+        - Auth
+      responses:
+        "200":
+          description: Logout successful
+ 
+  /api/auth/patient-only:
+    get:
+      summary: Patient-only protected route
+      tags:
+        - Roles
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Welcome Patient
+        "403":
+          description: Forbidden (not patient)
+ 
+  /api/auth/staff-only:
+    get:
+      summary: Doctor or Admin only route
+      tags:
+        - Roles
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Welcome Staff
+        "403":
+          description: Forbidden
+ 
+  /api/auth/forgot-password:
+    post:
+      summary: Send OTP to email for password reset
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  example: patient@gmail.com
+      responses:
+        "200":
+          description: OTP sent successfully
+        "400":
+          description: Email required
+ 
+  /api/auth/reset-password:
+    post:
+      summary: Reset password using OTP
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, otp, newPassword]
+              properties:
+                email:
+                  type: string
+                  example: patient@gmail.com
+                otp:
+                  type: string
+                  example: "123456"
+                newPassword:
+                  type: string
+                  example: NewPass@123
+      responses:
+        "200":
+          description: Password reset successful
+        "400":
+          description: Invalid or expired OTP
+ 
+  /api/admin/create-doctor:
+    post:
+      summary: Create doctor account (Admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - full_name
+                - specialization
+                - licence_no
+                - consultation_fee
+              properties:
+                email:
+                  type: string
+                  example: doctor@gmail.com
+                full_name:
+                  type: string
+                  example: Dr. John Smith
+                phone:
+                  type: string
+                  example: "9876543210"
+                specialization:
+                  type: string
+                  example: Cardiologist
+                licence_no:
+                  type: string
+                  example: LIC123456
+                consultation_fee:
+                  type: integer
+                  example: 500
+      responses:
+        "201":
+          description: Doctor created successfully
+        "403":
+          description: Permission denied
+ 
+  /api/admin/create-admin:
+    post:
+      summary: Create admin account (Admin only)
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - full_name
+              properties:
+                email:
+                  type: string
+                  example: admin2@gmail.com
+                full_name:
+                  type: string
+                  example: Admin User
+                phone:
+                  type: string
+                  example: "9876543210"
+      responses:
+        "201":
+          description: Admin created successfully
+        "403":
+          description: Permission denied
+ 
  
 components:
   securitySchemes:

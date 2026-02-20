@@ -13,7 +13,7 @@ interface LoginDTO {
 }
 
 type Role = (typeof ROLES)[keyof typeof ROLES];
-interface User {
+interface IUser {
   id: string;
   email: string;
   full_name: string;
@@ -23,4 +23,4 @@ interface User {
   passwordHash: string;
   isActive: boolean;
 }
-export type { RegisterDTO, LoginDTO, User, Role };
+export type { RegisterDTO, LoginDTO, IUser, Role };

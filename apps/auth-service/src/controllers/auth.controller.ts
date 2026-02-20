@@ -5,7 +5,8 @@ import { redis } from '../config/redis';
 import { trasport } from '../utils/mailer';
 import otpGenerator from 'otp-generator';
 import { hashPassword } from '../utils/hash';
-import { User } from '../models';
+import { Role, User } from '../models';
+
 import { RegisterDTO } from '../types/auth.types';
 import {
   verifyRefreshToken,
@@ -102,10 +103,52 @@ const logout: RequestHandler = async (req, res, next) => {
   return res.json({ message: 'logout successful' });
 };
 
-const me: RequestHandler = async (req, res) => {
-  return res.status(HTTP_STATUS.OK).json({
-    ...(req as any).user,
-  });
+const me: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = (req as any).user.id;
+ 
+    const user = await User.findByPk(userId, {
+      attributes: [
+        "id",
+        "email",
+        "full_name",
+        "phone",
+        "gender",
+        "date_of_birth",
+        "isActive",
+      ],
+      include: [
+        {
+          model: Role,
+          as: "roles",
+          attributes: ["name"],
+        },
+      ],
+    });
+ 
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+ 
+    const userJson = user.toJSON() as any;
+ 
+    return res.json({
+      id: userJson.id,
+      email: userJson.email,
+      full_name: userJson.full_name,
+      phone: userJson.phone,
+      gender: userJson.gender,
+      date_of_birth: userJson.date_of_birth,
+      role:
+        userJson.roles && userJson.roles.length > 0
+          ? userJson.roles[0].name
+          : "patient",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const forgotPassword: RequestHandler = async (req, res, next) => {
@@ -156,10 +199,12 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
 const resetPassword: RequestHandler = async (req, res, next) => {
   try {
     const { email, otp, newPassword } = req.body;
-
+    console.log("email:",email);
+    console.log("otp:",otp);
+    console.log("new pssword:",newPassword);
     if (!email || !otp || !newPassword) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
-        error: 'Email,otp and newPassword are required',
+        error: 'Otp and newPassword are required',
       });
     }
     const cleanEmail = req.body.email.trim().toLowerCase();

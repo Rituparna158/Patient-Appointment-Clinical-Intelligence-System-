@@ -32,5 +32,5 @@ User.hasOne(Doctor, {
 Doctor.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user',
-});
+})
 export { User, Role, Permission, UserRole, RolePermission, Doctor };

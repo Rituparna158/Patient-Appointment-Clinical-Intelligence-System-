@@ -1,4 +1,4 @@
-import { RegisterDTO, LoginDTO, User } from '../types/auth.types';
+import { RegisterDTO, LoginDTO, IUser } from '../types/auth.types';
 import { hashPassword } from '../utils/hash';
 import { MESSAGES } from '../constants/messages';
 import { findByEmail, saveUser } from '../repositories/user.repo';
@@ -11,6 +11,7 @@ import { saveRefreshToken } from '../utils/token-store';
 import { Role } from '../models/role.model';
 import { UserRole } from '../models';
 import { getRefreshToken } from '../utils/token-store';
+import { User } from '../models/user.model';
 
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
@@ -40,36 +41,67 @@ const registerUser = async (data: RegisterDTO): Promise<User> => {
   });
   return newUserRecord.toJSON() as User;
 };
+
 const loginUser = async (data: LoginDTO) => {
-  const userRecord = await findByEmail(data.email);
+
+  const userRecord = await User.findOne({
+    where: { email: data.email },
+    include: [
+      {
+        model: Role,
+        as: "roles", 
+        attributes: ["name"],
+      },
+    ],
+  });
+ 
   if (!userRecord) {
     throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
   }
-  const user = userRecord.toJSON() as User;
-  const match = await comparePassword(data.password, user.passwordHash);
-  if (!match) {
-    throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
+
+  const user=userRecord.toJSON() as IUser & {
+    roles?:{name:string}[]
   }
+  
+  const match = await comparePassword(data.password, user.passwordHash);
+ 
+  if (!match) {
+    throw new AppError(
+      MESSAGES.INVALID_CREDENTIALS,
+      HTTP_STATUS.UNAUTHORIZED
+    );
+  }
+ 
+  
+  const roleName =
+    user.roles && user.roles.length > 0
+      ? user.roles[0].name
+      : "patient";
+ 
+ 
   const payload = {
     id: user.id,
     email: user.email,
+    role: roleName,
   };
+ 
   const accessToken = generateToken(payload);
-  console.log('accesstoken:', accessToken);
   const refreshToken = generateRefreshToken(payload);
-
+ 
   await saveRefreshToken(user.id, refreshToken);
-
+ 
   return {
     user: {
       id: user.id,
       email: user.email,
+      role: roleName,
     },
     accessToken,
     refreshToken,
   };
 };
-
+ 
+ 
 const refreshTokenService = async (refreshToken:string) => {
     if (!refreshToken) {
       throw new AppError(
