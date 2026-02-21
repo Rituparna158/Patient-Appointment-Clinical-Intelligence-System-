@@ -5,9 +5,6 @@ import { HTTP_STATUS } from '../src/constants/http-status';
 import { User } from '../src/models';
 
 describe('Auth serice-Register', () => {
-  beforeEach(async () => {
-    await User.destroy({ where: {} });
-  });
   it('should register a new user successfully', async () => {
     const res = await request(app).post('/api/auth/register').send({
       full_name: 'Test User',

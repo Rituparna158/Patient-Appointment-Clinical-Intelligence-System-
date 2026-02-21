@@ -19,7 +19,7 @@ paths:
           application/json:
             schema:
               type: object
-              required: [email, password]
+              required: [full_name,email, password]
               properties:
                 email:
                   type: string

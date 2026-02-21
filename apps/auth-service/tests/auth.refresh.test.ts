@@ -6,9 +6,6 @@ import { HTTP_STATUS } from '../src/constants/http-status';
 import { User } from '../src/models';
 
 describe('Auth Service-Refresh Token', () => {
-  beforeEach(async () => {
-    await User.destroy({ where: {} });
-  });
   it('should generate a new access token with valid refresh token', async () => {
     await request(app).post('/api/auth/register').send({
       full_name: 'Refresh User',

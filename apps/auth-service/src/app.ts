@@ -12,13 +12,13 @@ const app = express();
 app.use(
   cors({
     //origin: ['http://localhost:5173', 'http://localhost:8080'],
-    origin:true,
+    origin: true,
     credentials: true,
   })
 );
 app.use(express.json());
 app.use(cookieParser());
-app.use('/health', healthRoutes);
+app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 const swaggerDocument = YAML.load('src/swagger.yaml');

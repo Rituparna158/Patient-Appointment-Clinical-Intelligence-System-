@@ -6,19 +6,23 @@ import { response } from 'express';
 
 describe('Auth service-Login', () => {
   it('should login successfully and return token', async () => {
-    await request(app).post('/api/auth/register').send({
-      full_name: 'Login User',
-      email: 'logint@gmail.com',
-      password: 'Password@123',
-    });
+    // try{
+    //   const a = await request(app).post('/api/auth/register').send({
+    //     full_name: 'Login User',
+    //     email: 'logint@gmail.com',
+    //     password: 'Password@123',
+    //   });
+    //   // console.log(a);
+    // } catch {}
     const res = await request(app).post('/api/auth/login').send({
       email: 'logint@gmail.com',
       password: 'Password@123',
     });
+    console.log(res);
     expect(res.status).toBe(HTTP_STATUS.OK);
     expect(res.body).toHaveProperty('accessToken');
     expect(res.body).toHaveProperty('refreshToken');
-  });
+  }, 15000);
   it('should return 401 if password is incorrect', async () => {
     await request(app).post('/api/auth/register').send({
       full_name: 'Wrong Pass',

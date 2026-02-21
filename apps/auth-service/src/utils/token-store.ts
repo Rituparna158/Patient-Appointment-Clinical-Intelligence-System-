@@ -1,4 +1,4 @@
-import { redis } from '../config/redis';
+import { redis } from '../config/redis.js';
 
 const saveRefreshToken = async (userId: string, token: string) => {
   await redis.set(`refresh:${userId}`, token, 'EX', 7 * 24 * 60 * 60);
