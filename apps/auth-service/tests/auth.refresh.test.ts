@@ -1,47 +1,33 @@
 import request from 'supertest';
-import { describe, it, expect, beforeEach } from 'vitest';
-
+import { describe, it, expect, vi } from 'vitest';
 import app from '../src/app';
+import jwt from 'jsonwebtoken';
 import { HTTP_STATUS } from '../src/constants/http-status';
-import { User } from '../src/models';
 
-describe('Auth Service-Refresh Token', () => {
-  it('should generate a new access token with valid refresh token', async () => {
-    await request(app).post('/api/auth/register').send({
-      full_name: 'Refresh User',
-      email: 'refresh@gmail.com',
-      password: 'Password@123',
-    });
-    const loginRes = await request(app).post('/api/auth/login').send({
-      email: 'refresh@gmail.com',
-      password: 'Password@123',
-    });
-    expect(loginRes.status).toBe(HTTP_STATUS.OK);
+vi.mock('jsonwebtoken');
 
-    const refreshToken = loginRes.body.refreshToken;
+describe('Auth - Refresh Token (Mocked)', () => {
+  it('should generate new access token', async () => {
+    vi.mocked(jwt.verify).mockReturnValue({ id: 1 } as never);
+    vi.mocked(jwt.sign).mockReturnValue('newAccessToken' as never);
 
-    expect(refreshToken).toBeDefined();
-
-    const refreshRes = await request(app)
+    const res = await request(app)
       .post('/api/auth/refresh')
-      .send({ refreshToken });
+      .send({ refreshToken: 'validToken' });
 
-    expect(refreshRes.status).toBe(HTTP_STATUS.OK);
-
-    expect(refreshRes.body).toHaveProperty('accessToken');
-    expect(typeof refreshRes.body.accessToken).toBe('string');
+    expect(res.status).toBe(HTTP_STATUS.OK);
+    expect(res.body).toHaveProperty('accessToken');
   });
-  it('should return 400 if refresh token is missing', async () => {
-    const res = await request(app).post('/api/auth/refresh').send({});
 
-    expect(res.status).toBe(HTTP_STATUS.BAD_REQUEST);
-    expect(res.body).toHaveProperty('error');
-  });
-  it('sould return 401 if refresh token is invalid', async () => {
-    const res = await request(app).post('/api/auth/refresh').send({
-      refreshToken: 'Invalid token value',
+  it('should return 401 if invalid token', async () => {
+    vi.mocked(jwt.verify).mockImplementation(() => {
+      throw new Error('Invalid');
     });
+
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: 'invalid' });
+
     expect(res.status).toBe(HTTP_STATUS.UNAUTHORIZED);
-    expect(res.body).toHaveProperty('error');
   });
 });

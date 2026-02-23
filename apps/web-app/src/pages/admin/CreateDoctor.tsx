@@ -1,80 +1,101 @@
-import { useState } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { api } from "@/services/api";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import FormField from "@/components/ui/FormField";
 import { useToast } from "@/hooks/use-toast";
- 
-export default function CreateDoctor() {
-    const {toast}=useToast();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    full_name: "",
-    phone: "",
-    specialization: "",
-    licence_no: "",
-    consultation_fee: "",
-  });
- 
-  async function handleCreate() {
-  try {
-    await api("/admin/create-doctor", {
-      method: "POST",
-      body: JSON.stringify({
-        ...form,
-        consultation_fee: Number(form.consultation_fee),
-      }),
-    });
- 
-    toast({
-        title:"Doctor Created",
-        description:"Doctor account has been created successfully."
-    })
- 
+import { api } from "@/services/api";
 
-    setForm({
-      email: "",
-      password: "",
-      full_name: "",
-      phone: "",
-      specialization: "",
-      licence_no: "",
-      consultation_fee: "",
-    });
- 
-  } catch (err:any) {
-    toast({
-        variant:"destructive",
-        title:"Error",
-        description: err.message || "Something went wrong"
-    })
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { doctorSchema } from "@/schemas/user.schema";
+import { z } from "zod";
+
+type DoctorForm = z.infer<typeof doctorSchema>;
+
+export default function CreateDoctor() {
+  const { toast } = useToast();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<DoctorForm>({
+    resolver: zodResolver(doctorSchema),
+    mode: "onBlur",
+  });
+
+  async function onSubmit(data: DoctorForm) {
+    try {
+      await api("/admin/create-doctor", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
+      toast({
+        title: "Doctor Created",
+        description: "Doctor created successfully",
+      });
+
+      reset();
+
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.message,
+      });
+    }
   }
-}
- 
+
   return (
     <DashboardLayout>
-      <Card className="max-w-xl">
-        <CardHeader>
-          <CardTitle>Create Doctor</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Object.keys(form).map((key) => (
-            <Input
-              key={key}
-              placeholder={key}
-              value={(form as any)[key]}
-              onChange={(e) =>
-                setForm({ ...form, [key]: e.target.value })
-              }
-            />
-          ))}
- 
-          <Button onClick={handleCreate}>
-            Create Doctor
-          </Button>
-        </CardContent>
+      <Card className="form-card">
+
+        <div className="form-header">
+          <h2 className="form-title">Create Doctor</h2>
+        </div>
+
+        <div className="form-content">
+          <form onSubmit={handleSubmit(onSubmit)} className="form-grid">
+
+            <FormField label="Full Name" required error={errors.full_name?.message}>
+              <Input {...register("full_name")} />
+            </FormField>
+
+            <FormField label="Email" required error={errors.email?.message}>
+              <Input {...register("email")} />
+            </FormField>
+
+            <FormField label="Phone" required error={errors.phone?.message}>
+              <Input {...register("phone")} />
+            </FormField>
+
+            <FormField label="Specialization" required error={errors.specialization?.message}>
+              <Input {...register("specialization")} />
+            </FormField>
+
+            <FormField label="Licence Number" required error={errors.licence_no?.message}>
+              <Input {...register("licence_no")} />
+            </FormField>
+
+            <FormField label="Consultation Fee" required error={errors.consultation_fee?.message}>
+              <Input
+                type="number"
+                {...register("consultation_fee", { valueAsNumber: true })}
+              />
+            </FormField>
+
+            <div className="col-span-2 mt-4">
+              <Button type="submit">
+                Create Doctor
+              </Button>
+            </div>
+
+          </form>
+        </div>
+
       </Card>
     </DashboardLayout>
   );

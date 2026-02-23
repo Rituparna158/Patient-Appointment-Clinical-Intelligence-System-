@@ -1,72 +1,98 @@
-import { useState } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { api } from "@/services/api";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import FormField from "@/components/ui/FormField";
 import { useToast } from "@/hooks/use-toast";
- 
-export default function CreateDoctor() {
-    const {toast}=useToast();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    full_name: "",
-    phone: "",
-  });
- 
-  async function handleCreate() {
-    try{
-        await api("/admin/create-admin", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
- 
-   toast({
-        title:"Admin Created",
-        description:"Admin account has been created successfully."
-    })
+import { api } from "@/services/api";
 
-    setForm({
-      email: "",
-      password: "",
-      full_name: "",
-      phone: "",
-    });
-    
-  }catch (err:any) {
-    toast({
-        variant:"destructive",
-        title:"Error",
-        description: err.message || "Something went wrong"
-    })
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { baseUserSchema } from "@/schemas/user.schema";
+import { z } from "zod";
+
+type AdminForm = z.infer<typeof baseUserSchema>;
+
+export default function CreateAdmin() {
+  const { toast } = useToast();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<AdminForm>({
+    resolver: zodResolver(baseUserSchema),
+    mode: "onBlur", 
+  });
+
+  async function onSubmit(data: AdminForm) {
+    try {
+      await api("/admin/create-admin", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
+      toast({
+        title: "Admin Created",
+        description: "Admin created successfully",
+      });
+
+      reset();
+
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.message,
+      });
+    }
   }
 
- }
-    
- 
   return (
     <DashboardLayout>
-      <Card className="max-w-xl">
-        <CardHeader>
-          <CardTitle>Create Admin</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Object.keys(form).map((key) => (
-            <Input
-              key={key}
-              placeholder={key}
-              value={(form as any)[key]}
-              onChange={(e) =>
-                setForm({ ...form, [key]: e.target.value })
-              }
-            />
-          ))}
- 
-          <Button onClick={handleCreate}>
-            Create Admin
-          </Button>
-        </CardContent>
+      <Card className="form-card">
+
+        <div className="form-header">
+          <h2 className="form-title">Create Administrator</h2>
+        </div>
+
+        <div className="form-content">
+          <form onSubmit={handleSubmit(onSubmit)} className="form-grid">
+
+            <FormField
+              label="Full Name"
+              required
+              error={errors.full_name?.message}
+            >
+              <Input {...register("full_name")} />
+            </FormField>
+
+            <FormField
+              label="Email"
+              required
+              error={errors.email?.message}
+            >
+              <Input {...register("email")} />
+            </FormField>
+
+            <FormField
+              label="Phone"
+              required
+              error={errors.phone?.message}
+            >
+              <Input {...register("phone")} />
+            </FormField>
+
+            <div className="col-span-2 mt-4">
+              <Button type="submit">
+                Create Admin
+              </Button>
+            </div>
+
+          </form>
+        </div>
+
       </Card>
     </DashboardLayout>
   );

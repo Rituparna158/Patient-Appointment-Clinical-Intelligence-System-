@@ -1,6 +1,6 @@
 interface CreateDoctorDTO {
   email: string;
-  password: string;
+
   full_name: string;
   phone?: string | null;
 
@@ -11,7 +11,7 @@ interface CreateDoctorDTO {
 }
 interface CreateAdminDTO {
   email: string;
-  password: string;
+  // password: string;
   full_name: string;
   phone?: string;
 }

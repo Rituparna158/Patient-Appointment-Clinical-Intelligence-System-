@@ -9,9 +9,11 @@ COPY . .
 RUN pnpm install
 RUN pnpm --filter web-app build
  
-FROM node:18-slim
+FROM nginx:alpine
  
-WORKDIR /app
-COPY --from=builder /app/apps/web-app/dist ./dist
+COPY --from=builder /app/apps/web-app/dist /usr/share/nginx/html
+COPY infra/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
  
-CMD ["sleep", "infinity"]
+CMD ["nginx","-g", "daemon off;"]

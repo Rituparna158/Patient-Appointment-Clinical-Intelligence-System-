@@ -19,25 +19,21 @@ services:
       - postgres
       - redis
  
-  web-app:
+  # web-app:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/web-app/Dockerfile
+  #   container_name: clinic-frontend
+ 
+  nginx:
     build:
       context: .
       dockerfile: apps/web-app/Dockerfile
-    container_name: clinic-frontend
-    volumes:
-      - web_dist:/app/dist
- 
-  nginx:
-    image: nginx:latest
     container_name: clinic-nginx
     ports:
       - "8080:80"
-    volumes:
-      - web_dist:/usr/share/nginx/html
-      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - auth-service
-      - web-app
  
   postgres:
     image: postgres:15
@@ -57,4 +53,3 @@ services:
  
 volumes:
   postgres_data:
-  web_dist:

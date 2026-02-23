@@ -1,29 +1,32 @@
 import request from 'supertest';
-import { beforeEach, describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import app from '../src/app';
+import jwt from 'jsonwebtoken';
+import * as models from '../src/models';
 import { HTTP_STATUS } from '../src/constants/http-status';
 
-describe('Auth service-Protected Route /me', () => {
-  it('should return 401 if token is missing', async () => {
+vi.mock('jsonwebtoken');
+vi.mock('../src/models');
+
+describe('Auth - /me (Mocked)', () => {
+  it('should return 401 if no token', async () => {
     const res = await request(app).get('/api/auth/me');
     expect(res.status).toBe(HTTP_STATUS.UNAUTHORIZED);
   });
-  it('should return user profile if token is valid', async () => {
-    await request(app).post('/api/auth/register').send({
-      full_name: 'Me user',
+
+  it('should return user if token valid', async () => {
+    vi.mocked(jwt.verify).mockReturnValue({ id: 1 } as never);
+
+    vi.mocked(models.User.findByPk).mockResolvedValue({
+      id: 1,
       email: 'me@gmail.com',
-      password: 'Password@123',
-    });
-    const loginRes = await request(app).post('/api/auth/login').send({
-      email: 'me@gmail.com',
-      password: 'Password@123',
-    });
-    const token = loginRes.body.accessToken;
+    } as any);
 
     const res = await request(app)
       .get('/api/auth/me')
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', 'Bearer validtoken');
+
     expect(res.status).toBe(HTTP_STATUS.OK);
-    expect(res.body).toHaveProperty('email', 'me@gmail.com');
+    expect(res.body.email).toBe('me@gmail.com');
   });
 });

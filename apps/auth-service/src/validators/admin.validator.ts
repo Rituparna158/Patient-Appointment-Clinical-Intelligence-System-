@@ -6,14 +6,14 @@ const createDoctorSchema = z.object({
     .min(1, 'Email is required')
     .regex(/^[a-zA-Z0-9._%+-]+@gmail\.com$/, 'Email must be a Gmail address'),
 
-  password: z
-    .string()
-    .min(6, 'Password must be aatleast 6 characters')
-    .max(20, 'Password must not exceed 20 characters')
-    .regex(
-      /^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])/,
-      'Password must contain atleat  upper case letter, 1 number and  symbol'
-    ),
+  // password: z
+  //   .string()
+  //   .min(6, 'Password must be aatleast 6 characters')
+  //   .max(20, 'Password must not exceed 20 characters')
+  //   .regex(
+  //     /^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])/,
+  //     'Password must contain atleat  upper case letter, 1 number and  symbol'
+  //   ),
 
   full_name: z
     .string()
@@ -40,14 +40,14 @@ const createAdminSchema = z.object({
     .min(1, 'Email is required')
     .regex(/^[a-zA-Z0-9._%+-]+@gmail\.com$/, 'Email must be a Gmail address'),
 
-  password: z
-    .string()
-    .min(6, 'Password must be aatleast 6 characters')
-    .max(20, 'Password must not exceed 20 characters')
-    .regex(
-      /^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])/,
-      'Password must contain atleat  upper case letter, 1 number and  symbol'
-    ),
+  // password: z
+  //   .string()
+  //   .min(6, 'Password must be aatleast 6 characters')
+  //   .max(20, 'Password must not exceed 20 characters')
+  //   .regex(
+  //     /^(?=.*[A-Z])(?=.*[0-9])(?=.*[@$!%*?&])/,
+  //     'Password must contain atleat  upper case letter, 1 number and  symbol'
+  //   ),
 
   full_name: z
     .string()

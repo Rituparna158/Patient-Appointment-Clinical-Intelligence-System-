@@ -116,8 +116,8 @@ const me: RequestHandler = async (req, res, next) => {
         'email',
         'full_name',
         'phone',
-        'gender',
-        'date_of_birth',
+        //'gender',
+        //'date_of_birth',
         'isActive',
       ],
       include: [
@@ -142,8 +142,8 @@ const me: RequestHandler = async (req, res, next) => {
       email: userJson.email,
       full_name: userJson.full_name,
       phone: userJson.phone,
-      gender: userJson.gender,
-      date_of_birth: userJson.date_of_birth,
+      //gender: userJson.gender,
+      //date_of_birth: userJson.date_of_birth,
       role:
         userJson.roles && userJson.roles.length > 0
           ? userJson.roles[0].name

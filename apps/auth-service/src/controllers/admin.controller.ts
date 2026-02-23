@@ -35,7 +35,7 @@ const createAdmin: RequestHandler = async (req, res, next) => {
   try {
     const body = createAdminSchema.parse(req.body);
 
-    const user = await createAdminUser(body);
+    const { user } = await createAdminUser(body);
 
     return res.status(HTTP_STATUS.CREATED).json({
       message: 'Adminr account created successfully',
