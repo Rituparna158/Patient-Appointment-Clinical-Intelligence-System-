@@ -18,6 +18,20 @@ services:
     depends_on:
       - postgres
       - redis
+
+  patient-service:
+    build:
+      context: .
+      dockerfile: apps/patient-service/Dockerfile
+    container_name: patient-service
+    expose:
+      - "4002"
+    env_file:
+      - apps/patient-service/.env
+    environment:
+      DB_HOST: postgres
+    depends_on:
+      - postgres
  
   # web-app:
   #   build:
@@ -34,6 +48,7 @@ services:
       - "8080:80"
     depends_on:
       - auth-service
+      - patient-service
  
   postgres:
     image: postgres:15
