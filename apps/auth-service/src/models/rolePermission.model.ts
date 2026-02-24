@@ -16,6 +16,7 @@ export class RolePermission extends Model<
   declare roleId: string;
   declare permissionId: string;
   declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
 }
 RolePermission.init(
   {
@@ -33,6 +34,10 @@ RolePermission.init(
       allowNull: false,
     },
     createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },

@@ -104,7 +104,7 @@ const adminSearch = async (req: Request, res: Response, next: NextFunction) => {
 
     const query = req.query;
 
-    console.log('QUERY:', query);
+    console.log('QUERY:', (req as any).validateQuery);
 
     const search = typeof query.search === 'string' ? query.search : undefined;
 
@@ -112,7 +112,7 @@ const adminSearch = async (req: Request, res: Response, next: NextFunction) => {
       typeof query.page === 'number' ? query.page : Number(query.page);
 
     const limit =
-      typeof query.limit === 'number' ? query.limit : Number(query.page);
+      typeof query.limit === 'number' ? query.limit : Number(query.limit);
 
     const result = await service.adminSearchPatients({
       search,

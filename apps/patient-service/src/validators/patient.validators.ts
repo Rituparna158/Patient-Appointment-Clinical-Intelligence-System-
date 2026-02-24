@@ -12,8 +12,8 @@ export const updatePatientSchema = z.object({
 
 export const searchPatientSchema = z.object({
   search: z.string().optional(),
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(10),
+  page: z.coerce.number().min(1),
+  limit: z.coerce.number().min(1),
 });
 
 export type CreatePatientDTO = z.infer<typeof createPatientSchema>;

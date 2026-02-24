@@ -47,6 +47,10 @@ export const searchPatients = async ({
     limit,
     offset,
   });
+  console.log('rowslength:', rows.length);
+  console.log('PAGE', page);
+  console.log('LIMIT:', limit);
+  console.log('OFFSET:', offset);
   return {
     total: count,
     page,
