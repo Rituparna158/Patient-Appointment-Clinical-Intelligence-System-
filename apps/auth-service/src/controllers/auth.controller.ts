@@ -44,13 +44,15 @@ const login: RequestHandler = async (req, res, next) => {
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: false,
-      sameSite: 'strict',
+      secure: false,
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: false,
-      sameSite: 'strict',
+      secure: false,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(HTTP_STATUS.OK).json({

@@ -8,10 +8,7 @@ import { generateTempPassword } from '../utils/generate-password';
 import { redis } from '../config/redis';
 import { trasport } from '../utils/mailer';
 
-/* ===========================
-   CREATE DOCTOR
-=========================== */
-
+/*CREATE Doctor*/
 const createDoctorUser = async (data: CreateDoctorDTO) => {
   const existing = await User.findOne({
     where: { email: data.email },
@@ -21,7 +18,6 @@ const createDoctorUser = async (data: CreateDoctorDTO) => {
     throw new AppError(MESSAGES.EMAIL_ALREADY_EXISTS, HTTP_STATUS.CONFLICT);
   }
 
-  // 🔥 Generate temp password
   const tempPassword = generateTempPassword();
   const hashedPassword = await hashPassword(tempPassword);
 
@@ -53,10 +49,9 @@ const createDoctorUser = async (data: CreateDoctorDTO) => {
     is_active: true,
   });
 
-  // 🔥 Store plain password in Redis (30 minutes)
+  // Store plain password in Redis (30 minutes)
   await redis.set(`register:password:${user.id}`, tempPassword, 'EX', 1800);
 
-  // 🔥 Send email
   await trasport.sendMail({
     from: process.env.MAIL_USER,
     to: user.email,
@@ -73,9 +68,7 @@ const createDoctorUser = async (data: CreateDoctorDTO) => {
   return { user, doctorProfile };
 };
 
-/* ===========================
-   CREATE ADMIN
-=========================== */
+/* CREATE ADMIN= */
 
 const createAdminUser = async (data: CreateAdminDTO) => {
   const existing = await User.findOne({
@@ -86,7 +79,6 @@ const createAdminUser = async (data: CreateAdminDTO) => {
     throw new AppError(MESSAGES.EMAIL_ALREADY_EXISTS, HTTP_STATUS.CONFLICT);
   }
 
-  // 🔥 Generate temp password
   const tempPassword = generateTempPassword();
   const hashedPassword = await hashPassword(tempPassword);
 
@@ -111,10 +103,8 @@ const createAdminUser = async (data: CreateAdminDTO) => {
     roleId: adminRole.id,
   });
 
-  // 🔥 Store plain password in Redis (30 minutes)
   await redis.set(`register:password:${user.id}`, tempPassword, 'EX', 1800);
 
-  // 🔥 Send email
   await trasport.sendMail({
     from: process.env.MAIL_USER,
     to: user.email,

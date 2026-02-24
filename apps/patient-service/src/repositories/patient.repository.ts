@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import { Patient } from '../models/patient.model';
 import {
   CreatePatientDTO,
@@ -25,18 +25,32 @@ export const updatePatient = (patient: Patient, data: UpdatePatientDTO) =>
 export const softDeletePatient = (patient: Patient) =>
   patient.update({ isActive: false });
 
-export const searchPatients = ({ search, page, limit }: PatientSearchQuery) => {
+export const searchPatients = async ({
+  search,
+  page,
+  limit,
+}: PatientSearchQuery) => {
   const offset = (page - 1) * limit;
 
-  return Patient.findAndCountAll({
-    where: search
-      ? {
-          address: {
-            [Op.iLike]: `%${search}%`,
-          },
-        }
-      : {},
-    offset,
+  const whereCondition = search
+    ? {
+        address: {
+          [Op.iLike]: `%${search}%`,
+        },
+      }
+    : {};
+
+  console.log('WhereCondition:', whereCondition);
+
+  const { rows, count } = await Patient.findAndCountAll({
+    where: whereCondition,
     limit,
+    offset,
   });
+  return {
+    total: count,
+    page,
+    limit,
+    patients: rows,
+  };
 };

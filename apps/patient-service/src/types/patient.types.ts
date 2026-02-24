@@ -1,18 +1,16 @@
-interface CreatePatientProfileDTO {
-  address: string;
-  emergencyContat: string;
-}
-
-interface UpdatePatientProfileDTO {
+interface CreatePatientDTO {
   address?: string;
   emergencyContat?: string;
 }
 
-interface PatientResponseDTO {
-  id: string;
-  userId: string;
+interface UpdatePatientDTO {
   address?: string;
-  emergencyContact?: string;
-  isActive: Boolean;
+  emergencyContat?: string;
 }
-export { CreatePatientProfileDTO, UpdatePatientProfileDTO, PatientResponseDTO };
+
+interface PatientSearchQuery {
+  search?: string;
+  page: number;
+  limit: number;
+}
+export { CreatePatientDTO, UpdatePatientDTO, PatientSearchQuery };

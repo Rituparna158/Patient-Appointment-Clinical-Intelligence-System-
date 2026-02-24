@@ -221,6 +221,9 @@ importers:
 
   apps/patient-service:
     dependencies:
+      cookie-parser:
+        specifier: ^1.4.7
+        version: 1.4.7
       cors:
         specifier: ^2.8.6
         version: 2.8.6
@@ -242,7 +245,13 @@ importers:
       sequelize:
         specifier: ^6.37.7
         version: 6.37.7(pg-hstore@2.3.4)(pg@8.18.0)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
+      '@types/cookie-parser':
+        specifier: ^1.4.10
+        version: 1.4.10(@types/express@5.0.6)
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6

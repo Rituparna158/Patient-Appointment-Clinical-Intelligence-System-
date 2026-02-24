@@ -5,7 +5,6 @@ import {
 } from '../validators/admin.validator';
 import { createDoctorUser, createAdminUser } from '../services/admin.service';
 import { HTTP_STATUS } from '../constants/http-status';
-import { listenerCount } from 'node:cluster';
 
 const createDoctor: RequestHandler = async (req, res, next) => {
   try {

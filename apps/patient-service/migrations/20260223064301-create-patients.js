@@ -1,8 +1,5 @@
 'use strict';
 
-const { sequelize } = require('../src/config/database');
-
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('patients', {
@@ -25,17 +22,27 @@ module.exports = {
         allowNull: true,
       },
       emergencyContact: {
-        typr: Sequelize.STRING,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       isActive: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
       },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('patients');
   },
 };
