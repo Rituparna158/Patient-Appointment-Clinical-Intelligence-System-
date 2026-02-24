@@ -1,41 +1,61 @@
+import * as repo from '../repositories/patient.repository';
+import { AppError } from '../utils/app-error';
+import { HTTP_STATUS } from '../constants/http_status';
+import { MESSAGES } from '../constants/messages';
 import {
-  CreatePatientProfileDTO,
-  UpdatePatientProfileDTO,
-  PatientResponseDTO,
-} from '../types/patient.types';
-import { Patient } from '../models/pateint.model';
-//import { MESSAGES } from '../../../auth-service/src/constants/messages';
+  CreatePatientDTO,
+  UpdatePatientDTO,
+  PatientSearchQuery,
+} from '../validators/patient.validators';
 
-const createPateintProfile = async (
-  userId: string,
-  payload: CreatePatientProfileDTO
-): Promise<PatientResponseDTO> => {
-  const existing = await Patient.findOne({
-    where: { userId },
-  });
+const createProfile = async (userId: string, data: CreatePatientDTO) => {
+  const existing = await repo.findByUserId(userId);
 
   if (existing) {
-    throw new Error('Patient already exists');
+    throw new AppError(MESSAGES.PROFILE_EXISTS, HTTP_STATUS.CONFLICT);
   }
 
-  const patient = await Patient.create({
-    userId,
-    ...payload,
-  });
-
-  return patient.toJSON() as unknown as PatientResponseDTO;
+  return repo.createPatient(userId, data);
 };
 
-const getMyProfile = async (
-  userId: string
-): Promise<PatientResponseDTO | null> => {
-  const patient = await Patient.findOne({
-    where: { userId },
-  });
+const getProfile = async (userId: string) => {
+  const patient = await repo.findByUserId(userId);
 
-  return patient ? (patient.toJSON() as PatientResponseDTO) : null;
+  if (!patient) {
+    throw new AppError(MESSAGES.PROFILE_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+  }
+
+  return patient;
 };
 
-const updatePatientProfile = async () => {};
+const updateProfile = async (userId: string, data: UpdatePatientDTO) => {
+  const patient = await repo.findByUserId(userId);
 
-export { createPateintProfile, getMyProfile, updatePatientProfile };
+  if (!patient) {
+    throw new AppError(MESSAGES.PROFILE_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+  }
+
+  return repo.updatePatient(patient, data);
+};
+
+const deleteProfile = async (userId: string) => {
+  const patient = await repo.findByUserId(userId);
+
+  if (!patient) {
+    throw new AppError(MESSAGES.PROFILE_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+  }
+
+  return repo.softDeletePatient(patient);
+};
+
+const adminSearchPatients = async (query: PatientSearchQuery) => {
+  return repo.searchPatients(query);
+};
+
+export {
+  createProfile,
+  getProfile,
+  updateProfile,
+  deleteProfile,
+  adminSearchPatients,
+};
