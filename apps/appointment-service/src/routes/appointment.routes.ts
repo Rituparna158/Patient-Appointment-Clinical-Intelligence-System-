@@ -29,6 +29,14 @@ router.post(
   controller.bookAppointment
 );
 
+router.post(
+  '/pay',
+  authenticate,
+  authorizeRole('patient'),
+  validateBody(confirmPaymentSchema),
+  controller.confirmPayment
+);
+
 router.get(
   '/me',
   authenticate,
@@ -48,7 +56,7 @@ router.get(
 router.patch(
   '/:id/status',
   authenticate,
-  authorizePermission('manage_appointments'),
+  authorizeRole('doctor'),
   validateBody(changeStatusSchema),
   controller.changeAppointmentStatus
 );

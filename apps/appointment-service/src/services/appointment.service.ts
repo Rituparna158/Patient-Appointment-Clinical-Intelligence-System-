@@ -17,6 +17,7 @@ import {
 } from '../types/appointment.types';
 
 import { DoctorSlot } from '../models/doctorSlot.model';
+import { processFakePayment } from '../utils/payment.util';
 
 class AppError extends Error {
   statusCode: number;
@@ -96,11 +97,13 @@ export const changeAppointmentStatus = async ({
     throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
   }
 
-  if (appointment.status === 'cancelled') {
-    throw new AppError(
-      'Cancelled appointment cannot be modified',
-      HTTP_STATUS.BAD_REQUEST
-    );
+  const validTransitions: Record<string, string[]> = {
+    requested: ['cancelled'],
+    confirmed: ['completed', 'missed'],
+  };
+
+  if (!validTransitions[appointment.status]?.includes(status)) {
+    throw new AppError('Invalid status transition', HTTP_STATUS.BAD_REQUEST);
   }
 
   if (status === 'cancelled') {
@@ -123,11 +126,20 @@ export const confirmPayment = async ({
     throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
   }
 
-  if (paymentStatus === 'paid') {
-    await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
+  if (appointment.paymentStatus === 'paid') {
+    throw new AppError('Already paid', HTTP_STATUS.BAD_REQUEST);
   }
 
-  return appointmentRepo.updatePaymentStatus(appointment, paymentStatus);
+  const paymentSuccess = await processFakePayment();
+
+  if (!paymentSuccess) {
+    throw new AppError('Payment filed', HTTP_STATUS.BAD_REQUEST);
+    // await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
+  }
+  await appointmentRepo.updatePaymentStatus(appointment, 'paid');
+  await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
+
+  return appointment;
 };
 
 export const getPatientAppointments = async ({

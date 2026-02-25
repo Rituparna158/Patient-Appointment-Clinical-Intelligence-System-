@@ -17,7 +17,7 @@ Branch.hasMany(Appointment, { foreignKey: 'branchId' });
 Appointment.belongsTo(Branch, { foreignKey: 'branchId' });
 
 DoctorSlot.hasOne(Appointment, { foreignKey: 'slotId' });
-Appointment.belongsTo(DoctorSlot, { foreignKey: 'slotId' });
+Appointment.belongsTo(DoctorSlot, { foreignKey: 'slotId', as: 'slot' });
 
 Doctor.belongsTo(User, {
   foreignKey: 'userId',

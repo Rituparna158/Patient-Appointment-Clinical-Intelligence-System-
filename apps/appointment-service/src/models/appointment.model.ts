@@ -19,6 +19,8 @@ export class Appointment extends Model<
   declare status: CreationOptional<string>;
   declare paymentStatus: CreationOptional<string>;
   declare appointmentReason: CreationOptional<string>;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
 }
 
 Appointment.init(
@@ -61,6 +63,14 @@ Appointment.init(
     appointmentReason: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
