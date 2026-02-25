@@ -32,6 +32,20 @@ services:
       DB_HOST: postgres
     depends_on:
       - postgres
+
+  appointment-service:
+    build:
+      context: .
+      dockerfile: apps/appointment-service/Dockerfile
+    container_name: appointment-service
+    expose:
+      - "4003"
+    env_file:
+      - apps/appointment-service/.env
+    environment:
+      DB_HOST: postgres
+    depends_on:
+      - postgres
  
   # web-app:
   #   build:
@@ -49,6 +63,7 @@ services:
     depends_on:
       - auth-service
       - patient-service
+      - appointment-service
  
   postgres:
     image: postgres:15
