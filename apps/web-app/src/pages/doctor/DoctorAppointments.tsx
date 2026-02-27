@@ -1,68 +1,91 @@
-
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import { Card } from "@/components/ui/card";
 import { AppointmentService } from "@/services/appointment.service";
 import { useAuthStore } from "@/store/auth/auth.store";
-import { Button } from "@/components/ui/button";
-import type { AppointmentStatus } from "@/types/appointment.types";
+import { useToast } from "@/hooks/use-toast";
+
+interface Appointment {
+  id: string;
+  patientId: string;
+  status: string;
+  paymentStatus: string;
+  createdAt: string;
+}
 
 export default function DoctorAppointments() {
+  const { toast } = useToast();
   const user = useAuthStore((s) => s.user);
-  const [appointments, setAppointments] = useState<any[]>([]);
 
-  async function fetchData() {
-    if (!user) return;
-    const data = await AppointmentService.doctorAppointments(
-      user.id,
-      1,
-      10
-    );
-    setAppointments(data.rows);
-  }
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    async function fetchAppointments() {
+      try {
+        if (!user?.id) return;
 
-  async function updateStatus(id: string, status: AppointmentStatus) {
-    await AppointmentService.updateStatus(id, status);
-    fetchData();
-  }
+        const res = await AppointmentService.getDoctorAppointments();
+
+        console.log("Doctor API Response:", res);
+
+        setAppointments(res.data.rows);
+      } catch (err: any) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: err.message,
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAppointments();
+  }, [user]);
 
   return (
     <DashboardLayout>
-      <h2 className="page-heading">Doctor Appointments</h2>
+      <h2 className="page-heading">My Scheduled Appointments</h2>
 
-      <div className="mt-6 space-y-4">
-        {appointments.map((appt) => (
-          <div
-            key={appt.id}
-            className="p-4 border border-border rounded-md"
-          >
-            <p><b>Status:</b> {appt.status}</p>
-            <p><b>Payment:</b> {appt.paymentStatus}</p>
+      {loading ? (
+        <p className="mt-6 text-muted-foreground">Loading...</p>
+      ) : appointments.length === 0 ? (
+        <p className="mt-6 text-muted-foreground">
+          No appointments found
+        </p>
+      ) : (
+        <div className="mt-6 space-y-4">
+          {appointments.map((appt) => (
+            <Card key={appt.id} className="p-6">
+              <div className="space-y-2">
 
-            <div className="flex gap-2 mt-3">
-              <Button
-                onClick={() =>
-                  updateStatus(appt.id, "completed")
-                }
-              >
-                Complete
-              </Button>
+                <p>
+                  <strong>Appointment ID:</strong> {appt.id}
+                </p>
 
-              <Button
-                variant="destructive"
-                onClick={() =>
-                  updateStatus(appt.id, "cancelled")
-                }
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+                <p>
+                  <strong>Patient ID:</strong> {appt.patientId}
+                </p>
+
+                <p>
+                  <strong>Status:</strong> {appt.status}
+                </p>
+
+                <p>
+                  <strong>Payment:</strong> {appt.paymentStatus}
+                </p>
+
+                <p>
+                  <strong>Created At:</strong>{" "}
+                  {new Date(appt.createdAt).toLocaleString()}
+                </p>
+
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </DashboardLayout>
   );
 }

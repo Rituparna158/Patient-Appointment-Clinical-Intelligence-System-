@@ -183,21 +183,30 @@ export const createSlot = async ({
   startTime,
   endTime,
 }: CreateSlotInput) => {
-  const start = new Date(startTime);
-  const end = new Date(endTime);
+  const slotDate = startTime.split('T')[0];
+  const start = startTime.split('T')[1];
+  const end = endTime.split('T')[1];
 
   if (start >= end) {
     throw new AppError('Start time must be before end time', 400);
   }
-  if (start < new Date()) {
+  const now = new Date();
+
+  const today = now.toISOString().split('T')[0];
+  const currentTime = now.toTimeString().slice(0, 8);
+
+  if (slotDate < today) {
     throw new AppError('Cannot create slot in the past', 400);
   }
 
-  const slotDate = start.toISOString().split('T')[0];
+  if (slotDate === today && start <= currentTime) {
+    throw new AppError('Cannot create slot in the past', 400);
+  }
 
   const overlapping = await slotRepo.findOverlappingSlot(
     doctorId,
     branchId,
+    slotDate,
     start,
     end
   );
@@ -207,4 +216,26 @@ export const createSlot = async ({
   }
 
   return slotRepo.createSlot(doctorId, branchId, slotDate, start, end);
+};
+
+export const getDoctorAppointmentsByUser = async ({
+  userId,
+  page,
+  limit,
+}: {
+  userId: string;
+  page: number;
+  limit: number;
+}) => {
+  console.log('user id jwt:', userId);
+
+  const doctor = await doctorRepo.findDoctorByUserId(userId);
+
+  console.log('DOCTOR FOUND:', doctor);
+
+  if (!doctor) {
+    throw new AppError('Doctor not found', 404);
+  }
+
+  return appointmentRepo.findAppointmentsByDoctor(doctor.id, page, limit);
 };

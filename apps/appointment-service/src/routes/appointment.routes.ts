@@ -46,7 +46,7 @@ router.get(
 );
 
 router.get(
-  '/doctor/:doctorId',
+  '/doctor/me',
   authenticate,
   authorizeRole('doctor'),
   validateQuery(paginationQuerySchema),

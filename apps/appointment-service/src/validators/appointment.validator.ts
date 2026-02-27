@@ -20,10 +20,10 @@ export const changeStatusSchema = z.object({
 
 export const confirmPaymentSchema = z.object({
   appointmentId: z.uuid(),
-  paymentStatus: z.enum(['pending', 'paid', 'failed'] as [
-    PaymentStatus,
-    ...PaymentStatus[],
-  ]),
+  //   paymentStatus: z.enum(['pending', 'paid', 'failed'] as [
+  //     PaymentStatus,
+  //     ...PaymentStatus[],
+  //   ]),
 });
 
 export const paginationQuerySchema = z.object({

@@ -164,7 +164,7 @@ export default function AppRoutes(){
             />
 
             <Route
-            path="/appointments/pay"
+            path="/patient/payment/:appointmentId"
             element={
                 <ProtectedRoute allowedRoles={["patient"]}>
                     <Payment />

@@ -101,4 +101,8 @@ export const AppointmentService = {
 
     return res.data;
   },
+
+  getDoctorAppointments(page = 1, limit = 10) {
+    return api(`/appointments/doctor/me?page=${page}&limit=${limit}`);
+  },
 };

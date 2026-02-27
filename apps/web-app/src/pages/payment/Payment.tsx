@@ -1,99 +1,139 @@
-import FormField from "@/components/ui/FormField";
+import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate, useParams } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { AppointmentService } from "@/services/appointment.service";
-import {
-    type PaymentForm, 
-    paymentSchema } from "@/schemas/payment.schema";
+import { useEffect } from "react";
+
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import FormField from "@/components/ui/FormField";
 
+import { paymentSchema, type PaymentForm } from "@/schemas/payment.schema";
+import { AppointmentService } from "@/services/appointment.service";
+import { useToast } from "@/hooks/use-toast";
 
-export default function Payment() {
-    const { appointmentId } = useParams();
-    const { toast } = useToast();
-    const navigate = useNavigate();
+export default function PaymentPage() {
+  const { appointmentId } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-      } = useForm<PaymentForm>({
-        resolver: zodResolver(paymentSchema),
-        mode: "onChange",
+  
+  useEffect(() => {
+    if (!appointmentId) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Payment",
+        description: "Appointment ID missing",
+      });
+      navigate("/patient/my-appointments");
+    }
+  }, [appointmentId]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<PaymentForm>({
+    resolver: zodResolver(paymentSchema),
+    mode: "onBlur",
+  });
+
+  async function onSubmit(_data: PaymentForm) {
+    try {
+      if (!appointmentId) return;
+
+      toast({
+        title: "Processing Payment",
+        description: "Please wait...",
       });
 
-        async function onSubmit(_data: PaymentForm) {
-          try {
-            if(!appointmentId) return;
+      await AppointmentService.pay(appointmentId);
 
-            await AppointmentService.pay(appointmentId);
-      
-            toast({
-              title: "Payment Done",
-              description: "Payment done successfully",
-            });
-      
-            navigate("/patient/my-appointments");
-          } catch (err: any) {
-            toast({
-              variant: "destructive",
-              title: "Payment failed",
-              description: err.message,
-            });
-          }
-        }
+      toast({
+        title: "Payment Successful",
+        description: "Appointment confirmed",
+      });
 
-    return (
-        <DashboardLayout>
-            <Card className="form-card">
-                <div className="form-header">
-                <h2 className="form-title">Secure Payment</h2>
-                </div>
+      navigate("/patient/my-appointments");
 
-                <div className="form-content">
-                <form onSubmit={handleSubmit(onSubmit)} className="form-grid">
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Payment Failed",
+        description: err.message,
+      });
+    }
+  }
 
-                    <FormField
-                    label="CardNumber"
-                    required
-                    error={errors.card_number?.message}
-                    >
-                    <Input 
-                    placeholder="123XXXXXXXXXXXXX"
-                    {...register("card_number")} />
-                    </FormField>
+  if (!appointmentId) return null;
 
-                    <FormField
-                    label="Expiry"
-                    required
-                    error={errors.expiry?.message}
-                    >
-                    <Input 
-                    {...register("expiry")} />
-                    </FormField>
+  return (
+    <DashboardLayout>
+      <Card className="form-card">
 
-                    <FormField
-                    label="CVV"
-                    required
-                    error={errors.cvv?.message}
-                    >
-                    <Input {...register("cvv")} />
-                    </FormField>
+        <div className="form-header">
+          <h2 className="form-title">
+            Secure Payment
+          </h2>
+        </div>
 
-                    <div className="col-span-2 mt-4">
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? "Processing..." : "Payment done"}
-                    </Button>
-                    </div>
+        <div className="form-content">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
 
-                </form>
-                </div>
-            </Card>
-            </DashboardLayout>
-    )
+            <FormField
+              label="Card Number"
+              required
+              error={errors.card_number?.message}
+            >
+              <Input
+                placeholder="1234123412341234"
+                {...register("card_number")}
+              />
+            </FormField>
+
+            <div className="grid grid-cols-2 gap-6">
+
+              <FormField
+                label="Expiry (MM/YY)"
+                required
+                error={errors.expiry?.message}
+              >
+                <Input
+                  placeholder="12/28"
+                  {...register("expiry")}
+                />
+              </FormField>
+
+              <FormField
+                label="CVV"
+                required
+                error={errors.cvv?.message}
+              >
+                <Input
+                  type="password"
+                  placeholder="123"
+                  {...register("cvv")}
+                />
+              </FormField>
+
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Processing..." : "Pay Now"}
+            </Button>
+
+          </form>
+        </div>
+
+      </Card>
+    </DashboardLayout>
+  );
 }

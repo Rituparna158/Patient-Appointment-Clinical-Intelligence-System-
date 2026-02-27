@@ -139,18 +139,22 @@ export const getDoctorAppointments = async (
   next: NextFunction
 ) => {
   try {
-    const doctorId = extractParam(req.params.doctorId, 'doctor id');
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
-    const result = await appointmentService.getDoctorAppointments({
-      doctorId,
+    const result = await appointmentService.getDoctorAppointmentsByUser({
+      userId,
       page,
       limit,
     });
 
-    return res.status(HTTP_STATUS.OK).json({
+    return res.status(200).json({
       success: true,
       data: result,
     });

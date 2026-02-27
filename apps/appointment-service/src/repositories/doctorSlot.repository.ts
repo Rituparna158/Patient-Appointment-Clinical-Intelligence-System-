@@ -26,8 +26,8 @@ export const createSlot = async (
   doctorId: string,
   branchId: string,
   slotDate: string,
-  startTime: Date,
-  endTime: Date
+  startTime: string,
+  endTime: string
 ) => {
   return DoctorSlot.create({
     doctorId,
@@ -42,13 +42,15 @@ export const createSlot = async (
 export const findOverlappingSlot = async (
   doctorId: string,
   branchId: string,
-  startTime: Date,
-  endTime: Date
+  slotDate: string,
+  startTime: string,
+  endTime: string
 ) => {
   return DoctorSlot.findOne({
     where: {
       doctorId,
       branchId,
+      slotDate,
       startTime,
       endTime,
     },
