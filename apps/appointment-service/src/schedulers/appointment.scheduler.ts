@@ -11,7 +11,7 @@ cron.schedule('* * * * *', async () => {
   const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000);
 
   await Appointment.update(
-    { status: 'cancelled' },
+    { status: 'cancelled', paymentStatus: 'failed' },
     {
       where: {
         status: 'requested',

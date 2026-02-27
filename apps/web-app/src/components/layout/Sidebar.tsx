@@ -6,7 +6,9 @@ import {
   UserPlus,
   Users,
   CalendarDays,
-  Menu
+  Menu,
+  Bookmark,
+  CalendarPlus2
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -68,9 +70,34 @@ export default function Sidebar() {
               to="/admin/create-admin"
               className={linkClass("/admin/create-admin")}
             >
-              <Users size={18} />
+                 <Users size={18} />
               {!collapsed && "Create Admin"}
             </Link>
+
+            <Link
+                to="/admin/patient"
+                className={linkClass("/admin/patient")}
+                >
+                    <Users size={18} />
+                    {!collapsed && "Patients"}
+                </Link>
+
+            <Link
+                to="/admin/appointments"
+                className={linkClass("/admin/appointments")}
+                >
+                    <Bookmark size={18} />
+                    {!collapsed && "Appointments"}
+                </Link>
+
+            <Link
+                to="/admin/create-slot"
+                className={linkClass("/admin/create-slot")}
+                >
+                    <CalendarPlus2 size={18} />
+                    {!collapsed && "Create Slot"}
+            </Link>
+             
           </>
         )}
 
@@ -90,8 +117,10 @@ export default function Sidebar() {
               className={linkClass("/doctor/appointments")}
             >
               <CalendarDays size={18} />
-              {!collapsed && "Today's Appointments"}
+              {!collapsed && "Appointments"}
             </Link>
+
+            
           </>
         )}
 
@@ -106,13 +135,38 @@ export default function Sidebar() {
               {!collapsed && "Dashboard"}
             </Link>
 
-            <Link
+            {/* <Link
               to="/appointments"
               className={linkClass("/appointments")}
             >
               <CalendarDays size={18} />
               {!collapsed && "My Appointments"}
-            </Link>
+            </Link> */}
+
+            <Link
+                to="/patient/profile"
+                className={linkClass("/patient/profile")}
+            >
+                <Users size={18} />
+                {!collapsed && "My Profile"}
+
+                </Link>
+
+                <Link
+                    to="/patient/book-appointment"
+                    className={linkClass("/patient/book-appointment")}
+                    >
+                        <Bookmark size={18} />
+                        {!collapsed && "Book Appointment"}
+                </Link>
+
+                <Link
+                    to="/patient/my-appointments"
+                    className={linkClass("/patient/my-appointments")}
+                    >
+                        <CalendarDays size={18} />
+                        {!collapsed && "My Appointments"}
+                </Link>
           </>
         )}
 

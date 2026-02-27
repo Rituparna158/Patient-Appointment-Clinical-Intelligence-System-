@@ -88,7 +88,9 @@ export const confirmPayment = async (
 
     const result = await appointmentService.confirmPayment({
       appointmentId,
-      paymentStatus,
+      //   card_number,
+      //   CVV_number,
+      //   paymentStatus,
     });
 
     return res.status(HTTP_STATUS.OK).json({

@@ -118,7 +118,8 @@ export const changeAppointmentStatus = async ({
 
 export const confirmPayment = async ({
   appointmentId,
-  paymentStatus,
+  //   card_number,
+  //   CVV_number,
 }: ConfirmPaymentInput) => {
   const appointment = await appointmentRepo.findAppointmentById(appointmentId);
 
@@ -126,9 +127,9 @@ export const confirmPayment = async ({
     throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
   }
 
-  if (appointment.paymentStatus === 'paid') {
-    throw new AppError('Already paid', HTTP_STATUS.BAD_REQUEST);
-  }
+  //   if (appointment.paymentStatus === 'paid') {
+  //     throw new AppError('Already paid', HTTP_STATUS.BAD_REQUEST);
+  //   }
 
   const paymentSuccess = await processFakePayment();
 

@@ -3,6 +3,7 @@ import { DoctorSlot } from './doctorSlot.model';
 import { Branch } from './branch.model';
 import { User } from './external/user.model';
 import { Doctor } from './external/doctor.model';
+import { Payment } from './payment.model';
 
 Doctor.hasMany(DoctorSlot, { foreignKey: 'doctorId' });
 DoctorSlot.belongsTo(Doctor, { foreignKey: 'doctorId' });
@@ -18,6 +19,11 @@ Appointment.belongsTo(Branch, { foreignKey: 'branchId' });
 
 DoctorSlot.hasOne(Appointment, { foreignKey: 'slotId' });
 Appointment.belongsTo(DoctorSlot, { foreignKey: 'slotId', as: 'slot' });
+
+Payment.belongsTo(Appointment, {
+  foreignKey: 'appointmentId',
+  as: 'appointment',
+});
 
 Doctor.belongsTo(User, {
   foreignKey: 'userId',

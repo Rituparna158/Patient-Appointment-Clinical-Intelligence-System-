@@ -32,7 +32,9 @@ export interface ChangeAppointmentStatusInput {
 
 export interface ConfirmPaymentInput {
   appointmentId: string;
-  paymentStatus: PaymentStatus;
+  //   card_number: string;
+  //   CVV_number: string;
+  //   paymentStatus: string;
 }
 
 export interface GetPatientAppointmentsInput {
