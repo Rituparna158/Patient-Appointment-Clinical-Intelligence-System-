@@ -105,4 +105,11 @@ export const AppointmentService = {
   getDoctorAppointments(page = 1, limit = 10) {
     return api(`/appointments/doctor/me?page=${page}&limit=${limit}`);
   },
+
+  changeStatus(appointmentId: string, status: string) {
+    return api(`/appointments/${appointmentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  },
 };
