@@ -1,0 +1,85 @@
+
+openapi: 3.0.0
+
+info:
+  title: Appointment Service API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Gateway
+
+paths:
+
+  /api/appointments/book:
+    post:
+      summary: Book appointment
+      tags: [Appointment]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                doctorId:
+                  type: string
+                  example: "iefueu0-hue-2ue8u92"
+                branchId:
+                  type: string
+                  example: "iefuwwdeu0-hue-2ue8u92"
+                slotId:
+                  type: string
+                  example: "iefuwwdeu0-hue-2ue8u92"
+                appointmentReason:
+                  type: string
+                  example: "Fever"
+
+
+                
+      responses:
+        "201":
+          description:Appointment booked successfully
+        "409":
+          description:  already exists
+        "400":
+          description: Validation error
+
+  /api/appointments/me:
+    get:
+      summary: Patient appointments
+      tags: [Appointment]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Appointment list
+
+  /api/appointments/doctor/me:
+    get:
+      summary: Doctor appointments
+      tags: [Doctor]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Doctor appointments
+
+  /api/appointments/slots:
+    get:
+      summary: Available slots
+      tags: [Appointment]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Slots list
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

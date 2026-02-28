@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import path from 'path';
 
 const app = express();
 app.use(
@@ -21,8 +22,51 @@ app.use(cookieParser());
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
-const swaggerDocument = YAML.load('src/swagger.yaml');
-console.log('swagger loaded:', swaggerDocument.info.title);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerFiles = [
+  {
+    url: '/swagger/auth',
+    name: 'Auth Service',
+  },
+  {
+    url: '/swagger/patient',
+    name: 'Patient Service',
+  },
+  {
+    url: '/swagger/appointment',
+    name: 'Appointment Service',
+  },
+];
+
+app.get('/swagger/auth', (req, res) => {
+  res.sendFile(
+    path.resolve(__dirname, '../../../packages/swagger/auth.swagger.yaml')
+  );
+});
+
+app.get('/swagger/patient', (req, res) => {
+  res.sendFile(
+    path.resolve(__dirname, '../../../packages/swagger/patient.swagger.yaml')
+  );
+});
+
+app.get('/swagger/appointment', (req, res) => {
+  res.sendFile(
+    path.resolve(
+      __dirname,
+      '../../../packages/swagger/appointment.swagger.yaml'
+    )
+  );
+});
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(null, {
+    explorer: true,
+    swaggerOptions: {
+      urls: swaggerFiles,
+    },
+  })
+);
 app.use(errorHandler);
 export default app;
