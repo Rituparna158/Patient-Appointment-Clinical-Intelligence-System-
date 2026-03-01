@@ -4,6 +4,8 @@ import * as doctorRepo from '../repositories/doctor.repository';
 import * as branchRepo from '../repositories/branch.repository';
 import * as slotRepo from '../repositories/doctorSlot.repository';
 import * as appointmentRepo from '../repositories/appointment.repository';
+import { HTTP_STATUS } from '../constants/http_status';
+import { AppError } from '../utils/app-error';
 
 import {
   BookAppointmentInput,
@@ -18,20 +20,6 @@ import {
 
 import { DoctorSlot } from '../models/doctorSlot.model';
 import { processFakePayment } from '../utils/payment.util';
-
-class AppError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
-
-const HTTP_STATUS = {
-  BAD_REQUEST: 400,
-  NOT_FOUND: 404,
-};
 
 export const bookAppointment = async ({
   userId,
@@ -118,8 +106,6 @@ export const changeAppointmentStatus = async ({
 
 export const confirmPayment = async ({
   appointmentId,
-  //   card_number,
-  //   CVV_number,
 }: ConfirmPaymentInput) => {
   const appointment = await appointmentRepo.findAppointmentById(appointmentId);
 
@@ -127,15 +113,10 @@ export const confirmPayment = async ({
     throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
   }
 
-  //   if (appointment.paymentStatus === 'paid') {
-  //     throw new AppError('Already paid', HTTP_STATUS.BAD_REQUEST);
-  //   }
-
   const paymentSuccess = await processFakePayment();
 
   if (!paymentSuccess) {
     throw new AppError('Payment filed', HTTP_STATUS.BAD_REQUEST);
-    // await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
   }
   await appointmentRepo.updatePaymentStatus(appointment, 'paid');
   await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
@@ -227,11 +208,7 @@ export const getDoctorAppointmentsByUser = async ({
   page: number;
   limit: number;
 }) => {
-  console.log('user id jwt:', userId);
-
   const doctor = await doctorRepo.findDoctorByUserId(userId);
-
-  console.log('DOCTOR FOUND:', doctor);
 
   if (!doctor) {
     throw new AppError('Doctor not found', 404);

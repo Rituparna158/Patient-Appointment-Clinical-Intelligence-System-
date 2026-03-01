@@ -32,9 +32,6 @@ export interface ChangeAppointmentStatusInput {
 
 export interface ConfirmPaymentInput {
   appointmentId: string;
-  //   card_number: string;
-  //   CVV_number: string;
-  //   paymentStatus: string;
 }
 
 export interface GetPatientAppointmentsInput {
@@ -52,6 +49,7 @@ export interface GetDoctorAppointmentsInput {
 export interface AdminSearchAppointmentsInput {
   branchId?: string;
   status?: AppointmentStatus;
+  search?: string;
   page: number;
   limit: number;
 }

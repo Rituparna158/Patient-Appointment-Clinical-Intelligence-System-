@@ -1,13 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as appointmentService from '../services/appointment.service';
 import { AppointmentStatus, PaymentStatus } from '../types/appointment.types';
-import { success } from 'zod';
-
-const HTTP_STATUS = {
-  OK: 200,
-  CREATED: 201,
-  UNAUTHORIZED: 401,
-};
+import { HTTP_STATUS } from '../constants/http_status';
 
 const extractParam = (
   param: string | string[] | undefined,
@@ -25,7 +19,6 @@ export const bookAppointment = async (
   next: NextFunction
 ) => {
   try {
-    console.log('Book request body:', req.body);
     const userId = req.user?.userId;
     if (!userId) {
       return res
@@ -88,9 +81,6 @@ export const confirmPayment = async (
 
     const result = await appointmentService.confirmPayment({
       appointmentId,
-      //   card_number,
-      //   CVV_number,
-      //   paymentStatus,
     });
 
     return res.status(HTTP_STATUS.OK).json({
@@ -171,6 +161,7 @@ export const adminSearchAppointments = async (
   try {
     const branchId = req.query.branchId as string | undefined;
     const status = req.query.status as AppointmentStatus | undefined;
+    const search = req.query.search as string | undefined;
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
@@ -178,6 +169,7 @@ export const adminSearchAppointments = async (
     const result = await appointmentService.adminSearchAppointments({
       branchId,
       status,
+      search,
       page,
       limit,
     });

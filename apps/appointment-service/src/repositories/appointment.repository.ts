@@ -1,4 +1,4 @@
-import { WhereOptions } from 'sequelize';
+import { WhereOptions, Op } from 'sequelize';
 import { Appointment } from '../models/appointment.model';
 import {
   CreateAppointmentData,
@@ -8,6 +8,7 @@ import {
 } from '../types/appointment.types';
 import { Doctor } from '../models';
 import { User } from '../models/external/user.model';
+import { Patient } from '../models/external/patient.model';
 
 export const createAppointment = (data: CreateAppointmentData) =>
   Appointment.create({
@@ -73,23 +74,61 @@ export const findAppointmentsByDoctor = (
 export const adminSearchAppointments = ({
   branchId,
   status,
+  search,
   page,
   limit,
 }: AdminSearchAppointmentsInput) => {
   const offset = (page - 1) * limit;
 
-  const where: WhereOptions = {};
+  const baseWhere: WhereOptions = {};
 
   if (branchId) {
-    where.branchId = branchId;
+    baseWhere.branchId = branchId;
   }
 
   if (status) {
-    where.status = status;
+    baseWhere.status = status;
   }
+
+  const searchCondition: WhereOptions | undefined = search
+    ? {
+        [Op.or]: [
+          { '$Doctor.user.full_name$': { [Op.iLike]: `%${search}%` } },
+          { '$Doctor.user.email$': { [Op.iLike]: `%${search}%` } },
+          { '$Patient.user.full_name$': { [Op.iLike]: `%${search}%` } },
+          { '$Patient.user.email$': { [Op.iLike]: `%${search}%` } },
+        ],
+      }
+    : undefined;
+
+  const where: WhereOptions = searchCondition
+    ? { ...baseWhere, ...searchCondition }
+    : baseWhere;
 
   return Appointment.findAndCountAll({
     where,
+    include: [
+      {
+        model: Doctor,
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'full_name', 'email'],
+          },
+        ],
+      },
+      {
+        model: Patient,
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'full_name', 'email'],
+          },
+        ],
+      },
+    ],
     limit,
     offset,
     order: [['createdAt', 'DESC']],
