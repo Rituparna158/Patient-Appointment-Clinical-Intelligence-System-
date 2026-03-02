@@ -6,9 +6,9 @@ export default function Home() {
     <div className="dashboard-layout flex flex-col">
       <header className="top-navbar">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="CIS Logo" className="h-8 w-8" />
+          <img src="download.png" alt="CIS Logo" className="h-8 w-8" />
           <h1 className="navbar-title">
-            Clinical Intelligence System
+            LifeLine
           </h1>
         </div>
 

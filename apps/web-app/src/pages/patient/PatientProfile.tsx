@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DashboardLayout from "@/layouts/DashboardLayout";
+import DashboardLayout from "@/app/layout/AppLayout";
 import { PatientService } from "@/services/patient.service";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";

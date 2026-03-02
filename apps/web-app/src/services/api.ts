@@ -1,7 +1,8 @@
 const API_BASE = '/api';
 
 export async function api(endpoint: string, options: RequestInit = {}) {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
+  const clearEndpoint = endpoint.replace(/\/\?/, '?');
+  const res = await fetch(`${API_BASE}${clearEndpoint}`, {
     headers: {
       'Content-Type': 'application/json',
     },

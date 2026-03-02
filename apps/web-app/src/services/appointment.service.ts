@@ -69,14 +69,23 @@ export const AppointmentService = {
     return res.data;
   },
 
-  async adminSearch(page = 1, limit = 10) {
-    const res: ApiResponse<any> = await api(
-      `/appointments?page=${page}&limit=${limit}`
-    );
+  async adminSearch(params: {
+    page: number;
+    limit: number;
+    search?: string;
+    status?: string;
+  }) {
+    const query = new URLSearchParams({
+      page: String(params.page),
+      limit: String(params.limit),
+      ...(params.search ? { search: params.search } : {}),
+      ...(params.status ? { status: params.status } : {}),
+    }).toString();
+
+    const res = await api(`/appointments?${query}`);
 
     return res.data;
   },
-
   async createSlot(data: {
     doctorId: string;
     branchId: string;
@@ -112,4 +121,39 @@ export const AppointmentService = {
       body: JSON.stringify({ status }),
     });
   },
+
+  async getDoctors() {
+    const res = await api('/appointments/doctors');
+    return res.data;
+  },
+
+  async getBranches() {
+    const res = await api('/appointments/branches');
+    return res.data;
+  },
+
+  async createBranch(data: { name: string; address: string; phone: string }) {
+    const res = await api('/appointments/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return res.data;
+  },
+
+  async cancelWithRefund(id: string) {
+    return api(`/appointments/${id}/cancel-refund`, {
+      method: 'PATCH',
+    });
+  },
+
+  async reschedule(id: string, newSlotId: string) {
+    return api(`/appointments/${id}/reschedule`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newSlotId }),
+    });
+  },
+
+  // async getAvailableSlotsForDoctor() {
+  //   const res = await api('/appointments/branches');
+  // }
 };

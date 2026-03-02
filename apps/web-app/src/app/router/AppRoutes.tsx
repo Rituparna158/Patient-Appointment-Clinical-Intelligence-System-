@@ -17,16 +17,19 @@ import CreateAdmin from "@/pages/admin/CreateAdmin";
 
 import CreatePatientProfile from "@/pages/patient/CreatePatientProfile";
 import PatientProfilePage from "@/pages/patient/PatientProfile";
-import PatientList from "@/pages/admin/PatientList";
+import PatientListPage from "@/features/admin/patients/PatientListPage";
 import EditPatientProfile from "@/pages/patient/EditPatientProfile";
 
 import BookAppointment from "@/pages/patient/BookAppointment";
 import MyAppointments from "@/pages/patient/MyAppointments";
-import DoctorAppointments from "@/pages/doctor/DoctorAppointments";
-import CreateSlot from "@/pages/admin/CreateSlot";
-import AppointmentList from "@/pages/admin/AppointmentList";
+import DoctorAppointments from "@/features/doctor/pages/DoctorAppointment";
+import CreateSlot from "@/features/admin/pages/CreateSlot";
+import CreateBranch from "@/features/admin/pages/CreateBranch";
+import AppointmentList from "@/features/admin/pages/AppointmentList";
 
 import Payment from "@/pages/payment/Payment";
+
+import AppLayout from "../layout/AppLayout";
 
 
 
@@ -101,7 +104,10 @@ export default function AppRoutes(){
             path="/patient/profile"
             element={
                 <ProtectedRoute allowedRoles={["patient"]}>
-                <PatientProfilePage />
+                    <AppLayout>
+                        <PatientProfilePage />
+                    </AppLayout>
+                
                 </ProtectedRoute>
             }
             />
@@ -110,7 +116,10 @@ export default function AppRoutes(){
             path="/admin/patient"
             element={
                 <ProtectedRoute allowedRoles={["admin"]}>
-                <PatientList />
+                    <AppLayout>
+                        <PatientListPage />
+                    </AppLayout>
+                
                 </ProtectedRoute>
             }
             />
@@ -150,7 +159,10 @@ export default function AppRoutes(){
             path="/admin/appointments"
             element={
                 <ProtectedRoute allowedRoles={["admin"]}>
-                    <AppointmentList />
+                    <AppLayout>
+                        <AppointmentList />
+                    </AppLayout>
+                    
                 </ProtectedRoute>
             }
             />
@@ -158,7 +170,22 @@ export default function AppRoutes(){
             path="/admin/create-slot"
             element={
                 <ProtectedRoute allowedRoles={["admin"]}>
-                    <CreateSlot />
+                    <AppLayout>
+                        <CreateSlot />
+                    </AppLayout>
+                    
+                </ProtectedRoute>
+            }
+            />
+
+            <Route
+            path="/admin/create-branch"
+            element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                    <AppLayout>
+                        <CreateBranch />
+                    </AppLayout>
+                    
                 </ProtectedRoute>
             }
             />

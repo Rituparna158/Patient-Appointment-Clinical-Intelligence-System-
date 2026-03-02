@@ -1,4 +1,4 @@
-import DashboardLayout from "@/layouts/DashboardLayout";
+import DashboardLayout from "@/app/layout/AppLayout";
 import { useAuthStore } from "@/store/auth/auth.store";
 
 export default function AdminDashboard() {

@@ -1,4 +1,4 @@
-import DashboardLayout from "@/layouts/DashboardLayout";
+import DashboardLayout from "@/app/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { api } from "@/services/api";
 
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+//import { zodResolver } from "@hookform/resolvers/zod";
 import { baseUserSchema } from "@/schemas/user.schema";
 import { z } from "zod";
 
@@ -22,7 +22,7 @@ export default function CreateAdmin() {
     formState: { errors },
     reset,
   } = useForm<AdminForm>({
-    resolver: zodResolver(baseUserSchema),
+    //resolver: zodResolver(baseUserSchema),
     mode: "onBlur", 
   });
 
@@ -84,11 +84,9 @@ export default function CreateAdmin() {
               <Input {...register("phone")} />
             </FormField>
 
-            <div className="col-span-2 mt-4">
               <Button type="submit">
                 Create Admin
               </Button>
-            </div>
 
           </form>
         </div>

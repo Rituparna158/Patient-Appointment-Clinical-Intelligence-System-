@@ -2,12 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth/auth.store";
 import { AuthService } from "@/services/auth.service";
-import {
-  Bell,
-  Moon,
-  Sun,
-  ChevronDown
-} from "lucide-react";
+import { Bell, Moon, Sun, ChevronDown } from "lucide-react";
 
 export default function TopNavbar() {
   const user = useAuthStore((s) => s.user);
@@ -17,6 +12,7 @@ export default function TopNavbar() {
   const [dark, setDark] = useState(
     document.documentElement.classList.contains("dark")
   );
+
   const [open, setOpen] = useState(false);
 
   async function handleLogout() {
@@ -31,9 +27,7 @@ export default function TopNavbar() {
   }
 
   return (
-    <header className="navbar">
-
-      {/* LEFT */}
+    <header className="navbar sticky top-0 z-50">
       <div className="navbar-left">
         <h1 className="navbar-title">
           Clinical Intelligence System
@@ -46,25 +40,16 @@ export default function TopNavbar() {
         )}
       </div>
 
-      {/* RIGHT */}
       <div className="navbar-right">
-
-        {/* Notification Icon */}
         <button className="navbar-icon-btn">
           <Bell size={18} />
         </button>
 
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="navbar-icon-btn"
-        >
+        <button onClick={toggleTheme} className="navbar-icon-btn">
           {dark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* User Info + Dropdown */}
         <div className="relative">
-
           <button
             onClick={() => setOpen(!open)}
             className="flex items-center gap-2"
@@ -77,7 +62,6 @@ export default function TopNavbar() {
 
           {open && (
             <div className="absolute right-0 mt-2 w-40 dropdown-menu">
-
               <div
                 className="dropdown-item"
                 onClick={() => {
@@ -97,13 +81,10 @@ export default function TopNavbar() {
               >
                 Logout
               </div>
-
             </div>
           )}
         </div>
-
       </div>
     </header>
   );
 }
-

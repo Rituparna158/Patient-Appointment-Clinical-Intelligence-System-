@@ -13,10 +13,35 @@ export interface Appointment {
   doctorId: string;
   branchId: string;
   slotId: string;
-  status: AppointmentStatus;
-  paymentStatus: PaymentStatus;
-  appointmentReason?: string;
+  status: string;
+  paymentStatus: string;
+  appointmentReason?: string | null;
   createdAt: string;
+  updatedAt: string;
+
+  Doctor?: {
+    id: string;
+    user?: {
+      id: string;
+      full_name: string;
+      email: string;
+    };
+  };
+
+  Patient?: {
+    id: string;
+    user?: {
+      id: string;
+      full_name: string;
+      email: string;
+    };
+  };
+
+  slot?: {
+    slotDate: string;
+    startTime: string;
+    endTime: string;
+  };
 }
 
 export interface Slot {
@@ -26,4 +51,21 @@ export interface Slot {
   slotDate: string;
   startTime: string;
   endTime: string;
+}
+
+export interface Doctor {
+  id: string;
+  specialization: string;
+  user: {
+    id: string;
+    full_name: string;
+    email: string;
+  };
+}
+
+export interface Branch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
 }

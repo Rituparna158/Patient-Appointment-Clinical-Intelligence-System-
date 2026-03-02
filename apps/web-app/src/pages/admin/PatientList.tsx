@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DashboardLayout from "@/layouts/DashboardLayout";
+import DashboardLayout from "@/app/layout/AppLayout";
 import { PatientService } from "@/services/patient.service";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

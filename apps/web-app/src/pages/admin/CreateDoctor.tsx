@@ -1,4 +1,4 @@
-import DashboardLayout from "@/layouts/DashboardLayout";
+import DashboardLayout from "@/app/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -87,11 +87,11 @@ export default function CreateDoctor() {
               />
             </FormField>
 
-            <div className="col-span-2 mt-4">
+            
               <Button type="submit">
                 Create Doctor
               </Button>
-            </div>
+            
 
           </form>
         </div>

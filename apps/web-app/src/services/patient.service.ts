@@ -1,8 +1,5 @@
 import { api } from './api';
-import type {
-  PatientProfile,
-  PatientSearchResponse,
-} from '@/types/patient.types';
+import type { PatientProfile } from '@/types/patient.types';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -49,16 +46,16 @@ export const PatientService = {
     return res.message;
   },
 
-  async search(params: {
-    search?: string;
-    page: number;
-    limit: number;
-  }): Promise<PatientSearchResponse> {
-    const query = new URLSearchParams(params as any).toString();
+  async search(params: { search?: string; page: number; limit: number }) {
+    const query = new URLSearchParams({
+      page: String(params.page),
+      limit: String(params.limit),
+    });
+    if (params.search) {
+      query.append('search', params.search);
+    }
 
-    const res: ApiResponse<PatientSearchResponse> = await api(
-      `/patient?${query}`
-    );
+    const res = await api(`/patient?${query.toString()}`);
 
     return res.data;
   },

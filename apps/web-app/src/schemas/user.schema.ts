@@ -17,10 +17,10 @@ export const baseUserSchema = z.object({
     .min(1, VALIDATION_MESSAGES.REQUIRED)
     .min(6, VALIDATION_MESSAGES.PHONE_MIN),
 
-  password: z
-    .string()
-    .min(1, VALIDATION_MESSAGES.REQUIRED)
-    .min(6, VALIDATION_MESSAGES.PASSWORD_MIN),
+  // password: z
+  //   .string()
+  //   .min(1, VALIDATION_MESSAGES.REQUIRED)
+  //   .min(6, VALIDATION_MESSAGES.PASSWORD_MIN),
 });
 
 export const doctorSchema = baseUserSchema.extend({
