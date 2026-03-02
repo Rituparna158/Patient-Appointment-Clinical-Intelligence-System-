@@ -20,8 +20,6 @@ export const authenticate = (
     (req.cookies?.accessToken as string | undefined) ||
     req.headers.authorization?.split(' ')[1];
 
-  console.log('cookies:', req.cookies);
-
   if (!token) {
     return res
       .status(HTTP_STATUS.UNAUTHORIZED)

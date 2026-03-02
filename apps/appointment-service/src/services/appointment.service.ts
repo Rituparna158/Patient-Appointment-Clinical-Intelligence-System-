@@ -16,6 +16,7 @@ import {
   AdminSearchAppointmentsInput,
   GetAvailableSlotsInput,
   CreateSlotInput,
+  CreateBranchInput,
 } from '../types/appointment.types';
 
 import { DoctorSlot } from '../models/doctorSlot.model';
@@ -215,4 +216,105 @@ export const getDoctorAppointmentsByUser = async ({
   }
 
   return appointmentRepo.findAppointmentsByDoctor(doctor.id, page, limit);
+};
+
+export const createBranch = async (data: CreateBranchInput) => {
+  if (!data.name || !data.address || !data.phone) {
+    throw new AppError(
+      'Name, address and phone are required',
+      HTTP_STATUS.BAD_REQUEST
+    );
+  }
+
+  const existing = await branchRepo.findBranchByName(data.name);
+
+  if (existing) {
+    throw new AppError(
+      'Branch with this name already exists',
+      HTTP_STATUS.CONFLICT
+    );
+  }
+
+  return branchRepo.createBranch(data);
+};
+
+export const getAllDoctors = async () => {
+  return doctorRepo.findAllActiveDoctors();
+};
+
+export const getAllBranches = async () => {
+  return branchRepo.findAllActiveBranches();
+};
+
+export const cancelAppointmentWithRefund = async (appointmentId: string) => {
+  const appointment = await appointmentRepo.findAppointmentById(appointmentId);
+
+  if (!appointment) {
+    throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  if (appointment.status === 'completed') {
+    throw new AppError(
+      'Completed appointment cannot be cancelled',
+      HTTP_STATUS.BAD_REQUEST
+    );
+  }
+
+  if (appointment.paymentStatus === 'paid') {
+    await appointmentRepo.updatePaymentStatus(appointment, 'refunded');
+  }
+
+  const slot = await slotRepo.findSlotById(appointment.slotId);
+
+  if (slot) {
+    await slotRepo.releaseSlot(slot);
+  }
+
+  await appointmentRepo.updateAppointmentStatus(appointment, 'cancelled');
+
+  return appointment;
+};
+
+export const rescheduleAppointment = async (
+  appointmentId: string,
+  newSlotId: string
+) => {
+  const appointment = await appointmentRepo.findAppointmentById(appointmentId);
+
+  if (!appointment) {
+    throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  if (appointment.status === 'completed') {
+    throw new AppError(
+      'Completed appointment cannot be rescheduled',
+      HTTP_STATUS.BAD_REQUEST
+    );
+  }
+
+  const newSlot = await slotRepo.findSlotById(newSlotId);
+
+  if (!newSlot) {
+    throw new AppError('Slot not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  if (newSlot.isBooked) {
+    throw new AppError('Slot already booked', HTTP_STATUS.BAD_REQUEST);
+  }
+
+  const oldSlot = await slotRepo.findSlotById(appointment.slotId);
+
+  if (oldSlot) {
+    await slotRepo.releaseSlot(oldSlot);
+  }
+
+  await slotRepo.markSlotBooked(newSlot);
+
+  await appointmentRepo.updateAppointmentSlot(
+    appointment,
+    newSlotId,
+    'rescheduled'
+  );
+
+  return appointment;
 };

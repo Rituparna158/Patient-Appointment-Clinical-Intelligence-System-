@@ -1,5 +1,6 @@
 import { Op, where } from 'sequelize';
 import { Patient } from '../models/patient.model';
+import { User } from '../models/rbac/user.model';
 import {
   CreatePatientDTO,
   UpdatePatientDTO,
@@ -32,25 +33,37 @@ export const searchPatients = async ({
 }: PatientSearchQuery) => {
   const offset = (page - 1) * limit;
 
-  const whereCondition = search
+  const userWhere = search
     ? {
-        address: {
-          [Op.iLike]: `%${search}%`,
-        },
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            email: {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+        ],
       }
-    : {};
-
-  console.log('WhereCondition:', whereCondition);
+    : undefined;
 
   const { rows, count } = await Patient.findAndCountAll({
-    where: whereCondition,
+    include: [
+      {
+        model: User,
+        as: 'user',
+        attributes: ['id', 'full_name', 'email'],
+        where: userWhere,
+      },
+    ],
     limit,
     offset,
+    order: [['createdAt', 'DESC']],
   });
-  console.log('rowslength:', rows.length);
-  console.log('PAGE', page);
-  console.log('LIMIT:', limit);
-  console.log('OFFSET:', offset);
+
   return {
     total: count,
     page,

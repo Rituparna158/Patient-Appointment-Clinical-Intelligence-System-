@@ -13,6 +13,7 @@ import {
   confirmPaymentSchema,
   paginationQuerySchema,
   createSlotSchema,
+  createBranchSchema,
 } from '../validators/appointment.validator';
 import {
   validateBody,
@@ -85,6 +86,42 @@ router.post(
   authorizePermission('manage_appointments'),
   validateBody(createSlotSchema),
   controller.createSlot
+);
+
+router.post(
+  '/',
+  authenticate,
+  authorizePermission('manage_appointments'),
+  validateBody(createBranchSchema),
+  controller.createBranch
+);
+
+router.get(
+  '/doctors',
+  authenticate,
+  authorizePermission('manage_appointments'),
+  controller.getAllDoctors
+);
+
+router.get(
+  '/branches',
+  authenticate,
+  authorizePermission('manage_appointments'),
+  controller.getAllBranches
+);
+
+router.patch(
+  '/:id/cancel-refund',
+  authenticate,
+  authorizeRole('doctor'),
+  controller.cancelWithRefund
+);
+
+router.patch(
+  '/:id/reschedule',
+  authenticate,
+  authorizeRole('doctor'),
+  controller.reschedule
 );
 
 export default router;

@@ -4,12 +4,7 @@ import { HTTP_STATUS } from '../constants/http_status';
 
 export interface JwtPayload {
   id: string;
-  //userId: string;
 }
-
-// export interface AuthenticatedRequest extends Request {
-//   user?: JwtPayload;
-// }
 
 export const authenticate = (
   req: Request,
@@ -19,8 +14,6 @@ export const authenticate = (
   const token =
     (req.cookies?.accessToken as string | undefined) ||
     req.headers.authorization?.split(' ')[1];
-
-  console.log('cookies:', req.cookies);
 
   if (!token) {
     return res

@@ -104,8 +104,6 @@ const adminSearch = async (req: Request, res: Response, next: NextFunction) => {
 
     const query = req.query;
 
-    console.log('QUERY:', (req as any).validateQuery);
-
     const search = typeof query.search === 'string' ? query.search : undefined;
 
     const page =

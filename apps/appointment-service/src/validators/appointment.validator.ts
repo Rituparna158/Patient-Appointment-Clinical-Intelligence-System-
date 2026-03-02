@@ -29,6 +29,11 @@ export const confirmPaymentSchema = z.object({
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).default(10),
+  search: z.string().optional(),
+  status: z
+    .enum(['requested', 'confirmed', 'completed', 'missed', 'cancelled'])
+    .optional(),
+  branchId: z.string().optional(),
 });
 
 export const createSlotSchema = z.object({
@@ -36,4 +41,10 @@ export const createSlotSchema = z.object({
   branchId: z.uuid(),
   startTime: z.string(),
   endTime: z.string(),
+});
+
+export const createBranchSchema = z.object({
+  name: z.string(),
+  address: z.string(),
+  phone: z.string(),
 });

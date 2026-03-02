@@ -5,9 +5,10 @@ export type AppointmentStatus =
   | 'confirmed'
   | 'completed'
   | 'missed'
-  | 'cancelled';
+  | 'cancelled'
+  | 'rescheduled';
 
-export type PaymentStatus = 'pending' | 'paid' | 'failed';
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 export interface CreateAppointmentData {
   patientId: string;
@@ -64,4 +65,10 @@ export interface CreateSlotInput {
   branchId: string;
   startTime: string;
   endTime: string;
+}
+
+export interface CreateBranchInput {
+  name: string;
+  address: string;
+  phone: string;
 }

@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { verifyToken } from '../utils/jwt';
-import { User } from '../models';
+import { User } from '../models/user.model';
 import { Role, Permission } from '../models';
 import { HTTP_STATUS } from '../constants/http-status';
 
@@ -17,8 +17,6 @@ const requireAuth: RequestHandler = async (req, res, next) => {
       });
     }
     const decode = verifyToken(token) as any;
-
-    console.log('decode:', decode);
 
     const user = await User.findByPk(decode.id, {
       include: [

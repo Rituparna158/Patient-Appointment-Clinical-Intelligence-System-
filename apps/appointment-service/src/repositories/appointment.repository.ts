@@ -6,7 +6,7 @@ import {
   PaymentStatus,
   AdminSearchAppointmentsInput,
 } from '../types/appointment.types';
-import { Doctor } from '../models';
+import { Doctor, DoctorSlot } from '../models';
 import { User } from '../models/external/user.model';
 import { Patient } from '../models/external/patient.model';
 
@@ -65,12 +65,28 @@ export const findAppointmentsByDoctor = (
 
   return Appointment.findAndCountAll({
     where: { doctorId },
+    include: [
+      {
+        model: Patient,
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'full_name', 'email'],
+          },
+        ],
+      },
+      {
+        model: DoctorSlot,
+        as: 'slot',
+        attributes: ['slotDate', 'startTime', 'endTime'],
+      },
+    ],
     limit,
     offset,
     order: [['createdAt', 'DESC']],
   });
 };
-
 export const adminSearchAppointments = ({
   branchId,
   status,
@@ -128,9 +144,24 @@ export const adminSearchAppointments = ({
           },
         ],
       },
+      {
+        model: DoctorSlot,
+        as: 'slot',
+        attributes: ['slotDate', 'startTime', 'endTime'],
+      },
     ],
     limit,
     offset,
     order: [['createdAt', 'DESC']],
   });
 };
+
+export const updateAppointmentSlot = (
+  appointment: Appointment,
+  slotId: string,
+  status: string
+) =>
+  appointment.update({
+    slotId,
+    status,
+  });

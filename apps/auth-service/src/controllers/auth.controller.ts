@@ -90,8 +90,6 @@ const logout: RequestHandler = async (req, res, next) => {
   res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
 
-  console.log('Refresh token:', token);
-
   if (!token) {
     return res.status(HTTP_STATUS.OK).json({
       message: 'Logged out successfully',
@@ -99,12 +97,9 @@ const logout: RequestHandler = async (req, res, next) => {
   }
   try {
     const decode = verifyRefreshToken(token) as any;
-    console.log('decode user:', decode);
+
     const deleted = await deleteRefreshToken(decode.id);
-    console.log('refresh token deleted from redis:', deleted);
-  } catch (err) {
-    console.log('logout: refresh token already invalid');
-  }
+  } catch (err) {}
   return res.json({ message: 'logout successful' });
 };
 
@@ -113,15 +108,7 @@ const me: RequestHandler = async (req, res, next) => {
     const userId = (req as any).user.id;
 
     const user = await User.findByPk(userId, {
-      attributes: [
-        'id',
-        'email',
-        'full_name',
-        'phone',
-        //'gender',
-        //'date_of_birth',
-        'isActive',
-      ],
+      attributes: ['id', 'email', 'full_name', 'phone', 'isActive'],
       include: [
         {
           model: Role,
@@ -172,8 +159,7 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
         message: 'If account exists,OTP has been sent',
       });
     }
-    console.log('MAIL_USER:', process.env.MAIL_USER);
-    console.log('MAIL_PASS exists:', !!process.env.MAIL_PASS);
+
     const otp = otpGenerator.generate(6, {
       digits: true,
       upperCaseAlphabets: false,
@@ -188,10 +174,7 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
         subject: 'Reset password OTP',
         text: `Your OTP for resetting password is: ${otp}.It expires in 10 minutes.`,
       });
-      console.log('email sent successfully');
-    } catch (error) {
-      console.log('email sending failed', error);
-    }
+    } catch (error) {}
 
     return res.json({
       message: 'OTP sent successfully',
@@ -204,9 +187,7 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
 const resetPassword: RequestHandler = async (req, res, next) => {
   try {
     const { email, otp, newPassword } = req.body;
-    console.log('email:', email);
-    console.log('otp:', otp);
-    console.log('new pssword:', newPassword);
+
     if (!email || !otp || !newPassword) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         error: 'Otp and newPassword are required',
@@ -216,9 +197,6 @@ const resetPassword: RequestHandler = async (req, res, next) => {
     console.log('looking for key:', `reset:${cleanEmail}`);
 
     const saveOtp = await redis.get(`reset:${cleanEmail}`);
-
-    console.log('saved otp:', saveOtp);
-    console.log('user otp:', otp);
 
     if (!saveOtp) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({

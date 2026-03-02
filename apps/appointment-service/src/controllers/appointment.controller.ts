@@ -229,3 +229,119 @@ export const createSlot = async (
     next(error);
   }
 };
+
+export const getAllDoctors = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const doctors = await appointmentService.getAllDoctors();
+
+    res.status(200).json({
+      success: true,
+      data: doctors,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createBranch = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const branch = await appointmentService.createBranch(req.body);
+
+    return res.status(HTTP_STATUS.CREATED).json({
+      success: true,
+      data: branch,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllBranches = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const branches = await appointmentService.getAllBranches();
+
+    res.status(200).json({
+      success: true,
+      data: branches,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cancelWithRefund = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const appointmentId = req.params.id;
+
+    if (!appointmentId || Array.isArray(appointmentId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid appointment id',
+      });
+    }
+
+    const result =
+      await appointmentService.cancelAppointmentWithRefund(appointmentId);
+
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reschedule = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const appointmentId = req.params.id;
+
+    if (!appointmentId || Array.isArray(appointmentId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid appointment id',
+      });
+    }
+
+    const { newSlotId } = req.body as { newSlotId?: string };
+
+    if (!newSlotId) {
+      return res.status(400).json({
+        success: false,
+        message: 'newSlotId is required',
+      });
+    }
+
+    const result = await appointmentService.rescheduleAppointment(
+      appointmentId,
+      newSlotId
+    );
+
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
