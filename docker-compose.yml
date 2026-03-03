@@ -46,6 +46,20 @@ services:
       DB_HOST: postgres
     depends_on:
       - postgres
+
+  clinical-service:
+    build:
+      context: .
+      dockerfile: apps/clinical-service/Dockerfile
+    container_name: clinical-service
+    expose:
+      - "4004"
+    env_file:
+      - apps/clinical-service/.env
+    environment:
+      DB_HOST: postgres
+    depends_on:
+      - postgres
  
   # web-app:
   #   build:
@@ -64,6 +78,7 @@ services:
       - auth-service
       - patient-service
       - appointment-service
+      - clinical-service
  
   postgres:
     image: postgres:15
