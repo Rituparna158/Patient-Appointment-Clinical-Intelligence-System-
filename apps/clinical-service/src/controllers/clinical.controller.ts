@@ -38,7 +38,7 @@ export const updateConsultationNote = async (
       });
     }
 
-    const user = req.user!;
+    //const user = req.user!;
 
     const noteId = req.params.noteId;
 
@@ -49,7 +49,7 @@ export const updateConsultationNote = async (
       });
     }
 
-    const result = await clinicalService.updateNote(
+    const updatedNote = await clinicalService.updateNote(
       noteId,
       req.user.userId,
       req.body
@@ -57,7 +57,7 @@ export const updateConsultationNote = async (
 
     return res.status(200).json({
       success: true,
-      message: result.message,
+      data: updatedNote,
     });
   } catch (error) {
     next(error);
@@ -89,8 +89,8 @@ export const getNotesByAppointment = async (
     }
 
     const result = await clinicalService.getNotesByAppointment(
-      req.user.userId,
-      appointmentId
+      appointmentId,
+      req.user.userId
     );
 
     return res.status(200).json({
@@ -115,7 +115,6 @@ export const getDoctorConsultations = async (
       });
     }
 
-    // coming from validateQuery middleware
     const { page, limit, search, from, to } = (req as any).validateQuery;
 
     const result = await clinicalService.getDoctorConsultations(

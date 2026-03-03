@@ -7,12 +7,13 @@ export const createConsultationNoteSchema = z.object({
   diagnosis: z.string().min(3).max(500),
   prescriptions: z.string().min(10).max(1000),
   notes: z.string().min(20).max(1000).optional(),
+  followUpDate: z.string().optional(),
 });
 
 export const updateConsultationNoteSchema = z.object({
   symptoms: z.string().min(3).max(200).optional(),
   diagnosis: z.string().min(3).max(500).optional(),
-  prescription: z.string().min(5).max(1000).optional(),
+  prescriptions: z.string().min(5).max(1000).optional(),
   notes: z.string().min(10).max(1000).optional(),
 });
 

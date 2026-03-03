@@ -4,6 +4,7 @@ export interface CreateConsultationNoteInput {
   diagnosis: string;
   prescriptions: string;
   notes?: string;
+  followUpDate?: string;
 }
 
 export interface UpdateConsultationNoteInput {
@@ -11,4 +12,5 @@ export interface UpdateConsultationNoteInput {
   diagnosis: string;
   prescriptions: string;
   notes?: string;
+  followUpDate?: string;
 }

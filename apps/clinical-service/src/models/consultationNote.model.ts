@@ -17,6 +17,10 @@ export class ConsultaionNote extends Model<
   declare diagnosis: string;
   declare prescriptions: string;
   declare notes: string | null;
+  declare createdBy: string;
+  declare updatedBy: string | null;
+  declare lockedAt: Date | null;
+  declare followUpDate: Date | null;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -46,6 +50,22 @@ ConsultaionNote.init(
     },
     notes: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    createdBy: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    updatedBy: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    lockedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    followUpDate: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
     createdAt: {

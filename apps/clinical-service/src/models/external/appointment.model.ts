@@ -8,6 +8,7 @@ import {
 import { sequelize } from '../../config/database';
 import { DoctorSlot } from './doctorSlot.model';
 import { Notification } from './notification.model';
+import { ConsultaionNote } from '../consultationNote.model';
 
 export class Appointment extends Model<
   InferAttributes<Appointment>,
@@ -101,5 +102,14 @@ Appointment.afterUpdate(async (appointment) => {
       message: 'Reminder: You have an upcoming appointment',
       scheduledAt: reminderTime,
     });
+  }
+  if (appointment.changed('status') && appointment.status === 'completed') {
+    const note = await ConsultaionNote.findOne({
+      where: { appointmentId: appointment.id },
+    });
+    if (note) {
+      note.lockedAt = new Date();
+      await note.save();
+    }
   }
 });

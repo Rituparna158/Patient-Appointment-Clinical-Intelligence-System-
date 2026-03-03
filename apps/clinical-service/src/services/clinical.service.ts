@@ -1,3 +1,4 @@
+import { Notification } from '../models/external/notification.model';
 import * as appointmentRepo from '../repositories/appointment.repository';
 import * as doctorRepo from '../repositories/doctor.repository';
 import * as consultationRepo from '../repositories/consultation.repository';
@@ -10,10 +11,10 @@ import {
 } from '../types/clinical.types';
 
 export const createNote = async (
-  doctorId: string,
+  doctorUserId: string,
   data: CreateConsultationNoteInput
 ) => {
-  const doctor = await doctorRepo.findDoctorByUserId(doctorId);
+  const doctor = await doctorRepo.findDoctorByUserId(doctorUserId);
   if (!doctor) {
     throw new AppError('Doctor not found', 404);
   }
@@ -33,13 +34,32 @@ export const createNote = async (
   if (appointment.doctorId !== doctor.id) {
     throw new AppError('Unauthorized doctor access', 403);
   }
-  return consultationRepo.createConsultationNote(data);
+  const createNote = await consultationRepo.createConsultationNote({
+    appointmentId: data.appointmentId,
+    symptoms: data.symptoms,
+    diagnosis: data.diagnosis,
+    prescriptions: data.prescriptions,
+    notes: data.notes,
+    followUpDate: data.followUpDate ? new Date(data.followUpDate) : undefined,
+    createdBy: doctorUserId,
+  });
+  console.log('Incoming followUpDate:', data.followUpDate);
+  if (data.followUpDate) {
+    await Notification.create({
+      appointmentId: appointment.id,
+      userId: appointment.patientId,
+      type: 'follow_up',
+      message: `Follow-up scheduled for ${data.followUpDate}`,
+      scheduledAt: new Date(data.followUpDate),
+    });
+  }
+  return createNote;
 };
 
 export const updateNote = async (
   noteId: string,
   doctorUserId: string,
-  data: any
+  data: UpdateConsultationNoteInput
 ) => {
   const doctor = await doctorRepo.findDoctorByUserId(doctorUserId);
   if (!doctor) throw new AppError('Doctor not found', 404);
@@ -47,9 +67,22 @@ export const updateNote = async (
   const note = await consultationRepo.findByNoteId(noteId);
   if (!note) throw new AppError('Note not found', 404);
 
-  await consultationRepo.updateConsultationNote(noteId, data);
+  if (note.lockedAt) {
+    throw new AppError(
+      "This Consultation note is locked and can't b edited anymore",
+      400
+    );
+  }
 
-  return { message: 'Updated successfully' };
+  const updatedNote = await consultationRepo.updateConsultationNote(noteId, {
+    symptoms: data.symptoms,
+    diagnosis: data.diagnosis,
+    prescriptions: data.prescriptions,
+    notes: data.notes,
+    followUpDate: data.followUpDate ? new Date(data.followUpDate) : undefined,
+    updatedBy: doctorUserId,
+  });
+  return updatedNote;
 };
 
 export const getDoctorConsultations = async (
@@ -74,10 +107,14 @@ export const getDoctorConsultations = async (
 };
 
 export const getPatientTimeline = async (
-  patientId: string,
+  userId: string,
   page: number,
   limit: number
-) => consultationRepo.findPatientTimeline(patientId, page, limit);
+) => {
+  const patient = await patientRepo.findByUserId(userId);
+  if (!patient) throw new AppError('Patient not found', 404);
+  return consultationRepo.findPatientTimeline(patient.id, page, limit);
+};
 
 export const getAllRecords = async (search?: string, page = 1, limit = 10) =>
   consultationRepo.findAllClinicalRecords(search, page, limit);
