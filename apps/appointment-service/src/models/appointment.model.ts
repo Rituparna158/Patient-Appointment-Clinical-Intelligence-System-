@@ -6,6 +6,8 @@ import {
   CreationOptional,
 } from 'sequelize';
 import { sequelize } from '../config/database';
+import { DoctorSlot } from './doctorSlot.model';
+import { Notification } from './notification.model';
 
 export class Appointment extends Model<
   InferAttributes<Appointment>,
@@ -79,3 +81,25 @@ Appointment.init(
     timestamps: true,
   }
 );
+
+Appointment.afterUpdate(async (appointment) => {
+  if (appointment.changed('status') && appointment.status === 'confirmed') {
+    const slot = await DoctorSlot.findByPk(appointment.slotId);
+
+    if (!slot) return;
+
+    const appointmentStart = new Date(`${slot.slotDate}T${slot.startTime}`);
+
+    const reminderTime = new Date(appointmentStart.getTime() - 60 * 60 * 100);
+
+    if (reminderTime <= new Date()) return;
+
+    await Notification.create({
+      appointmentId: appointment.id,
+      userId: appointment.patientId,
+      type: 'reminder',
+      message: 'Reminder: You have an upcoming appointment',
+      scheduledAt: reminderTime,
+    });
+  }
+});

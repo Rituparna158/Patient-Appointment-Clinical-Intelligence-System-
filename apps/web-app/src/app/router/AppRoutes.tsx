@@ -104,10 +104,7 @@ export default function AppRoutes(){
             path="/patient/profile"
             element={
                 <ProtectedRoute allowedRoles={["patient"]}>
-                    <AppLayout>
                         <PatientProfilePage />
-                    </AppLayout>
-                
                 </ProtectedRoute>
             }
             />

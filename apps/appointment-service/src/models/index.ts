@@ -5,6 +5,7 @@ import { User } from './external/user.model';
 import { Doctor } from './external/doctor.model';
 import { Payment } from './payment.model';
 import { Patient } from './external/patient.model';
+import { Notification } from './notification.model';
 
 Doctor.hasMany(DoctorSlot, { foreignKey: 'doctorId' });
 DoctorSlot.belongsTo(Doctor, { foreignKey: 'doctorId' });
@@ -32,5 +33,8 @@ Patient.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 Patient.hasMany(Appointment, { foreignKey: 'patientId' });
 Appointment.belongsTo(Patient, { foreignKey: 'patientId' });
+
+Appointment.hasMany(Notification, { foreignKey: 'appointmentId' });
+Notification.belongsTo(Appointment, { foreignKey: 'appointmentId' });
 
 export { Appointment, DoctorSlot, Branch, Doctor };
