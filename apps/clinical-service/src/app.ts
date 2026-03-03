@@ -1,5 +1,6 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import './models';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
