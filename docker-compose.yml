@@ -60,6 +60,20 @@ services:
       DB_HOST: postgres
     depends_on:
       - postgres
+
+  worker-service:
+    build:
+      context: .
+      dockerfile: apps/worker-service/Dockerfile
+    container_name: worker-service
+    expose:
+      - "4005"
+    env_file:
+      - apps/worker-service/.env
+    environment:
+      DB_HOST: postgres
+    depends_on:
+      - postgres
  
   # web-app:
   #   build:
@@ -79,6 +93,7 @@ services:
       - patient-service
       - appointment-service
       - clinical-service
+      - worker-service
  
   postgres:
     image: postgres:15
