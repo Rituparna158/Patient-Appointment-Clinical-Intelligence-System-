@@ -10,6 +10,8 @@ import {
   UpdateConsultationNoteInput,
 } from '../types/clinical.types';
 
+import { clinicalQueue } from '../queues/clinical.producer';
+
 export const createNote = async (
   doctorUserId: string,
   data: CreateConsultationNoteInput
@@ -43,7 +45,11 @@ export const createNote = async (
     followUpDate: data.followUpDate ? new Date(data.followUpDate) : undefined,
     createdBy: doctorUserId,
   });
-  console.log('Incoming followUpDate:', data.followUpDate);
+
+  await clinicalQueue.add('consultation.followup', {
+    consultationId: createNote.id,
+  });
+
   if (data.followUpDate) {
     await Notification.create({
       appointmentId: appointment.id,

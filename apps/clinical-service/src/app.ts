@@ -7,6 +7,7 @@ import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
 import { errorHandler } from './middlewares/error.middleware';
 import healthRoutes from './routes/health-clinical.routes';
 import clinicalRoutes from './routes/clinical.routes';
+import notificationRoutes from './routes/notification.routes';
 
 const app = express();
 app.use(helmet());
@@ -16,5 +17,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/clinical/health-clinical', healthRoutes);
 app.use('/api/clinical', clinicalRoutes);
+app.use('/api/clinical/notification', notificationRoutes);
 app.use(errorHandler);
 export default app;
