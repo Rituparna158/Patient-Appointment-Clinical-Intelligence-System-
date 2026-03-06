@@ -1,9 +1,14 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import './models';
 import { sequelize } from './config/database';
-import { app } from './app';
 import { startScheduler } from './schedulers/master.scheduler';
+
+import './queues/appointment.consumer';
+import './queues/clinical.consumer';
+
+import { app } from './app';
 
 const PORT = process.env.PORT || 4005;
 

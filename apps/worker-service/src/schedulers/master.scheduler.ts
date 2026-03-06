@@ -1,8 +1,8 @@
 import cron from 'node-cron';
 
-import { cancelUnpaidAppointments } from '../jobs/appointment-expiry.job';
-import { markMissedAppointments } from '../jobs/appointment-missed.job';
-import { processNotification } from '../jobs/notification.job';
+import { cancelUnpaidAppointments } from '../jobs/cron-jobs/appointment-expiry.job';
+import { markMissedAppointments } from '../jobs/cron-jobs/appointment-missed.job';
+import { processNotification } from '../jobs/cron-jobs/notification.job';
 
 export const startScheduler = () => {
   cron.schedule('* * * * *', async () => {

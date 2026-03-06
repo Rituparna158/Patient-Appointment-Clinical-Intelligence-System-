@@ -1,8 +1,8 @@
 import cron from 'node-cron';
 import { Op } from 'sequelize';
-import { Appointment } from '../models/external/appointment.model';
-import { DoctorSlot } from '../models/external/doctorSlot.model';
-import { app } from '../app';
+import { Appointment } from '../../models/external/appointment.model';
+import { DoctorSlot } from '../../models/external/doctorSlot.model';
+import { app } from '../../app';
 
 export const cancelUnpaidAppointments = async () => {
   const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);

@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { Notification } from '../models/external/notification.model';
+import { Notification } from '../../models/external/notification.model';
 
 export const processNotification = async () => {
   const now = new Date();

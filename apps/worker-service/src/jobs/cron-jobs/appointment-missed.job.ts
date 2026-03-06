@@ -1,9 +1,9 @@
-import { Appointment } from '../models/external/appointment.model';
-import { DoctorSlot } from '../models/external/doctorSlot.model';
+import { Appointment } from '../../models/external/appointment.model';
+import { DoctorSlot } from '../../models/external/doctorSlot.model';
 
 export const markMissedAppointments = async () => {
   const confirmedAppointments = await Appointment.findAll({
-    where: { status: 'pending' },
+    where: { status: 'confirmed' },
   });
 
   for (const appointment of confirmedAppointments) {
