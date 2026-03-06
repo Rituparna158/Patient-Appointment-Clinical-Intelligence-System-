@@ -22,6 +22,8 @@ import {
 import { DoctorSlot } from '../models/doctorSlot.model';
 import { processFakePayment } from '../utils/payment.util';
 
+import { appointmentQueue } from '../queues/appointment.producer';
+
 export const bookAppointment = async ({
   userId,
   doctorId,
@@ -121,6 +123,12 @@ export const confirmPayment = async ({
   }
   await appointmentRepo.updatePaymentStatus(appointment, 'paid');
   await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
+
+  console.log('Adding job:', appointment.id);
+
+  await appointmentQueue.add('appointment.confirmed', {
+    appointmentId: appointment.id,
+  });
 
   return appointment;
 };
