@@ -29,6 +29,11 @@ import AppointmentList from "@/features/admin/pages/AppointmentList";
 
 import Payment from "@/pages/payment/Payment";
 
+import DoctorConsultations from "@/features/doctor/pages/DoctorConsultations";
+
+import PatientTimeline from "@/features/patient/pages/PatientTimeline";
+import AdminClinicalRecords from "@/features/admin/pages/AdminClinicalRecords";
+
 import AppLayout from "../layout/AppLayout";
 
 
@@ -192,6 +197,34 @@ export default function AppRoutes(){
             element={
                 <ProtectedRoute allowedRoles={["patient"]}>
                     <Payment />
+                </ProtectedRoute>
+            }
+            />
+
+            <Route
+            path="/doctor/consultations"
+            element={
+                <ProtectedRoute allowedRoles={["doctor"]}>
+                    <DoctorConsultations />
+                </ProtectedRoute>
+            }
+            />
+
+            <Route
+            path="/patient/timeline"
+            element={
+                <ProtectedRoute allowedRoles={["patient"]}>
+                    <PatientTimeline />
+                </ProtectedRoute>
+            }
+            />
+
+            
+            <Route
+            path="/admin/clinical-records"
+            element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                    <AdminClinicalRecords />
                 </ProtectedRoute>
             }
             />

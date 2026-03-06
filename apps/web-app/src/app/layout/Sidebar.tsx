@@ -10,6 +10,8 @@ import {
   Bookmark,
   CalendarPlus2,
   House,
+  FileText,
+  Clock,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -82,6 +84,11 @@ export default function Sidebar() {
               <House size={18} />
               {!collapsed && "Create Branch"}
             </Link>
+
+            <Link to="/admin/clinical-records" className={linkClass("/admin/clinical-records")}>
+              <House size={18} />
+              {!collapsed && "Clinical Records"}
+            </Link>
           </>
         )}
 
@@ -96,6 +103,15 @@ export default function Sidebar() {
               <CalendarDays size={18} />
               {!collapsed && "Appointments"}
             </Link>
+
+            
+            <Link to="/doctor/consultations" className={linkClass("/doctor/consultations")}>
+              <FileText size={18} />
+              {!collapsed && "Consultations"}
+            </Link>
+
+
+
           </>
         )}
 
@@ -119,6 +135,11 @@ export default function Sidebar() {
             <Link to="/patient/my-appointments" className={linkClass("/patient/my-appointments")}>
               <CalendarDays size={18} />
               {!collapsed && "My Appointments"}
+            </Link>
+
+            <Link to="/patient/timeline" className={linkClass("/patient/timeline")}>
+              <Clock size={18} />
+              {!collapsed && "Medical Timeline"}
             </Link>
           </>
         )}
