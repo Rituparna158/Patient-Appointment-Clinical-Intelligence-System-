@@ -47,8 +47,12 @@ export const bookAppointment = async ({
   }
 
   const slot = await slotRepo.findSlotById(slotId);
-  if (!slot) {
-    throw new AppError('Slot not found', HTTP_STATUS.NOT_FOUND);
+
+  if (!slot || slot.doctorId !== doctorId || slot.branchId !== branchId) {
+    throw new AppError(
+      'Invalid slot for selected doctor or branch',
+      HTTP_STATUS.BAD_REQUEST
+    );
   }
 
   if (slot.isBooked) {
@@ -90,7 +94,7 @@ export const changeAppointmentStatus = async ({
 
   const validTransitions: Record<string, string[]> = {
     requested: ['cancelled'],
-    confirmed: ['completed', 'missed'],
+    confirmed: ['completed', 'missed', 'cancelled'],
   };
 
   if (!validTransitions[appointment.status]?.includes(status)) {
