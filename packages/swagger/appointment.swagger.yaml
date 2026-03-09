@@ -1,4 +1,3 @@
-
 openapi: 3.0.0
 
 info:
@@ -10,7 +9,6 @@ servers:
     description: Gateway
 
 paths:
-
   /api/appointments/book:
     post:
       summary: Book appointment
@@ -26,25 +24,22 @@ paths:
               properties:
                 doctorId:
                   type: string
-                  example: "iefueu0-hue-2ue8u92"
+                  example: 'iefueu0-hue-2ue8u92'
                 branchId:
                   type: string
-                  example: "iefuwwdeu0-hue-2ue8u92"
+                  example: 'iefuwwdeu0-hue-2ue8u92'
                 slotId:
                   type: string
-                  example: "iefuwwdeu0-hue-2ue8u92"
+                  example: 'iefuwwdeu0-hue-2ue8u92'
                 appointmentReason:
                   type: string
-                  example: "Fever"
+                  example: 'Fever'
 
-
-                
       responses:
-        "201":
-          description:Appointment booked successfully
-        "409":
-          description:  already exists
-        "400":
+        '201': description:Appointment booked successfully
+        '409':
+          description: already exists
+        '400':
           description: Validation error
 
   /api/appointments/me:
@@ -54,7 +49,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Appointment list
 
   /api/appointments/doctor/me:
@@ -64,7 +59,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Doctor appointments
 
   /api/appointments/slots:
@@ -74,7 +69,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Slots list
 
 components:

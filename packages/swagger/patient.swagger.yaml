@@ -9,7 +9,6 @@ servers:
     description: Gateway
 
 paths:
-
   /api/patient/profile:
     post:
       summary: Create profile
@@ -30,11 +29,11 @@ paths:
                   type: string
                   example: 6789098765
       responses:
-        "201":
+        '201':
           description: Patient Profile created successfully
-        "409":
+        '409':
           description: Profile already exists
-        "400":
+        '400':
           description: Validation error
 
   /api/patient/me:
@@ -44,7 +43,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Profile
 
   /api/patient?:
@@ -54,7 +53,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        "200":
+        '200':
           description: Patients list
 
   # /api/patient/me:
@@ -74,7 +73,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
-
-
-

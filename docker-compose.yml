@@ -1,14 +1,11 @@
-
- 
 services:
- 
   auth-service:
     build:
       context: .
       dockerfile: apps/auth-service/Dockerfile
     container_name: auth-service
     expose:
-      - "4001"
+      - '4001'
     env_file:
       - apps/auth-service/.env
     environment:
@@ -25,7 +22,7 @@ services:
       dockerfile: apps/patient-service/Dockerfile
     container_name: patient-service
     expose:
-      - "4002"
+      - '4002'
     env_file:
       - apps/patient-service/.env
     environment:
@@ -39,13 +36,16 @@ services:
       dockerfile: apps/appointment-service/Dockerfile
     container_name: appointment-service
     expose:
-      - "4003"
+      - '4003'
     env_file:
       - apps/appointment-service/.env
     environment:
       DB_HOST: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - postgres
+      - redis
 
   clinical-service:
     build:
@@ -53,13 +53,16 @@ services:
       dockerfile: apps/clinical-service/Dockerfile
     container_name: clinical-service
     expose:
-      - "4004"
+      - '4004'
     env_file:
       - apps/clinical-service/.env
     environment:
       DB_HOST: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - postgres
+      - redis
 
   worker-service:
     build:
@@ -67,34 +70,37 @@ services:
       dockerfile: apps/worker-service/Dockerfile
     container_name: worker-service
     expose:
-      - "4005"
+      - '4005'
     env_file:
       - apps/worker-service/.env
     environment:
       DB_HOST: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - postgres
- 
+      - redis
+
   # web-app:
   #   build:
   #     context: .
   #     dockerfile: apps/web-app/Dockerfile
   #   container_name: clinic-frontend
- 
+
   nginx:
     build:
       context: .
       dockerfile: apps/web-app/Dockerfile
     container_name: clinic-nginx
     ports:
-      - "8080:80"
+      - '8080:80'
     depends_on:
       - auth-service
       - patient-service
       - appointment-service
       - clinical-service
       - worker-service
- 
+
   postgres:
     image: postgres:15
     container_name: clinic-postgres
@@ -103,13 +109,15 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: clinic_db
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
- 
+
   redis:
     image: redis:latest
     container_name: clinic-redis
- 
+    ports:
+      - '6379:6379'
+
 volumes:
   postgres_data:
