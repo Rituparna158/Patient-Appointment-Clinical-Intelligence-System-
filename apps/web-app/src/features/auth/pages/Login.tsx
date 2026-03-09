@@ -1,0 +1,90 @@
+import { Button } from '@/components/ui/button';
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { AuthService } from '@/services/auth.service';
+import { useAuthStore } from '@/store/auth/auth.store';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginSchema } from '@/schemas/auth.schema';
+import type { z } from "zod"
+
+type LoginFormData = z.infer<typeof loginSchema>
+
+export default function Login() {
+
+  const navigate = useNavigate()
+  const setUser = useAuthStore((s) => s.setUser)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    mode: "onChange" 
+  })
+
+  async function onSubmit(data: LoginFormData) {
+
+    const res = await AuthService.login(
+      data.email,
+      data.password
+    )
+
+    const user = res.user
+    setUser(user)
+
+    if (user.role === "admin") navigate("/admin/dashboard")
+    else if (user.role === "doctor") navigate("/doctor/dashboard")
+    else navigate("/patient/dashboard")
+
+  }
+
+
+  return (
+    <div className="auth-container">
+      <Card className="auth-card">
+        <CardHeader>
+          <CardTitle className="auth-title">Clinic Login</CardTitle>
+          <p className="auth-subtitle">Secure access to your dashboard</p>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          <Input
+            placeholder="Email"
+            {...register("email")}
+          />
+
+          {errors.email && <p className="auth-error">{errors.email.message}</p>}
+
+          <Input
+            placeholder="Password"
+            type="password"
+            {...register("password")}
+          />
+
+          {errors.password && <p className="auth-error">{errors.password.message}</p>}
+
+          <p className="text-body">
+            <Link to="/forgot-password" className="auth-link">
+              Forgot Password?
+            </Link>
+          </p>
+
+          <Button className="w-full" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+            {isSubmitting ? 'Logging in...' : 'Login'}
+          </Button>
+
+          <p className="text-body text-center text-muted-foreground">
+            Don’t have an account?{' '}
+            <Link to="/register" className="auth-link">
+              Register
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
