@@ -1,40 +1,40 @@
+import type { PatientProfileResponse } from '@/types/patientProfile.types';
 import { api } from './api';
-import type { ClinicalResponse } from '@/features/clinical/types/clinical.types';
+import type {
+  ClinicalResponse,
+  ClinicalTableQuery,
+} from '@/types/clinical.types';
+
+function buildQuery(query: ClinicalTableQuery) {
+  const params = new URLSearchParams({
+    page: String(query.page),
+    limit: String(query.limit),
+  });
+
+  if (query.search) params.append('search', query.search);
+  if (query.sortBy) params.append('sortBy', query.sortBy);
+  if (query.sortOrder) params.append('sortOrder', query.sortOrder);
+  if (query.from) params.append('from', query.from);
+  if (query.to) params.append('to', query.to);
+
+  return params.toString();
+}
 
 export const ClinicalService = {
   async getDoctorConsultations(
-    page: number,
-    limit: number,
-    search: string
+    query: ClinicalTableQuery
   ): Promise<ClinicalResponse> {
-    const query = new URLSearchParams({
-      page: String(page),
-      limit: String(limit),
-      ...(search ? { search } : {}),
-    });
-
-    return api(`/clinical/doctor/me?${query}`);
+    return api(`/clinical/doctor/me?${buildQuery(query)}`);
   },
 
   async getPatientTimeline(
-    page: number,
-    limit: number
+    query: ClinicalTableQuery
   ): Promise<ClinicalResponse> {
-    return api(`/clinical/patient/me?page=${page}&limit=${limit}`);
+    return api(`/clinical/patient/me?${buildQuery(query)}`);
   },
 
-  async getAdminRecords(
-    page: number,
-    limit: number,
-    search: string
-  ): Promise<ClinicalResponse> {
-    const query = new URLSearchParams({
-      page: String(page),
-      limit: String(limit),
-      ...(search ? { search } : {}),
-    });
-
-    return api(`/clinical/admin?${query}`);
+  async getAdminRecords(query: ClinicalTableQuery): Promise<ClinicalResponse> {
+    return api(`/clinical/admin?${buildQuery(query)}`);
   },
 
   async createNote(data: {
@@ -68,5 +68,11 @@ export const ClinicalService = {
 
   async getNotesByAppointment(appointmentId: string) {
     return api(`/clinical/notes/${appointmentId}`);
+  },
+
+  async getPatientProfile(patientId: string): Promise<PatientProfileResponse> {
+    const res = await api(`/clinical/doctor/patient/${patientId}`);
+
+    return res.data;
   },
 };
