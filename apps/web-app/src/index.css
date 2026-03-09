@@ -47,10 +47,8 @@
   --ring: 217 91% 60%;
 }
 
-
 @layer components {
-
-   .app-layout {
+  .app-layout {
     @apply flex bg-background text-foreground;
   }
 
@@ -90,7 +88,7 @@
     @apply text-green-600 text-body font-medium;
   }
 
-    .dashboard-layout {
+  .dashboard-layout {
     @apply min-h-screen bg-background text-foreground;
   }
 
@@ -102,7 +100,6 @@
     @apply h-16 bg-card border-b border-border flex items-center justify-between px-6;
   }
 
- 
   .dashboard-heading {
     @apply text-3xl font-semibold text-foreground;
   }
@@ -258,87 +255,84 @@
   }
 
   .form-container {
-  @apply max-w-3xl;
-}
+    @apply max-w-3xl;
+  }
 
-.form-card {
-  @apply bg-card border border-border rounded-xl shadow-sm;
-}
+  .form-card {
+    @apply bg-card border border-border rounded-xl shadow-sm;
+  }
 
-.form-header {
-  @apply px-8 py-6 border-b border-border;
-}
+  .form-header {
+    @apply px-8 py-6 border-b border-border;
+  }
 
-.form-title {
-  @apply text-xl font-semibold;
-}
+  .form-title {
+    @apply text-xl font-semibold;
+  }
 
-.form-content {
-  @apply px-8 py-8 space-y-6;
-}
+  .form-content {
+    @apply px-8 py-8 space-y-6;
+  }
 
-.form-grid {
-  @apply grid grid-cols-2 gap-6;
-}
+  .form-grid {
+    @apply grid grid-cols-2 gap-6;
+  }
 
-.form-group {
-  @apply flex flex-col gap-2;
-}
+  .form-group {
+    @apply flex flex-col gap-2;
+  }
 
-.form-label {
-  @apply text-sm font-medium text-muted-foreground;
-}
+  .form-label {
+    @apply text-sm font-medium text-muted-foreground;
+  }
 
-.form-actions {
-  @apply pt-4;
-}
+  .form-actions {
+    @apply pt-4;
+  }
 
-.auth-layout {
-  @apply min-h-screen flex items-center justify-center bg-background;
-}
+  .auth-layout {
+    @apply min-h-screen flex items-center justify-center bg-background;
+  }
 
-.auth-card {
-  @apply w-full max-w-md bg-card border border-border rounded-xl shadow-md;
-}
+  .auth-card {
+    @apply w-full max-w-md bg-card border border-border rounded-xl shadow-md;
+  }
 
-.auth-header {
-  @apply px-8 py-6 border-b border-border;
-}
+  .auth-header {
+    @apply px-8 py-6 border-b border-border;
+  }
 
-.auth-title {
-  @apply text-xl font-semibold;
-}
+  .auth-title {
+    @apply text-xl font-semibold;
+  }
 
-.auth-content {
-  @apply px-8 py-8 space-y-6;
-}
+  .auth-content {
+    @apply px-8 py-8 space-y-6;
+  }
 
+  .form-group {
+    @apply flex flex-col gap-1 relative;
+  }
 
-.form-group {
-  @apply flex flex-col gap-1 relative;
-}
+  .form-label {
+    @apply text-sm font-medium text-muted-foreground;
+  }
 
-.form-label {
-  @apply text-sm font-medium text-muted-foreground;
-}
+  .form-error {
+    @apply text-sm text-destructive mt-1;
+  }
 
-.form-error {
-  @apply text-sm text-destructive mt-1;
-}
+  .error-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
 
+  .error-show {
+    @apply opacity-100 translate-y-0;
+  }
 
-.error-transition {
-  @apply transition-all duration-300 ease-in-out;
-}
-
-.error-show {
-  @apply opacity-100 translate-y-0;
-}
-
-.error-hide {
-  @apply opacity-0 -translate-y-1 h-0 overflow-hidden;
-}
-
+  .error-hide {
+    @apply opacity-0 -translate-y-1 h-0 overflow-hidden;
+  }
 }
 
 .select-content-fix {
@@ -364,3 +358,108 @@
 .status-missed {
   @apply bg-gray-200 text-gray-800;
 }
+
+.table-container {
+  @apply border border-border rounded-xl bg-card shadow-sm overflow-x-auto;
+}
+
+.table-main {
+  @apply w-full text-sm min-w-[700px];
+}
+
+.table-header {
+  @apply bg-muted;
+}
+
+.table-head {
+  @apply px-4 py-3 font-semibold cursor-pointer select-none;
+}
+
+.table-row {
+  @apply border-t border-border hover:bg-muted/40 transition;
+}
+
+.table-cell {
+  @apply px-4 py-3 text-muted-foreground;
+}
+
+.table-search {
+  @apply max-w-sm w-full;
+}
+
+.table-pagination {
+  @apply flex flex-col sm:flex-row items-center justify-between gap-3 mt-4;
+}
+
+.table-sort-icon {
+  @apply inline-block ml-1 text-xs;
+}
+
+.table-skeleton {
+  @apply animate-pulse h-10 bg-muted rounded;
+}
+
+.table-filters {
+  @apply flex flex-col sm:flex-row gap-3 mb-4;
+}
+
+.page-spacing {
+  @apply mt-6;
+}
+
+.profile-item {
+  @apply flex flex-col gap-1;
+}
+
+.profile-item label {
+  @apply text-sm text-muted-foreground;
+}
+
+.profile-item p {
+  @apply font-medium;
+}
+.notification-container {
+    @apply relative;
+  }
+
+  .notification-bell {
+    @apply text-xl cursor-pointer;
+  }
+
+  .notification-badge {
+    @apply absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full;
+  }
+
+  .notification-dropdown {
+    @apply absolute right-0 mt-2 w-80 bg-white border rounded-md shadow-lg z-50;
+  }
+
+  .notification-header {
+    @apply p-3 border-b font-semibold text-sm;
+  }
+
+  .notification-empty {
+    @apply p-4 text-sm text-gray-500;
+  }
+
+  .notification-item {
+    @apply p-3 border-b hover:bg-gray-50 cursor-pointer;
+  }
+
+  .notification-message {
+    @apply text-sm text-gray-800;
+  }
+
+  .notification-date {
+    @apply text-xs text-gray-500;
+  }
+
+  .notifications-page {
+    @apply p-6;
+  }
+
+  .notifications-title {
+    @apply text-lg font-semibold mb-4;
+  }
+
+

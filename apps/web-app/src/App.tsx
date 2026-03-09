@@ -1,5 +1,5 @@
-import { BrowserRouter } from 'react-router-dom'
-import AppRoutes from './app/router/AppRoutes'
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './app/router/AppRoutes';
 //import './App.css'
 
 function App() {
@@ -7,9 +7,9 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AppRoutes/>
+      <AppRoutes />
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
