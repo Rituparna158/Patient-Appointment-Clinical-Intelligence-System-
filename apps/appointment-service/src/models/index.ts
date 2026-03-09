@@ -14,7 +14,7 @@ Branch.hasMany(DoctorSlot, { foreignKey: 'branchId' });
 DoctorSlot.belongsTo(Branch, { foreignKey: 'branchId' });
 
 Doctor.hasMany(Appointment, { foreignKey: 'doctorId' });
-Appointment.belongsTo(Doctor, { foreignKey: 'doctorId' });
+Appointment.belongsTo(Doctor, { foreignKey: 'doctorId', as: 'doctor' });
 
 Branch.hasMany(Appointment, { foreignKey: 'branchId' });
 Appointment.belongsTo(Branch, { foreignKey: 'branchId' });
@@ -32,7 +32,7 @@ Doctor.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 Patient.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 Patient.hasMany(Appointment, { foreignKey: 'patientId' });
-Appointment.belongsTo(Patient, { foreignKey: 'patientId' });
+Appointment.belongsTo(Patient, { foreignKey: 'patientId', as: 'patient' });
 
 Appointment.hasMany(Notification, { foreignKey: 'appointmentId' });
 Notification.belongsTo(Appointment, { foreignKey: 'appointmentId' });
