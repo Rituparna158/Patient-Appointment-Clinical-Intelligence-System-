@@ -1,98 +1,136 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ClinicalService } from '@/services/clinical.service';
+import { useEffect, useState } from "react"
+import { useClinicalStore } from "@/store/clinical/clinical.store"
+import { DataTable } from "@/features/shared/table/components/DataTable"
+import { TablePagination } from "@/features/shared/table/components/TablePagination"
+import { TableSearch } from "@/features/shared/table/components/TableSearch"
+import TableSkeleton from "@/features/shared/components/TableSkeleton"
+import { TableFilters } from "@/features/shared/table/components/TableFilters"
+import AppLayout from "@/app/layout/AppLayout"
+import type { ConsultationNote } from "@/types/clinical.types"
+import { Button } from "@/components/ui/button"
+import ConsultationDrawer from "@/features/shared/components/consultationDrawer"
 
-import { DataTable } from '@/features/shared/table/components/DataTable';
-import { TableSearch } from '@/features/shared/table/components/TableSearch';
-import { TablePagination } from '@/features/shared/table/components/TablePagination';
+export default function PatientTimelinePage() {
+  const {
+    notes,
+    total,
+    page,
+    limit,
+    search,
+    from,
+    to,
+    sortBy,
+    sortOrder,
+    setPage,
+    setSearch,
+    setFrom,
+    setTo,
+    setSort,
+    fetchPatientTimeline
+  } = useClinicalStore()
 
-import type { ConsultationNote } from '@/features/clinical/types/clinical.types';
-import ConsultationDrawer from '@/features/shared/components/consultationDrawer';
-import AppLayout from '@/app/layout/AppLayout';
-import { Button } from '@/components/ui/button';
-
-export default function MedicalTimeline() {
-  const [records, setRecords] = useState<ConsultationNote[]>([]);
-  const [search, setSearch] = useState('');
-  
-  const [drawer, setDrawer] = useState(false);
-    const [page, setPage] = useState(1);
-    const limit = 10;
-  const [total] = useState(0);
-  const [selected, setSelected] = useState<ConsultationNote | null>(null);
+  const [loading, setLoading] = useState(false)
+  const [selectedNote, setSelectedNote] = useState<ConsultationNote | null>(null)
+    const [drawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    async function load() {
-      const res = await ClinicalService.getPatientTimeline(page, limit);
-      setRecords(res.data ?? []);
-      //setTotal(res.data?.count ?? 0);
-    }
+    setLoading(true)
+    fetchPatientTimeline().finally(() => setLoading(false))
+  }, [page, search, from, to, sortBy, sortOrder])
+   const openDrawer = (note: ConsultationNote) => {
 
-    load();
-  }, []);
+    setSelectedNote(note)
 
-  const filtered = useMemo(() => {
-    return records.filter((r) =>
-      r.appointment?.doctor?.user?.full_name
-        ?.toLowerCase()
-        .includes(search.toLowerCase())
-    );
-  }, [records, search]);
+    setDrawerOpen(true)
+
+  }
 
   const columns = [
+    { 
+        key: "doctor",
+         header: "Doctor", 
+         render: (row: typeof notes[0]) => row.appointment.doctor.user.full_name, 
+         sortable: true
+     },
+    { 
+        key: "symptoms", 
+        header: "Symptoms", 
+        render: (row: typeof notes[0]) => row.symptoms
+ },
     {
-      header: 'Doctor',
-      render: (row: ConsultationNote) =>
-        row.appointment?.doctor?.user?.full_name ?? '-',
+         key: "diagnosis", 
+         header: "Diagnosis",
+         sortable: true,
+          render: (row: typeof notes[0]) => row.diagnosis 
+    },
+    { 
+        key: "prescriptions", 
+        header: "Prescription", 
+        render: (row: typeof notes[0]) => row.prescriptions 
+    },
+    { 
+        key: "createdAt", 
+        header: "Date", 
+        render: (row: typeof notes[0]) => new Date(row.createdAt).toLocaleString(), 
+        sortable: true 
     },
     {
-      header: 'Date',
-      render: (row: ConsultationNote) => row.appointment?.slot?.slotDate ?? '-',
-    },
-    {
-      header: 'Diagnosis',
-      render: (row: ConsultationNote) => row.diagnosis ?? '-',
-    },
-    {
-      header: 'Record',
-      render: (row: ConsultationNote) => (
+      key: "actions",
+      header: "Actions",
+      render: (row: typeof notes[0]) => (
+
         <Button
           size="sm"
-          variant="outline"
-          onClick={() => {
-            setSelected(row);
-            setDrawer(true);
-          }}
+          onClick={() => openDrawer(row)}
         >
           View
         </Button>
-      ),
-    },
-  ];
+
+      )
+    }
+  ]
 
   return (
     <AppLayout>
-      <div className="p-6 space-y-6">
-        <h1 className="text-2xl font-semibold">Medical Timeline</h1>
+    <div className="page-container">
+      <h1 className="page-heading">Patient Timeline</h1>
 
+      <div className="flex gap-4 my-4">
         <TableSearch value={search} onChange={setSearch} />
-
-        <DataTable columns={columns} data={filtered} />
-
-        <div className="mt-4">
-        <TablePagination
-          page={page}
-          total={total}
-          limit={limit}
-          onPageChange={setPage}
+        <TableFilters
+          fromDate={from}
+          toDate={to}
+          setFromDate={setFrom}
+          setToDate={setTo}
         />
       </div>
 
-      <ConsultationDrawer
-              open={drawer}
-              consultation={selected}
-              onClose={() => setDrawer(false)}
+      {loading ? <TableSkeleton /> : (
+        <DataTable
+          data={notes}
+          columns={columns}
+          selected={[]}
+          onSelect={() => {}}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={setSort}
         />
-        </div>
+      )}
+
+      <TablePagination
+        page={page}
+        total={total}
+        limit={limit}
+        onPageChange={setPage}
+      />
+
+      <ConsultationDrawer
+        open={drawerOpen}
+        consultation={selectedNote}
+        onClose={() => setDrawerOpen(false)}
+              />
+    </div>
     </AppLayout>
-  );
+  )
 }
+
