@@ -1,11 +1,4 @@
-interface Props {
-  status?: string
-  setStatus?: (value: string) => void
-  fromDate?: string
-  toDate?: string
-  setFromDate: (value: string) => void
-  setToDate: (value: string) => void
-}
+import type { TableFilterProps } from "../../types/TableFilter.types";
 
 export function TableFilters({
   status,
@@ -14,12 +7,12 @@ export function TableFilters({
   toDate,
   setFromDate,
   setToDate
-}: Props) {
+}: TableFilterProps) {
 
   return (
 
     <div className="table-filters flex gap-3 items-center">
-        
+
       {status !== undefined && setStatus && (
         <select
           value={status}

@@ -21,3 +21,7 @@ export interface ConfirmDialogProps {
   description: string;
   onConfirm: () => void;
 }
+
+export interface EmptyStateProps {
+  message: string;
+}

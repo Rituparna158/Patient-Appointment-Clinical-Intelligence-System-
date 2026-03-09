@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import type { Props } from "../types/DataTable.types"
+import type { Props } from "../../types/DataTable.types"
 export function DataTable<T extends { id: string }>({
   data,
   columns,

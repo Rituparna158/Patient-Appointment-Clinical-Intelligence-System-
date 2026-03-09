@@ -5,19 +5,13 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 
-import type { ConsultationNote } from '@/types/clinical.types';
-
-interface Props {
-  open: boolean;
-  consultation: ConsultationNote | null;
-  onClose: () => void;
-}
+import type { ConsultationDrawerProps } from '../types/ConsultationDrawer.types';
 
 export default function ConsultationDrawer({
   open,
   consultation,
   onClose,
-}: Props) {
+}: ConsultationDrawerProps) {
   if (!consultation) return null;
 
   return (

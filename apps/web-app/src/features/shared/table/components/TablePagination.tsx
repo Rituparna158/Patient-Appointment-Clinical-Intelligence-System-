@@ -1,19 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { TABLE_TEXT } from "@/constants/table.constants"
-
-interface Props {
-  page: number
-  total: number
-  limit: number
-  onPageChange: (page: number) => void
-}
+import type { TablePaginationProps } from "../../types/TablePagination.types"
 
 export function TablePagination({
   page,
   total,
   limit,
   onPageChange
-}: Props) {
+}: TablePaginationProps) {
 
   const totalPages = Math.ceil(total / limit)
 

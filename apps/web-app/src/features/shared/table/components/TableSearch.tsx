@@ -1,13 +1,9 @@
 import { Input } from "@/components/ui/input"
 import { useEffect, useState } from "react"
 import { TABLE_TEXT } from "@/constants/table.constants"
+import type { TableSearchProps } from "../../types/TableSearch.types"
 
-interface Props {
-  value: string
-  onChange: (value: string) => void
-}
-
-export function TableSearch({ value, onChange }: Props) {
+export function TableSearch({ value, onChange }: TableSearchProps) {
 
   const [local, setLocal] = useState(value)
 
