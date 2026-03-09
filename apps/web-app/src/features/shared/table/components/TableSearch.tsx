@@ -1,22 +1,38 @@
 import { Input } from "@/components/ui/input"
+import { useEffect, useState } from "react"
+import { TABLE_TEXT } from "@/constants/table.constants"
 
 interface Props {
   value: string
   onChange: (value: string) => void
-  placeholder?: string
 }
 
-export function TableSearch({
-  value,
-  onChange,
-  placeholder,
-}: Props) {
+export function TableSearch({ value, onChange }: Props) {
+
+  const [local, setLocal] = useState(value)
+
+  useEffect(() => {
+    setLocal(value)
+  }, [value])
+
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+      onChange(local)
+    }, 400)
+
+    return () => clearTimeout(timer)
+
+  }, [local])
+
   return (
+
     <Input
-      placeholder={placeholder ?? "Search..."}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="max-w-sm"
+      value={local}
+      onChange={(e) => setLocal(e.target.value)}
+      placeholder={TABLE_TEXT.SEARCH_PLACEHOLDER}
+      className="table-search"
     />
+
   )
 }

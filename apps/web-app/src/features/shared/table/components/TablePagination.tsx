@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { TABLE_TEXT } from "@/constants/table.constants"
 
 interface Props {
   page: number
@@ -11,35 +12,42 @@ export function TablePagination({
   page,
   total,
   limit,
-  onPageChange,
+  onPageChange
 }: Props) {
+
   const totalPages = Math.ceil(total / limit)
 
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-muted-foreground">
+
+    <div className="table-pagination">
+
+      <span>
         Page {page} of {totalPages || 1}
       </span>
 
       <div className="flex gap-2">
+
         <Button
-          disabled={page === 1}
+          size="sm"
+          disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
         >
-          Previous
+          {TABLE_TEXT.PREVIOUS}
         </Button>
 
         <Button
+          size="sm"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >
-          Next
+          {TABLE_TEXT.NEXT}
         </Button>
+
       </div>
+
     </div>
+
   )
 }
-
-
 
 

@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function TableSkeleton() {
   return (
@@ -8,5 +8,5 @@ export default function TableSkeleton() {
       <Skeleton className="h-10 w-full" />
       <Skeleton className="h-10 w-full" />
     </div>
-  )
+  );
 }
