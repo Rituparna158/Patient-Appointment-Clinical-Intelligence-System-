@@ -9,6 +9,7 @@ import { sequelize } from '../../config/database';
 import { DoctorSlot } from './doctorSlot.model';
 import { Notification } from './notification.model';
 import { ConsultaionNote } from '../consultationNote.model';
+import { Patient } from './patient.model';
 
 export class Appointment extends Model<
   InferAttributes<Appointment>,
@@ -89,6 +90,12 @@ Appointment.afterUpdate(async (appointment) => {
 
     if (!slot) return;
 
+    const patient = await Patient.findByPk(appointment.patientId);
+
+    if (!patient) {
+      throw new Error('Patient not found');
+    }
+
     const appointmentStart = new Date(`${slot.slotDate}T${slot.startTime}`);
 
     const reminderTime = new Date(appointmentStart.getTime() - 60 * 60 * 100);
@@ -97,7 +104,7 @@ Appointment.afterUpdate(async (appointment) => {
 
     await Notification.create({
       appointmentId: appointment.id,
-      userId: appointment.patientId,
+      userId: patient.userId,
       type: 'reminder',
       message: 'Reminder: You have an upcoming appointment',
       scheduledAt: reminderTime,
