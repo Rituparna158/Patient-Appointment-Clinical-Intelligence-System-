@@ -68,4 +68,10 @@ router.get(
   controller.getAllClinicalRecords
 );
 
+router.get(
+  '/doctor/patient/:patientId',
+  authenticate,
+  controller.getPatientProfileForDoctor
+);
+
 export default router;

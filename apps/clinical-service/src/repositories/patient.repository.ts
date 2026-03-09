@@ -3,3 +3,5 @@ import { Patient } from '../models';
 
 export const findByUserId = (userId: string) =>
   Patient.findOne({ where: { userId } });
+
+export const findById = (id: string) => Patient.findByPk(id);
