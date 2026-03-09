@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 interface Props {
   label: string;
@@ -7,12 +7,7 @@ interface Props {
   children: ReactNode;
 }
 
-export default function FormField({
-  label,
-  required,
-  error,
-  children,
-}: Props) {
+export default function FormField({ label, required, error, children }: Props) {
   return (
     <div className="form-group">
       <label className="form-label">
@@ -22,11 +17,7 @@ export default function FormField({
 
       {children}
 
-      {error && (
-        <p className="text-sm text-destructive mt-1">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-sm text-destructive mt-1">{error}</p>}
     </div>
   );
 }
