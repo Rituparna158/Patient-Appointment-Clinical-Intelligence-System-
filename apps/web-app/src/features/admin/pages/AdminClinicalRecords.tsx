@@ -1,146 +1,148 @@
 import { useEffect, useState } from "react"
-
-import AppLayout from "@/app/layout/AppLayout"
-
-import PageHeader from "@/features/shared/components/PageHeader"
-import EmptyState from "@/features/shared/components/EmptyState"
-
+import { useClinicalStore } from "@/store/clinical/clinical.store"
 import { DataTable } from "@/features/shared/table/components/DataTable"
 import { TablePagination } from "@/features/shared/table/components/TablePagination"
 import { TableSearch } from "@/features/shared/table/components/TableSearch"
-
+import TableSkeleton from "@/features/shared/components/TableSkeleton"
+import { TableFilters } from "@/features/shared/table/components/TableFilters"
+import AppLayout from "@/app/layout/AppLayout"
+import type { ConsultationNote } from "@/types/clinical.types"
+import { Button } from "@/components/ui/button"
 import ConsultationDrawer from "@/features/shared/components/consultationDrawer"
 
-import { useClinicalStore } from "@/features/clinical/store/clinical.store"
-
-import type { ConsultationNote } from "@/features/clinical/types/clinical.types"
-
-import { Button } from "@/components/ui/button"
-
-export default function AdminClinicalRecords() {
-
+export default function AdminRecordsPage() {
   const {
     notes,
-    fetchAdminRecords,
+    total,
     page,
     limit,
-    total,
-    setPage,
     search,
+    from,
+    to,
+    sortBy,
+    sortOrder,
+    setPage,
     setSearch,
+    setFrom,
+    setTo,
+    setSort,
+    fetchAdminRecords
   } = useClinicalStore()
 
-  const [drawer, setDrawer] = useState(false)
-
-  const [selected, setSelected] =
-    useState<ConsultationNote | null>(null)
+  const [loading, setLoading] = useState(false)
+   const [selectedNote, setSelectedNote] = useState<ConsultationNote | null>(null)
+    const [drawerOpen, setDrawerOpen] = useState(false)
+  
 
   useEffect(() => {
-    fetchAdminRecords()
-  }, [page, search])
+    setLoading(true)
+    fetchAdminRecords().finally(() => setLoading(false))
+  }, [page, search,from, to, sortBy, sortOrder])
+
+  const openDrawer = (note: ConsultationNote) => {
+
+    setSelectedNote(note)
+
+    setDrawerOpen(true)
+
+  }
 
   const columns = [
 
-    {
-      header: "Date",
-      render: (row: ConsultationNote) =>
-        row.appointment.slot.slotDate
-    },
+  {
+    key: "patient",
+    header: "Patient",
+    render: (row: typeof notes[0]) =>
+      row.appointment?.patient?.user?.full_name ?? "-",
+    sortable: true
+  },
 
-    {
-      header: "Patient",
-      render: (row: ConsultationNote) =>
-        row.appointment.patient.user.full_name
-    },
+  {
+    key: "doctor",
+    header: "Doctor",
+    render: (row: typeof notes[0]) =>
+      row.appointment?.doctor?.user?.full_name ?? "-",
+    sortable: true,
+  },
 
-    {
-      header: "Doctor",
-      render: (row: ConsultationNote) =>
-        `Dr. ${row.appointment.doctor.user.full_name}`
-    },
+  {
+    key: "slot",
+    header: "Slot",
+    sortable: true,
+    render: (row: typeof notes[0]) => 
 
-    {
-      header: "Diagnosis",
-      render: (row: ConsultationNote) =>
-        row.diagnosis
-    },
-
-    {
-      header: "Record",
-      render: (row: ConsultationNote) => (
+      row.appointment?.slot ?
+      `${row.appointment.slot.slotDate} 
+      ${row.appointment.slot.startTime}-${row.appointment.slot.endTime}`
+      : "-"
+  },
+  {
+    key: "createdAt",
+    header: "Created At",
+    sortable: true,
+    render: (row: typeof notes[0]) =>
+      new Date(row.createdAt).toLocaleString()
+  },
+  {
+      key: "actions",
+      header: "Actions",
+      render: (row: typeof notes[0]) => (
 
         <Button
           size="sm"
-          variant="outline"
-          onClick={() => {
-            setSelected(row)
-            setDrawer(true)
-          }}
+          onClick={() => openDrawer(row)}
         >
-          View Record
+          View
         </Button>
 
       )
     }
 
-  ]
+]
+
+
 
   return (
-
     <AppLayout>
+    <div className="page-container">
+      <h1 className="page-heading">Admin Clinical Records</h1>
 
-      <PageHeader
-        title="Clinical Records"
-        description="All hospital consultation records"
+      <div className="flex gap-4 my-4">
+        <TableSearch value={search} onChange={setSearch} />
+        <TableFilters
+          fromDate={from}
+          toDate={to}
+          setFromDate={setFrom}
+          setToDate={setTo}
+        />
+      </div>
+
+      {loading ? <TableSkeleton /> : (
+        <DataTable
+          data={notes}
+          columns={columns}
+          selected={[]}
+          onSelect={() => {}}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={setSort}
+        />
+      )}
+
+      <TablePagination
+        page={page}
+        total={total}
+        limit={limit}
+        onPageChange={setPage}
       />
-
-      <div className="mt-6">
-
-        <TableSearch
-          value={search}
-          onChange={setSearch}
-          placeholder="Search patient..."
-        />
-
-      </div>
-
-      <div className="mt-6 border rounded-xl p-4">
-
-        {notes.length === 0 ? (
-
-          <EmptyState message="No clinical records available" />
-
-        ) : (
-
-          <DataTable
-            data={notes}
-            columns={columns}
-          />
-
-        )}
-
-      </div>
-
-      <div className="mt-4">
-
-        <TablePagination
-          page={page}
-          total={total}
-          limit={limit}
-          onPageChange={setPage}
-        />
-
-      </div>
 
       <ConsultationDrawer
-        open={drawer}
-        consultation={selected}
-        onClose={() => setDrawer(false)}
-      />
-
+        open={drawerOpen}
+        consultation={selectedNote}
+         onClose={() => setDrawerOpen(false)}
+        />
+      
+    </div>
     </AppLayout>
-
   )
-
 }
-
