@@ -43,16 +43,16 @@ const login: RequestHandler = async (req, res, next) => {
     const result = await loginUser(body);
 
     res.cookie('accessToken', result.accessToken, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'lax',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(HTTP_STATUS.OK).json({

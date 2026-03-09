@@ -1,14 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { HTTP_STATUS } from '../constants/http-status';
 import { AppError } from '../utils/app-error';
 
-const errorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof ZodError) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       error: 'Validation Error',
