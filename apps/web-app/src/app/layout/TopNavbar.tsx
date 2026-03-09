@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth/auth.store";
 import { AuthService } from "@/services/auth.service";
-import { Bell, Moon, Sun, ChevronDown } from "lucide-react";
+import { Moon, Sun, ChevronDown } from "lucide-react";
+import NotificationBell from "@/features/notifications/components/NotificationBell";
 
 export default function TopNavbar() {
   const user = useAuthStore((s) => s.user);
@@ -41,9 +42,11 @@ export default function TopNavbar() {
       </div>
 
       <div className="navbar-right">
-        <button className="navbar-icon-btn">
+
+        <NotificationBell />
+        {/* <button className="navbar-icon-btn">
           <Bell size={18} />
-        </button>
+        </button> */}
 
         <button onClick={toggleTheme} className="navbar-icon-btn">
           {dark ? <Sun size={18} /> : <Moon size={18} />}
