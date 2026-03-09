@@ -7,17 +7,17 @@ import tsParser from '@typescript-eslint/parser';
 export default [
   {
     ignores: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/.husky/**",
-      "**/infra/**",
-      "**/*.config.js",
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.husky/**',
+      '**/infra/**',
+      '**/*.config.js',
       'commitlint.config.js',
-      "tsconfig*.json"
+      'tsconfig*.json',
     ],
   },
   {
-    files: ["**/*.ts","**/*.tsx"],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
