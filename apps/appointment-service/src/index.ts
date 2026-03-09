@@ -2,8 +2,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 import app from './app';
+import './models';
 import { sequelize } from './config/database';
-import './schedulers/appointment.scheduler';
+//import './schedulers/appointment.scheduler';
 
 const PORT = process.env.PORT || 4003;
 const startServer = async () => {

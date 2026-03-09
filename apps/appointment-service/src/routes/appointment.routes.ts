@@ -99,14 +99,14 @@ router.post(
 router.get(
   '/doctors',
   authenticate,
-  authorizePermission('manage_appointments'),
+  //authorizePermission('manage_appointments'),
   controller.getAllDoctors
 );
 
 router.get(
   '/branches',
   authenticate,
-  authorizePermission('manage_appointments'),
+  //authorizePermission('manage_appointments'),
   controller.getAllBranches
 );
 

@@ -1,4 +1,13 @@
-//
+export interface PaginationQuery {
+  page: number;
+  limit: number;
+}
+
+export interface TableQueryOptions {
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
+}
 
 export type AppointmentStatus =
   | 'requested'
@@ -35,24 +44,35 @@ export interface ConfirmPaymentInput {
   appointmentId: string;
 }
 
-export interface GetPatientAppointmentsInput {
+export interface GetPatientAppointmentsInput
+  extends PaginationQuery, TableQueryOptions {
   userId: string;
-  page: number;
-  limit: number;
+  status?: AppointmentStatus;
+  fromDate?: string;
+  toDate?: string;
 }
 
-export interface GetDoctorAppointmentsInput {
+export interface GetDoctorAppointmentsInput
+  extends PaginationQuery, TableQueryOptions {
   doctorId: string;
-  page: number;
-  limit: number;
+  status?: AppointmentStatus;
+  fromDate?: string;
+  toDate?: string;
 }
 
-export interface AdminSearchAppointmentsInput {
+export interface GetDoctorAppointmentsByUserInput
+  extends PaginationQuery, TableQueryOptions {
+  userId: string;
+  status?: AppointmentStatus;
+  fromDate?: string;
+  toDate?: string;
+}
+export interface AdminSearchAppointmentsInput
+  extends PaginationQuery, TableQueryOptions {
   branchId?: string;
   status?: AppointmentStatus;
-  search?: string;
-  page: number;
-  limit: number;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export interface GetAvailableSlotsInput {

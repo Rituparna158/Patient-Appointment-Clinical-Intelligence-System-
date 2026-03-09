@@ -17,6 +17,7 @@ import {
   GetAvailableSlotsInput,
   CreateSlotInput,
   CreateBranchInput,
+  GetDoctorAppointmentsByUserInput,
 } from '../types/appointment.types';
 
 import { DoctorSlot } from '../models/doctorSlot.model';
@@ -137,17 +138,26 @@ export const confirmPayment = async ({
   return appointment;
 };
 
-export const getPatientAppointments = async ({
-  userId,
-  page,
-  limit,
-}: GetPatientAppointmentsInput) => {
-  const patient = await patientRepo.findPatientByUserId(userId);
+export const getPatientAppointments = async (
+  input: GetPatientAppointmentsInput
+) => {
+  const patient = await patientRepo.findPatientByUserId(input.userId);
+
   if (!patient) {
     throw new AppError('Patient not found', HTTP_STATUS.NOT_FOUND);
   }
 
-  return appointmentRepo.findAppointmentsByPatient(patient.id, page, limit);
+  return appointmentRepo.findAppointmentsByPatient(
+    patient.id,
+    input.page,
+    input.limit,
+    input.search,
+    input.status,
+    input.fromDate,
+    input.toDate,
+    input.sortBy,
+    input.sortOrder
+  );
 };
 
 export const getDoctorAppointments = async ({
@@ -212,22 +222,26 @@ export const createSlot = async ({
   return slotRepo.createSlot(doctorId, branchId, slotDate, start, end);
 };
 
-export const getDoctorAppointmentsByUser = async ({
-  userId,
-  page,
-  limit,
-}: {
-  userId: string;
-  page: number;
-  limit: number;
-}) => {
-  const doctor = await doctorRepo.findDoctorByUserId(userId);
+export const getDoctorAppointmentsByUser = async (
+  input: GetDoctorAppointmentsByUserInput
+) => {
+  const doctor = await doctorRepo.findDoctorByUserId(input.userId);
 
   if (!doctor) {
     throw new AppError('Doctor not found', 404);
   }
 
-  return appointmentRepo.findAppointmentsByDoctor(doctor.id, page, limit);
+  return appointmentRepo.findAppointmentsByDoctor(
+    doctor.id,
+    input.page,
+    input.limit,
+    input.search,
+    input.status,
+    input.fromDate,
+    input.toDate,
+    input.sortBy,
+    input.sortOrder
+  );
 };
 
 export const createBranch = async (data: CreateBranchInput) => {

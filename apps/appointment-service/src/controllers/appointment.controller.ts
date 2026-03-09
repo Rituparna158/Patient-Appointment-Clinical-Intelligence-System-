@@ -99,19 +99,35 @@ export const getMyAppointments = async (
 ) => {
   try {
     const userId = req.user?.userId;
+
     if (!userId) {
-      return res
-        .status(HTTP_STATUS.UNAUTHORIZED)
-        .json({ message: 'Unauthorized' });
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        message: 'Unauthorized',
+      });
     }
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
+    const search = req.query.search as string | undefined;
+    const status = req.query.status as AppointmentStatus | undefined;
+
+    const fromDate = req.query.fromDate as string | undefined;
+    const toDate = req.query.toDate as string | undefined;
+
+    const sortBy = (req.query.sortBy as string) || 'createdAt';
+    const sortOrder = (req.query.sortOrder as 'ASC' | 'DESC') || 'DESC';
+
     const result = await appointmentService.getPatientAppointments({
       userId,
       page,
       limit,
+      search,
+      status,
+      fromDate,
+      toDate,
+      sortBy,
+      sortOrder,
     });
 
     return res.status(HTTP_STATUS.OK).json({
@@ -138,10 +154,25 @@ export const getDoctorAppointments = async (
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
+    const search = req.query.search as string | undefined;
+    const status = req.query.status as AppointmentStatus | undefined;
+
+    const fromDate = req.query.fromDate as string | undefined;
+    const toDate = req.query.toDate as string | undefined;
+
+    const sortBy = (req.query.sortBy as string) || 'createdAt';
+    const sortOrder = (req.query.sortOrder as 'ASC' | 'DESC') || 'DESC';
+
     const result = await appointmentService.getDoctorAppointmentsByUser({
       userId,
       page,
       limit,
+      search,
+      status,
+      fromDate,
+      toDate,
+      sortBy,
+      sortOrder,
     });
 
     return res.status(200).json({
@@ -166,12 +197,22 @@ export const adminSearchAppointments = async (
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
+    const sortBy = (req.query.sortBy as string) || 'createdAt';
+    const sortOrder = (req.query.sortOrder as 'ASC' | 'DESC') || 'DESC';
+
+    const fromDate = req.query.fromDate as string | undefined;
+    const toDate = req.query.toDate as string | undefined;
+
     const result = await appointmentService.adminSearchAppointments({
       branchId,
       status,
       search,
       page,
       limit,
+      sortBy,
+      sortOrder,
+      fromDate,
+      toDate,
     });
 
     return res.status(HTTP_STATUS.OK).json({

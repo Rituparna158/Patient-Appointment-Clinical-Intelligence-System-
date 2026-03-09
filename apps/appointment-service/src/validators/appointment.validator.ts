@@ -28,12 +28,24 @@ export const confirmPaymentSchema = z.object({
 
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).default(10),
+
+  limit: z.coerce.number().min(1).max(50).default(10),
+
   search: z.string().optional(),
+
   status: z
     .enum(['requested', 'confirmed', 'completed', 'missed', 'cancelled'])
     .optional(),
+
   branchId: z.string().optional(),
+
+  sortBy: z.string().optional(),
+
+  sortOrder: z.enum(['ASC', 'DESC']).optional(),
+
+  fromDate: z.string().optional(),
+
+  toDate: z.string().optional(),
 });
 
 export const createSlotSchema = z.object({
