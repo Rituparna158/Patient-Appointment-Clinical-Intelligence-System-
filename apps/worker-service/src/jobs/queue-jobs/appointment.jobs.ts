@@ -31,8 +31,6 @@ export const sendAppointmentConfirmation = async (appointmentId: string) => {
   const patientUser = (appointment as any).patient?.user;
   const slot = (appointment as any).slot;
 
-  console.log('patient email:', patientUser?.email);
-
   if (!patientUser?.email || !slot) return;
 
   await sendEmail(

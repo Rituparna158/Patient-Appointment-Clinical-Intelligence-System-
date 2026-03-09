@@ -31,8 +31,6 @@ export const sendFollowupReminder = async (consultationId: string) => {
 
   const patientUser = (note as any).appointment?.patient?.user;
 
-  console.log('FOLLOWUP EMAIL:', patientUser?.email);
-
   if (!patientUser?.email) return;
 
   await sendEmail(

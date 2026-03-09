@@ -18,8 +18,6 @@ const appointmentQueue = new Queue<AppointmentJobData>('appointment-queue', {
 export const appointmentWorker = new Worker<AppointmentJobData>(
   'appointment-queue',
   async (job) => {
-    console.log('job received:', job.name, job.data);
-
     if (job.name === 'appointment.confirmed') {
       await sendAppointmentConfirmation(job.data.appointmentId);
 
@@ -38,7 +36,6 @@ export const appointmentWorker = new Worker<AppointmentJobData>(
 
       if (!slot) return;
 
-      // TEST MODE → reminder after 1 minute
       const delay = 60 * 1000;
 
       await appointmentQueue.add(
