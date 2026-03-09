@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { branchSchema } from "../schemas/branch.schema";
-import type { BranchForm } from "../schemas/branch.schema";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { AppointmentService } from "@/services/appointment.service";
+import { useState } from 'react';
+import { branchSchema } from '../../../schemas/branch.schema';
+import type { BranchForm } from '../../../schemas/branch.schema';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { AppointmentService } from '@/services/appointment.service';
 
 export default function CreateBranch() {
   const { toast } = useToast();
 
   const [form, setForm] = useState<BranchForm>({
-    name: "",
-    address: "",
-    phone: "",
+    name: '',
+    address: '',
+    phone: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,7 +43,7 @@ export default function CreateBranch() {
 
       result.error.issues.forEach((err) => {
         const field = err.path[0];
-        if (typeof field === "string") {
+        if (typeof field === 'string') {
           formatted[field] = err.message;
         }
       });
@@ -58,23 +58,23 @@ export default function CreateBranch() {
       await AppointmentService.createBranch(trimmedForm);
 
       toast({
-        title: "Branch created successfully",
+        title: 'Branch created successfully',
       });
 
       setForm({
-        name: "",
-        address: "",
-        phone: "",
+        name: '',
+        address: '',
+        phone: '',
       });
 
       setErrors({});
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Something went wrong";
+        err instanceof Error ? err.message : 'Something went wrong';
 
       toast({
-        variant: "destructive",
-        title: "Error",
+        variant: 'destructive',
+        title: 'Error',
         description: message,
       });
     } finally {
@@ -96,13 +96,11 @@ export default function CreateBranch() {
               <label className="form-label">Branch Name</label>
               <Input
                 value={form.name}
-                onChange={(e) =>
-                  handleChange("name", e.target.value)
-                }
+                onChange={(e) => handleChange('name', e.target.value)}
               />
               <p
                 className={`form-error error-transition ${
-                  errors.name ? "error-show" : "error-hide"
+                  errors.name ? 'error-show' : 'error-hide'
                 }`}
               >
                 {errors.name}
@@ -114,13 +112,11 @@ export default function CreateBranch() {
               <label className="form-label">Address</label>
               <Input
                 value={form.address}
-                onChange={(e) =>
-                  handleChange("address", e.target.value)
-                }
+                onChange={(e) => handleChange('address', e.target.value)}
               />
               <p
                 className={`form-error error-transition ${
-                  errors.address ? "error-show" : "error-hide"
+                  errors.address ? 'error-show' : 'error-hide'
                 }`}
               >
                 {errors.address}
@@ -132,13 +128,11 @@ export default function CreateBranch() {
               <label className="form-label">Phone</label>
               <Input
                 value={form.phone}
-                onChange={(e) =>
-                  handleChange("phone", e.target.value)
-                }
+                onChange={(e) => handleChange('phone', e.target.value)}
               />
               <p
                 className={`form-error error-transition ${
-                  errors.phone ? "error-show" : "error-hide"
+                  errors.phone ? 'error-show' : 'error-hide'
                 }`}
               >
                 {errors.phone}
@@ -147,7 +141,7 @@ export default function CreateBranch() {
 
             <div className="form-actions">
               <Button onClick={handleSubmit} disabled={loading}>
-                {loading ? "Creating..." : "Create Branch"}
+                {loading ? 'Creating...' : 'Create Branch'}
               </Button>
             </div>
           </div>
@@ -156,6 +150,3 @@ export default function CreateBranch() {
     </div>
   );
 }
-
-
-
