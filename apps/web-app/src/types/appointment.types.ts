@@ -19,7 +19,7 @@ export interface Appointment {
   createdAt: string;
   updatedAt: string;
 
-  Doctor?: {
+  doctor?: {
     id: string;
     user?: {
       id: string;
@@ -28,7 +28,7 @@ export interface Appointment {
     };
   };
 
-  Patient?: {
+  patient?: {
     id: string;
     user?: {
       id: string;
@@ -68,4 +68,52 @@ export interface Branch {
   name: string;
   address: string;
   phone: string;
+}
+
+export interface ApiResponse<T> {
+  sucess: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface PaginatedAppointments {
+  rows: Appointment[];
+  count: number;
+}
+
+export interface AppointmentState {
+  appointments: Appointment[];
+  total: number;
+
+  page: number;
+  limit: number;
+
+  search: string;
+  status: string;
+  branchId?: string;
+
+  sortBy: string;
+  sortOrder: 'ASC' | 'DESC';
+
+  fromDate?: string;
+  toDate?: string;
+
+  loading: boolean;
+
+  setSearch: (value: string) => void;
+  setStatus: (value: string) => void;
+  setBranch: (value: string | undefined) => void;
+
+  setPage: (page: number) => void;
+  setSort: (column: string) => void;
+
+  setDateRange: (from?: string, to?: string) => void;
+
+  fetchDoctorAppointments: () => Promise<void>;
+  fetchMyAppointments: () => Promise<void>;
+  fetchAdminAppointments: () => Promise<void>;
+}
+export interface AppointmentTableProps {
+  appointments: Appointment[];
+  onCancel: (id: string) => void;
 }
