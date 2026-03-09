@@ -1,5 +1,5 @@
-import { api } from "./api";
- 
+import { api } from './api';
+
 export const AuthService = {
   // Register API
   register(data: {
@@ -10,44 +10,43 @@ export const AuthService = {
     gender: string;
     date_of_birth: string;
   }) {
-    return api("/auth/register", {
-      method: "POST",
+    return api('/auth/register', {
+      method: 'POST',
       body: JSON.stringify(data),
     });
   },
- 
+
   // Login API
   login(email: string, password: string) {
-    return api("/auth/login", {
-      method: "POST",
+    return api('/auth/login', {
+      method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   },
- 
+
   // Logout API
   logout() {
-    return api("/auth/logout", {
-      method: "POST",
+    return api('/auth/logout', {
+      method: 'POST',
     });
   },
- 
+
   // Current logged-in user
   me() {
-    return api("/auth/me");
+    return api('/auth/me');
   },
 
   forgotPassword(email: string) {
-    return api("/auth/forgot-password", {
-      method: "POST",
+    return api('/auth/forgot-password', {
+      method: 'POST',
       body: JSON.stringify({ email }),
     });
   },
 
-  resetPassword(email:string,otp:string,newPassword:string) {
-    return api("/auth/reset-password", {
-      method: "POST",
-      body: JSON.stringify({email,otp,newPassword }),
+  resetPassword(email: string, otp: string, newPassword: string) {
+    return api('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp, newPassword }),
     });
   },
 };
- 
