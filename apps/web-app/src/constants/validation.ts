@@ -8,3 +8,22 @@ export const VALIDATION_MESSAGES = {
   LICENCE_REQUIRED: 'Licence number is required',
   FEE_MIN: 'Consultation fee must be greater than 0',
 };
+
+export const TABLE_TEXT = {
+  SEARCH_PLACEHOLDER: 'Search...',
+  LOADING: 'Loading...',
+  NO_DATA: 'No records found',
+};
+
+export const APPOINTMENT_TEXT = {
+  SEARCH: 'Search appointments...',
+};
+
+export const CLINICAL_TEXT = {
+  SEARCH: 'Search patient...',
+  EMPTY: 'No clinical records available',
+};
+
+export const TIMELINE_TEXT = {
+  SEARCH: 'Search doctor...',
+};
