@@ -1,223 +1,237 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AppointmentService } from "@/services/appointment.service";
-import { useToast } from "@/hooks/use-toast";
-import type { Appointment } from "@/types/appointment.types";
-import AppLayout from "@/app/layout/AppLayout";
+import { useEffect, useState } from "react"
+import AppLayout from "@/app/layout/AppLayout"
+
+import { useAppointmentStore } from "@/store/appointment/appointment.store"
+import { AppointmentService } from "@/services/appointment.service"
+
+import { DataTable } from "@/features/shared/table/components/DataTable"
+import { TableSearch } from "@/features/shared/table/components/TableSearch"
+import { TableFilters } from "@/features/shared/table/components/TableFilters"
+import { TablePagination } from "@/features/shared/table/components/TablePagination"
+
+import TableSkeleton from "@/features/shared/components/TableSkeleton"
+import StatusBadge from "@/features/shared/components/StatusBadge"
+
+import { Button } from "@/components/ui/button"
+import ConsultationModal from "../components/consultationModal"
+
+import type { Appointment } from "@/types/appointment.types"
 
 export default function DoctorAppointments() {
-  const { toast } = useToast();
 
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const {
 
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [todayFilter, setTodayFilter] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState("");
+    appointments,
+    total,
+    page,
+    limit,
 
-  async function fetchAppointments() {
-    try {
-      const res = await AppointmentService.getDoctorAppointments();
-      setAppointments(res.data.rows ?? []);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to load appointments";
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }
+    search,
+    status,
+    fromDate,
+    toDate,
+
+    sortBy,
+    sortOrder,
+
+    loading,
+
+    setSearch,
+    setStatus,
+    setDateRange,
+    setPage,
+    setSort,
+
+    fetchDoctorAppointments
+
+  } = useAppointmentStore()
+
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchAppointments();
-  }, []);
 
-  const filteredAppointments = useMemo(() => {
-    return appointments.filter((appt) => {
-      const matchesStatus =
-        statusFilter === "all" ? true : appt.status === statusFilter;
+    fetchDoctorAppointments()
 
-      const matchesSearch = appt.Patient?.user?.full_name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  }, [
+    page,
+    search,
+    status,
+    fromDate,
+    toDate,
+    sortBy,
+    sortOrder
+  ])
 
-      let matchesToday = true;
-      if (todayFilter) {
-        const todayDate = new Date().toISOString().split("T")[0];
-        matchesToday = appt.slot?.slotDate === todayDate;
-      }
+  const handleComplete = async (id: string) => {
 
-      return matchesStatus && matchesSearch && matchesToday;
-    });
-  }, [appointments, statusFilter, searchTerm, todayFilter]);
+    await AppointmentService.updateStatus(id, "completed")
 
-  async function updateStatus(id: string, status: string) {
-    try {
-      await AppointmentService.changeStatus(id, status);
-      toast({ title: "Status updated" });
-      fetchAppointments();
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to update";
-      toast({ variant: "destructive", title: "Error", description: message });
-    }
+    fetchDoctorAppointments()
+
   }
 
-  return (
-    <AppLayout>
-      <h2 className="page-heading">My Appointments</h2>
+  const handleCancel = async (id: string) => {
 
-      {/* FILTERS */}
-      <div className="mt-4 flex flex-wrap gap-4">
-        {/* Search by patient */}
-        <Input
-          placeholder="Search by patient..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
+    await AppointmentService.cancelWithRefund(id)
+
+    fetchDoctorAppointments()
+
+  }
+
+  const openConsultation = (id: string) => {
+
+    setSelectedAppointmentId(id)
+
+    setModalOpen(true)
+
+  }
+
+  const columns = [
+
+    {
+      key: "patient",
+      header: "Patient",
+      sortable: true,
+      render: (row: Appointment) =>
+        row.patient?.user?.full_name ?? "-"
+    },
+
+    {
+      key: "date",
+      header: "Date",
+      sortable: true,
+      render: (row: Appointment) =>
+        row.slot?.slotDate ?? "-"
+    },
+
+    {
+      key: "time",
+      header: "Time",
+      sortable: true,
+      render: (row: Appointment) =>
+        row.slot
+          ? `${row.slot.startTime} - ${row.slot.endTime}`
+          : "-"
+    },
+
+    {
+      key: "status",
+      header: "Status",
+      sortable: true,
+      render: (row: Appointment) =>
+        <StatusBadge status={row.status}/>
+    },
+
+    {
+      key: "actions",
+      header: "Actions",
+
+      render: (row: Appointment) => {
+
+        if (row.status === "confirmed") {
+
+          return (
+
+            <div className="flex gap-2">
+
+              <Button
+                size="sm"
+                onClick={() => handleComplete(row.id)}
+              >
+                Complete
+              </Button>
+
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => handleCancel(row.id)}
+              >
+                Cancel
+              </Button>
+
+            </div>
+
+          )
+        }
+
+        if (row.status === "completed") {
+
+          return (
+
+            <Button
+              size="sm"
+              onClick={() => openConsultation(row.id)}
+            >
+              Add Note
+            </Button>
+
+          )
+        }
+
+        return "-"
+
+      }
+
+    }
+
+  ]
+
+  return (
+
+    <AppLayout>
+
+      <div className="space-y-4">
+
+        <TableSearch
+          value={search}
+          onChange={setSearch}
         />
 
-        {/* Status */}
-        <div className="w-48">
-          <Select
-            value={statusFilter}
-            onValueChange={setStatusFilter}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
+        <TableFilters
+          status={status}
+          setStatus={setStatus}
+          fromDate={fromDate}
+          toDate={toDate}
+          setFromDate={(v) => setDateRange(v, toDate)}
+          setToDate={(v) => setDateRange(fromDate, v)}
+        />
 
-            <SelectContent className="select-content-fix">
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="requested">Requested</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="missed">Missed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {loading ? (
 
-        {/* Today */}
-        <Button
-          variant={todayFilter ? "destructive" : "outline"}
-          onClick={() => setTodayFilter((prev) => !prev)}
-        >
-          {todayFilter ? "Showing Today Only" : "Show Today"}
-        </Button>
+          <TableSkeleton/>
+
+        ) : (
+
+          <DataTable
+            data={appointments}
+            columns={columns}
+            selected={[]}
+            onSelect={() => {}}
+            onSort={setSort}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+          />
+
+        )}
+
+        <TablePagination
+          page={page}
+          total={total}
+          limit={limit}
+          onPageChange={setPage}
+        />
+
+        <ConsultationModal
+          open={modalOpen}
+          appointmentId={selectedAppointmentId}
+          onClose={() => setModalOpen(false)}
+        />
+
       </div>
 
-      {/* TABLE */}
-      <div className="mt-6 bg-card border border-border rounded-xl shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Patient</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Schedule</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <div className="space-y-2 p-4">
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-full" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : filteredAppointments.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-6 text-muted-foreground">
-                  No appointments found
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAppointments.map((appt) => (
-                <TableRow key={appt.id}>
-                  <TableCell>
-                    {appt.Patient?.user?.full_name ?? "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {appt.Patient?.user?.email ?? "-"}
-                  </TableCell>
-
-                  <TableCell>
-                    {appt.slot?.slotDate ?? "-"} <br />
-                    {appt.slot?.startTime ?? ""} - {appt.slot?.endTime ?? ""}
-                  </TableCell>
-
-                  <TableCell>
-                    <Badge className={`status-${appt.status}`}>
-                      {appt.status}
-                    </Badge>
-                  </TableCell>
-
-                  <TableCell>
-                    <Badge variant="outline">
-                      {appt.paymentStatus}
-                    </Badge>
-                  </TableCell>
-
-                  <TableCell>
-                    {appt.status === "confirmed" && (
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            updateStatus(appt.id, "completed")
-                          }
-                        >
-                          Complete
-                        </Button>
-
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() =>
-                            updateStatus(appt.id, "cancelled")
-                          }
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
     </AppLayout>
-  );
+
+  )
 }
+
