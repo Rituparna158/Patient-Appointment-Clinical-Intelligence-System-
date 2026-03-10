@@ -8,11 +8,28 @@ export const getCounters = async (
   next: NextFunction
 ) => {
   try {
-    const result = await service.getCounters();
+    const result = await service.getDashboardCounters();
 
     return res.json({
       success: true,
       data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAppointmentStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await service.getAppointmentStatus();
+
+    return res.json({
+      success: true,
+      data,
     });
   } catch (error) {
     next(error);
@@ -25,7 +42,10 @@ export const getAppointmentTrend = async (
   next: NextFunction
 ) => {
   try {
-    const result = await service.getAppointmentTrend();
+    const { days } = req.validateQuery;
+
+    const trendDays = days ?? 7;
+    const result = await service.getAppointmentTrend(trendDays);
     return res.json({
       success,
       data: result,
@@ -41,8 +61,72 @@ export const getDailyAnalytics = async (
   next: NextFunction
 ) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit);
+    const { page, limit, from, to, sortBy, sortOrder } = req.validateQuery;
+
+    const result = await service.getDailyAnalytics(
+      page,
+      limit,
+      from,
+      to,
+      sortBy,
+      sortOrder
+    );
+
+    return res.json({
+      success: true,
+      total: result.count,
+      rows: result.rows,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const doctorDashboard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const doctorId = req.user?.userId;
+
+    if (!doctorId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    const data = await service.getDoctorDashboard(doctorId);
+
+    return res.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const patientDashboard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const patientId = req.user?.userId;
+
+    if (!patientId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    const data = await service.getPatientDashboard(patientId);
+
+    return res.json({
+      success: true,
+      data,
+    });
   } catch (error) {
     next(error);
   }
