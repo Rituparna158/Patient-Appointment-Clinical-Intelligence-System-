@@ -15,11 +15,18 @@ import StatusBadge from "@/features/shared/components/StatusBadge"
 import TableSkeleton from "@/features/shared/components/TableSkeleton"
 
 import type { DoctorUpcomingAppointment } from "../../types/dashboard.types"
+import DoctorCompletionChart from "./components/DoctorCompletionChart"
+import DoctorPatientTypeChart from "./components/DoctorPatientTypeChart"
+import DoctorWorkloadTrendChart from "./components/DoctorWorkloadTrendChart"
 
 export default function DoctorDashboard() {
 
   const {
     doctorDashboard,
+    doctorTrend,
+    completionRate,
+    patientTypes,
+    range,
     page,
     limit,
     sortBy,
@@ -27,19 +34,23 @@ export default function DoctorDashboard() {
     from,
     to,
 
+    setRange,
+
     setPage,
     setSort,
     setFrom,
     setTo,
 
-    fetchDoctorDashboard
+    fetchDoctorDashboard,
+    fetchDoctorCharts
   } = useDashboardStore()
 
   useEffect(() => {
 
-    fetchDoctorDashboard()
+    fetchDoctorDashboard(),
+    fetchDoctorCharts()
 
-  }, [])
+  }, [ range, page , sortBy , sortOrder , from , to])
 
   const counters = doctorDashboard?.counters
 
@@ -66,7 +77,7 @@ export default function DoctorDashboard() {
     {
       key: "startTime",
       header: "Time",
-      sortable: false,
+      sortable: true,
       render: (row: DoctorUpcomingAppointment) =>
         row.startTime
     },
@@ -85,34 +96,55 @@ export default function DoctorDashboard() {
 
     <DashboardLayout>
 
-      <div className="space-y-6">
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-          <div>
-
-            <h1 className="text-xl font-semibold">
-              Doctor Dashboard
-            </h1>
-
-            <p className="text-sm text-muted-foreground">
-              Overview of appointments and schedule
-            </p>
-
-          </div>
-
-          <ExportButton/>
-
+      <div className="space-y-8 max-w-7xl mx-auto">
+ 
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold">Doctor Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            Overview of appointments and schedule
+          </p>
         </div>
-
-        {counters && (
-
-          <DoctorDashboardCounters data={doctorDashboard.counters}/>
-
-        )}
-
-        {/* TABLE */}
-
+    
+        <div className="flex items-center gap-3">
+          <select
+            value={range}
+            onChange={(e) => setRange(e.target.value as any)}
+            className="border rounded px-3 py-1 text-sm"
+          >
+            <option value="today">Today</option>
+            <option value="week">Weekly</option>
+            <option value="month">Monthly</option>
+            <option value="year">Yearly</option>
+          </select>
+    
+          <ExportButton />
+        </div>
+    </div>
+ 
+  {counters && <DoctorDashboardCounters data={counters} />}
+ 
+  <div className="doctor-dashboard">
+    <div className="h-[300px]">
+      <DoctorWorkloadTrendChart data={doctorTrend}/>
+    </div>
+  </div>
+ 
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+ 
+    {completionRate && (
+      <div className="doctor-dashboard">
+        <DoctorCompletionChart data={completionRate}/>
+      </div>
+    )}
+ 
+    {patientTypes && (
+      <div className="doctor-dashboard">
+        <DoctorPatientTypeChart data={patientTypes}/>
+      </div>
+    )}
+ 
+  </div>
         <div className="space-y-4">
 
           <h3 className="font-semibold">

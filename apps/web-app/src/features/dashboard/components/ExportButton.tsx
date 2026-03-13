@@ -38,6 +38,7 @@ export default function ExportButton() {
     <div className="relative">
  
       <Button
+    
         onClick={()=>setOpen(!open)}
         className="flex gap-2"
       >
@@ -75,6 +76,7 @@ export default function ExportButton() {
  
             <>
               <button
+              type="button"
                 onClick={handleDownload}
                 className="block w-full text-left px-3 py-2 hover:bg-gray-100"
               >
@@ -82,6 +84,7 @@ export default function ExportButton() {
               </button>
  
               <button
+              type="button"
                 onClick={handleEmail}
                 className="block w-full text-left px-3 py-2 hover:bg-gray-100"
               >

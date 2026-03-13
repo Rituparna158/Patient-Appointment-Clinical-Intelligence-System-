@@ -81,16 +81,3 @@ export default function AdminDashboard() {
  
   )
 }
-
-  // const result: CSVRow[] = rows.map((r)=>({
-
-  //   date:r.date,
-  //   totalAppointments:r.totalAppointments,
-  //   completedAppointments:r.completedAppointments,
-  //   cancelledAppointments:r.cancelledAppointments,
-  //   missedAppointments:r.missedAppointments,
-  //   newPatients:r.newPatients,
-  //   uniquePatients:r.uniquePatients,
-  //   followUpsScheduled:r.followUpsScheduled
-
-  // }));
