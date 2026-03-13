@@ -1,43 +1,60 @@
 import fs from 'fs';
 import path from 'path';
-import { CSVRow } from '../types/export.types';
+import { format } from '@fast-csv/format';
+import { AdminCSVRow } from '../types/export.types';
 
-export const generateCSV = async (rows: CSVRow[]) => {
-  const headers = [
-    'Date',
-    'TotalAppointments',
-    'Completed',
-    'Cancelled',
-    'Missed',
-    'NewPatients',
-    'UniquePatients',
-    'FollowUps',
-  ];
+export const generateAdminCSV = async (rows: AdminCSVRow[]) => {
+  const exportDir = path.join(__dirname, '../../exports');
 
-  const csvRows = rows.map((r) => [
-    r.date,
-    r.totalAppointments,
-    r.completedAppointments,
-    r.cancelledAppointments,
-    r.missedAppointments,
-    r.newPatients,
-    r.uniquePatients,
-    r.followUpsScheduled,
-  ]);
-
-  const csv = [headers.join(','), ...csvRows.map((row) => row.join(','))].join(
-    '\n'
-  );
-
-  const exportDir = path.resolve(__dirname, '../../exports');
-  console.log('__dirname:', __dirname);
   if (!fs.existsSync(exportDir)) {
     fs.mkdirSync(exportDir, { recursive: true });
   }
 
-  const filePath = path.join(exportDir, `report-${Date.now()}.csv`);
+  const filePath = path.join(exportDir, `admin-report-${Date.now()}.csv`);
 
-  fs.writeFileSync(filePath, csv);
+  const ws = fs.createWriteStream(filePath);
+
+  const csvStream = format({
+    headers: [
+      'Date',
+      'Doctor',
+      'Patient',
+      'Status',
+      'SlotDate',
+      'StartTime',
+      'TotalAppointments',
+      'CompletedAppointments',
+      'CancelledAppointments',
+      'MissedAppointments',
+      'NewPatients',
+      'UniquePatients',
+      'FollowUpsScheduled',
+    ],
+  });
+
+  csvStream.pipe(ws);
+
+  rows.forEach((row) => {
+    csvStream.write({
+      Date: row.date,
+      Doctor: row.doctorName,
+      Patient: row.patientName,
+      Status: row.appointmentStatus,
+      SlotDate: row.slotDate,
+      StartTime: row.startTime,
+      TotalAppointments: row.totalAppointments,
+      CompletedAppointments: row.completedAppointments,
+      CancelledAppointments: row.cancelledAppointments,
+      MissedAppointments: row.missedAppointments,
+      NewPatients: row.newPatients,
+      UniquePatients: row.uniquePatients,
+      FollowUpsScheduled: row.followUpsScheduled,
+    });
+  });
+
+  csvStream.end();
+
+  await new Promise((resolve) => ws.on('finish', resolve));
 
   return filePath;
 };

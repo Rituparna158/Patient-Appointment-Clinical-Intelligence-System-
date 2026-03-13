@@ -1,14 +1,26 @@
+export type RangeType = 'today' | 'month' | 'week' | 'year';
 export interface ReportJobData {
-  type: 'daily' | 'monthly';
+  range?: RangeType;
+
   from?: string;
   to?: string;
-  delivery: string;
+
+  role: 'admin' | 'doctor';
+  doctorId?: string;
+
+  delivery: 'email' | 'download';
+
   userId: string;
   email?: string;
 }
 
-export interface CSVRow {
+export interface AdminCSVRow {
   date: Date;
+  doctorName: string;
+  patientName: string;
+  appointmentStatus: string;
+  slotDate: string;
+  startTime: string;
   totalAppointments: number;
   completedAppointments: number;
   cancelledAppointments: number;
@@ -16,4 +28,12 @@ export interface CSVRow {
   newPatients: number;
   uniquePatients: number;
   followUpsScheduled: number;
+}
+
+export interface DoctorCSVRow {
+  appointmentId: string;
+  patientName: string;
+  slotDate: string;
+  startTime: string;
+  status: string;
 }

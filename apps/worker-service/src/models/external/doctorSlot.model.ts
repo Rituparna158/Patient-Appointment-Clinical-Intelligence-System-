@@ -6,6 +6,7 @@ import {
   CreationOptional,
 } from 'sequelize';
 import { sequelize } from '../../config/database';
+import { Doctor } from './doctor.model';
 
 export class DoctorSlot extends Model<
   InferAttributes<DoctorSlot>,
@@ -21,6 +22,8 @@ export class DoctorSlot extends Model<
   declare isActive: CreationOptional<boolean>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  declare doctor?: Doctor;
 }
 
 DoctorSlot.init(

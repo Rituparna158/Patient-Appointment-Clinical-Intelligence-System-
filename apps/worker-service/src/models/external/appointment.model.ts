@@ -4,11 +4,13 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  NonAttribute,
 } from 'sequelize';
 import { sequelize } from '../../config/database';
 import { DoctorSlot } from './doctorSlot.model';
 import { Notification } from './notification.model';
 import { Patient } from './patient.model';
+import { Doctor } from './doctor.model';
 
 export class Appointment extends Model<
   InferAttributes<Appointment>,
@@ -24,6 +26,10 @@ export class Appointment extends Model<
   declare appointmentReason: CreationOptional<string>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  declare patient?: NonAttribute<Patient>;
+  declare doctor?: NonAttribute<Doctor>;
+  declare slot?: NonAttribute<DoctorSlot>;
 }
 
 Appointment.init(

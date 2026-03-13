@@ -7,7 +7,7 @@ import { startScheduler } from './schedulers/master.scheduler';
 
 import './queues/appointment.consumer';
 import './queues/clinical.consumer';
-import './queues/analytics.consumer';
+import './queues/export.consumer';
 
 import { app } from './app';
 

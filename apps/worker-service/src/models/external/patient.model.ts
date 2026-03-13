@@ -4,9 +4,11 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  NonAttribute,
 } from 'sequelize';
 //import { ROLES } from '../../auth-service/src/constants/http-status';
 import { sequelize } from '../../config/database';
+import { User } from './user.model';
 
 export class Patient extends Model<
   InferAttributes<Patient>,
@@ -17,6 +19,8 @@ export class Patient extends Model<
   declare address: CreationOptional<string>;
   declare emergencyContact: CreationOptional<string>;
   declare isActive: CreationOptional<boolean>;
+
+  declare user?: NonAttribute<User>;
 }
 Patient.init(
   {

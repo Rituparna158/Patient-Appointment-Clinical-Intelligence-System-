@@ -4,8 +4,10 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  NonAttribute,
 } from 'sequelize';
 import { sequelize } from '../../config/database';
+import { User } from './user.model';
 
 export class Doctor extends Model<
   InferAttributes<Doctor>,
@@ -19,6 +21,8 @@ export class Doctor extends Model<
   declare is_active: boolean;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  declare user?: NonAttribute<User>;
 }
 Doctor.init(
   {

@@ -6,6 +6,7 @@ import { User } from '../../models/external/user.model';
 import { Role } from '../../models/external/role.model';
 
 import { AnalyticsDaily } from '../../models/external/analyticsDailyMetric.model';
+import { DoctorSlot } from '../../models/external/doctorSlot.model';
 
 export const generateDailyAnalytics = async () => {
   const start = new Date();
@@ -18,11 +19,18 @@ export const generateDailyAnalytics = async () => {
   today.setHours(0, 0, 0, 0);
 
   const appointments = await Appointment.findAll({
-    where: {
-      createdAt: {
-        [Op.between]: [start, end],
+    include: [
+      {
+        model: DoctorSlot,
+        as: 'slot',
+        attributes: ['slotDate'],
+        where: {
+          slotDate: {
+            [Op.between]: [start, end],
+          },
+        },
       },
-    },
+    ],
   });
 
   const totalAppointments = appointments.length;
