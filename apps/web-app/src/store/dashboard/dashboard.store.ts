@@ -11,6 +11,10 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   status: null,
   trend: [],
 
+  doctorTrend: [],
+  completionRate: null,
+  patientTypes: null,
+
   rows: [],
   total: 0,
 
@@ -37,6 +41,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   async fetchDoctorDashboard() {
     const res = await DashboardService.getDoctorDashboard();
+
     set({
       doctorDashboard: res,
     });
@@ -48,7 +53,15 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       patientDashboard: res,
     });
   },
+  async fetchDoctorCharts() {
+    const { range } = get();
 
+    const trend = await DashboardService.getDoctorTrend(range);
+    const completionRate = await DashboardService.getDoctorCompletion(range);
+    const patientTypes = await DashboardService.getDoctorPatients(range);
+
+    set({ doctorTrend: trend, completionRate, patientTypes });
+  },
   async fetchAdminTable() {
     const { page, limit, from, to, sortBy, sortOrder } = get();
 
@@ -115,7 +128,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   setRange(range) {
     set({ range });
-    get().fetchAdminDashboard();
+    //get().fetchAdminDashboard();
   },
 
   setPage(page) {

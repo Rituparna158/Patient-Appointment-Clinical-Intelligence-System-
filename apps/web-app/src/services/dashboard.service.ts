@@ -9,6 +9,9 @@ import type {
   PatientDashboard,
   PatientDashboardTableResponse,
   DoctorDashboardTableResponse,
+  DoctorCompletionRate,
+  DoctorPatientTypes,
+  DoctorWorkloadTrend,
 } from '../types/dashboard.types';
 
 export const DashboardService = {
@@ -63,8 +66,28 @@ export const DashboardService = {
     );
     return res;
   },
-  //    async getDoctorCounters(): Promise<DoctorDashboardCounters> {
-  //     const res = await api(`/reports-analytics/analytics/doctor`)
-  //     return res.data
-  //   }
+
+  async getDoctorTrend(range?: string): Promise<DoctorWorkloadTrend[]> {
+    const res = await api(
+      `/reports-analytics/analytics/doctor/charts/workload?range=${range}`
+    );
+
+    return res.data;
+  },
+
+  async getDoctorCompletion(range?: string): Promise<DoctorCompletionRate> {
+    const res = await api(
+      `/reports-analytics/analytics/doctor/charts/completion-rate?range=${range}`
+    );
+
+    return res.data;
+  },
+
+  async getDoctorPatients(range?: string): Promise<DoctorPatientTypes> {
+    const res = await api(
+      `/reports-analytics/analytics/doctor/charts/patient-types?range=${range}`
+    );
+
+    return res.data;
+  },
 };

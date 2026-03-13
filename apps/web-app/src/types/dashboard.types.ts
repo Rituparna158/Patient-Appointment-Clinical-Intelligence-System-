@@ -66,6 +66,22 @@ export interface DoctorDashboardTableResponse {
   rows: DoctorAppointmentRow[];
 }
 
+export interface DoctorWorkloadTrend {
+  date: string;
+  totalAppointments: number;
+}
+
+export interface DoctorCompletionRate {
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
+export interface DoctorPatientTypes {
+  newPatients: number;
+  returningPatients: number;
+}
+
 export interface PatientAppointmentRow {
   id: string;
   patientName: string;
@@ -115,6 +131,11 @@ export interface DashboardState {
   counters: DashboardCounters | null;
   doctorDashboard: DoctorDashboard | null;
   patientDashboard: PatientDashboard | null;
+
+  doctorTrend: DoctorWorkloadTrend[];
+  completionRate: DoctorCompletionRate | null;
+  patientTypes: DoctorPatientTypes | null;
+
   status: AppointmentStatus | null;
   trend: AppointmentTrend[];
 
@@ -135,6 +156,7 @@ export interface DashboardState {
   fetchAdminDashboard: () => Promise<void>;
   fetchDoctorDashboard: () => Promise<void>;
   fetchPatientDashboard: () => Promise<void>;
+  fetchDoctorCharts: () => Promise<void>;
   fetchAdminTable: () => Promise<void>;
   fetchDoctorTable: () => Promise<void>;
   fetchPatientTable: () => Promise<void>;
@@ -166,4 +188,31 @@ export interface DoctorDashboardCountersProps {
 
 export interface PatientDashboardCountersProps {
   data: PatientDashboardCounters;
+}
+
+export interface CompletionRate {
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
+export interface CompletionRateProps {
+  data: CompletionRate;
+}
+export interface PatientTypes {
+  newPatients: number;
+  returningPatients: number;
+}
+
+export interface PatientTypesProps {
+  data: PatientTypes;
+}
+
+export interface WorkloadRow {
+  date: string;
+  totalAppointments: number;
+}
+
+export interface WorkloadRowProps {
+  data: WorkloadRow[];
 }
