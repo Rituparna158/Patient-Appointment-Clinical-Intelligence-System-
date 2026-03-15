@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express';
 import { HTTP_STATUS } from '../constants/http-status';
 import { Role } from '../types/auth.types';
-const reuireRole = (role: string): RequestHandler => {
+const requireRole = (role: string): RequestHandler => {
   return (req, res, next) => {
     const user = (req as any).user;
 
@@ -38,4 +38,4 @@ const requireAnyRole = (role: String[]): RequestHandler => {
     next();
   };
 };
-export { reuireRole, requireAnyRole };
+export { requireRole, requireAnyRole };

@@ -11,8 +11,6 @@ import { Doctor, DoctorSlot } from '../models';
 import { User } from '../models/external/user.model';
 import { Patient } from '../models/external/patient.model';
 
-/* ---------------- SORT BUILDER ---------------- */
-
 function buildSort(sortBy: string, sortOrder: 'ASC' | 'DESC'): Order {
   if (sortBy === 'doctor') {
     return [

@@ -26,6 +26,9 @@ export default function Sidebar() {
       isActive(path) ? 'sidebar-link-active' : 'sidebar-link-hover'
     }`;
 
+    const isAdmin = user?.roles.includes("admin");
+    const isDoctor = user?.roles.includes("doctor");
+    const isPatient = user?.roles.includes("patient")
   return (
     <aside
       className={`bg-sidebar text-sidebar-foreground ${
@@ -43,7 +46,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav overflow-y-auto">
-        {user?.role === 'admin' && (
+        {isAdmin && (
           <>
             <Link
               to="/admin/dashboard"
@@ -108,7 +111,7 @@ export default function Sidebar() {
           </>
         )}
 
-        {user?.role === 'doctor' && (
+        {isDoctor && (
           <>
             <Link
               to="/doctor/dashboard"
@@ -136,7 +139,7 @@ export default function Sidebar() {
           </>
         )}
 
-        {user?.role === 'patient' && (
+        {isPatient && (
           <>
             <Link
               to="/patient/dashboard"

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.middleware';
-import { reuireRole, requireAnyRole } from '../middleware/role.middleware';
+import { requireRole, requireAnyRole } from '../middleware/role.middleware';
 import {
   register,
   login,
@@ -19,12 +19,12 @@ router.post('/login', login);
 router.post('/refresh', refreshTok);
 router.post('/logout', logout);
 router.get('/me', requireAuth, me);
-router.get('/patient-only', requireAuth, reuireRole('patient'), (req, res) => {
+router.get('/patient-only', requireAuth, requireRole('patient'), (req, res) => {
   return res.status(HTTP_STATUS.OK).json({
     message: 'Welcome Patient',
   });
 });
-router.get('/doctor-only', requireAuth, reuireRole('doctor'), (req, res) => {
+router.get('/doctor-only', requireAuth, requireRole('doctor'), (req, res) => {
   return res.status(HTTP_STATUS.OK).json({
     message: 'Welcome Doctor',
   });

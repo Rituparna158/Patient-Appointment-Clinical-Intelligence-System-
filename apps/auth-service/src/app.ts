@@ -35,6 +35,14 @@ const swaggerFiles = [
     url: '/swagger/appointment',
     name: 'Appointment Service',
   },
+  {
+    url: '/swagger/report',
+    name: 'Report and Analytics Service',
+  },
+  {
+    url: '/swagger/clinical',
+    name: 'Clinical Service',
+  },
 ];
 
 app.get('/swagger/auth', (req, res) => {
@@ -55,6 +63,21 @@ app.get('/swagger/appointment', (req, res) => {
       __dirname,
       '../../../packages/swagger/appointment.swagger.yaml'
     )
+  );
+});
+
+app.get('/swagger/report', (req, res) => {
+  res.sendFile(
+    path.resolve(
+      __dirname,
+      '../../../packages/swagger/report-analytics.swagger.yaml'
+    )
+  );
+});
+
+app.get('/swagger/clinical', (req, res) => {
+  res.sendFile(
+    path.resolve(__dirname, '../../../packages/swagger/clinical.swagger.yaml')
   );
 });
 

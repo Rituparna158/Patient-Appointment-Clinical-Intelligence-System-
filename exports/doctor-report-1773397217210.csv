@@ -1,0 +1,24 @@
+AppointmentId,Patient,SlotDate,StartTime,Status
+7c48b829-d8f2-4475-bea8-9553401f4ed9,Simuna Sanjibita,2026-03-13,15:00:00,confirmed
+2d5ac71e-a76e-4b37-a2fe-90b5e62819d3,Biswa Rath,,,completed
+e7e8b40f-0469-411a-acd7-e32c6b3f5f8d,Biswa Rath,,,cancelled
+403ec93a-0abf-45c3-bb1f-ce5336b250d3,Biswa Rath,,,cancelled
+10fa0e01-664b-4d8b-9e0c-28d4029902f8,Biswa Rath,,,cancelled
+be5a5de6-d005-48cc-81e1-a2cf49cbaf00,Kaushik Patra,2026-03-07,10:00:00,missed
+cadcddef-b1f2-4c60-801b-62c5b07be8b1,Kaushik Patra,2026-03-06,19:00:00,completed
+29624c56-9b71-4fe6-84e1-d7bee8b26a34,Kaushik Patra,2026-03-12,18:00:00,missed
+3f071bec-6b1a-4288-a77f-85dead9f1a72,Kaushik Patra,2026-02-28,10:30:00,missed
+37a2422b-238c-47c2-b235-cfbf6893fccd,Kaushik Patra,2026-02-28,10:00:00,missed
+8c282aa7-67b3-4bdc-a2ae-871b17c4a670,Kaushik Patra,2026-02-28,10:30:00,completed
+028ae090-5400-4f1b-b673-11f944a0b632,Kaushik Patra,2026-03-05,02:00:00,completed
+1fad4b80-a89b-458a-9e6a-10b3d16ce61a,Isha Rath,2026-03-13,19:00:00,confirmed
+1c549200-c815-4397-8e91-b9c4d7289e41,Isha Rath,2026-03-12,09:00:00,missed
+5a7db408-5fcc-44d7-a4a4-c5f12230abfd,Isha Rath,2026-03-12,14:30:00,completed
+0bc19189-c4f5-429b-a804-6ae3d56b352f,Isha Rath,2026-03-12,09:12:00,missed
+1a1dfd7a-52f4-4269-aa80-8c88a54d62d5,Isha Rath,2026-03-12,15:45:00,cancelled
+7c8385ce-1764-441e-b748-5083fbe4226d,Isha Rath,2026-03-09,20:00:00,missed
+2a2bb41b-1763-487c-b338-b58fdd17f1da,Isha Rath,2026-03-07,11:00:00,cancelled
+b9dcdddd-4511-4ee2-9de6-dd48d9932a1d,Isha Rath,2026-02-28,10:00:00,completed
+a886bc6a-3ee3-4a29-bf23-b3fddeab749c,Isha Rath,2026-02-28,11:00:00,cancelled
+78495029-991a-4a42-8fe7-560841b438aa,Isha Rath,2026-02-28,11:00:00,completed
+2ad0fb79-a647-4ecb-9038-1e3ea5b50c2b,Arpita Sen,2026-03-13,12:00:00,confirmed

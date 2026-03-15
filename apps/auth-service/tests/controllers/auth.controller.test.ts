@@ -12,7 +12,7 @@ import {
 import * as authService from '../../src/services/auth.service';
 import { User } from '../../src/models';
 import { redis } from '../../src/config/redis';
-import { trasport } from '../../src/utils/mailer';
+import { transport } from '../../src/utils/mailer';
 import { hashPassword } from '../../src/utils/hash';
 import { verifyRefreshToken } from '../../src/utils/jwt';
 import { deleteRefreshToken } from '../../src/utils/token-store';
@@ -27,7 +27,7 @@ vi.mock('../../src/config/redis', () => ({
   },
 }));
 vi.mock('../../src/utils/mailer', () => ({
-  trasport: {
+  transport: {
     sendMail: vi.fn(),
   },
 }));
@@ -166,7 +166,7 @@ describe('Auth Controller Unit Tests', () => {
     await forgotPassword(req, res, next);
 
     expect(redis.set).toHaveBeenCalled();
-    expect(trasport.sendMail).toHaveBeenCalled();
+    expect(transport.sendMail).toHaveBeenCalled();
   });
 
   // ---------------- RESET PASSWORD ----------------

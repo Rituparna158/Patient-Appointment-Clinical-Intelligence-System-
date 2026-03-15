@@ -6,7 +6,7 @@ import { User, UserRole, Doctor, Role } from '../models';
 import { CreateDoctorDTO, CreateAdminDTO } from '../types/admin.types';
 import { generateTempPassword } from '../utils/generate-password';
 import { redis } from '../config/redis';
-import { trasport } from '../utils/mailer';
+import { transport } from '../utils/mailer';
 
 /*CREATE Doctor*/
 const createDoctorUser = async (data: CreateDoctorDTO) => {
@@ -52,7 +52,7 @@ const createDoctorUser = async (data: CreateDoctorDTO) => {
   // Store plain password in Redis (30 minutes)
   await redis.set(`register:password:${user.id}`, tempPassword, 'EX', 1800);
 
-  await trasport.sendMail({
+  await transport.sendMail({
     from: process.env.MAIL_USER,
     to: user.email,
     subject: 'Your Doctor Account Credentials',
@@ -105,7 +105,7 @@ const createAdminUser = async (data: CreateAdminDTO) => {
 
   await redis.set(`register:password:${user.id}`, tempPassword, 'EX', 1800);
 
-  await trasport.sendMail({
+  await transport.sendMail({
     from: process.env.MAIL_USER,
     to: user.email,
     subject: 'Your Admin Account Credentials',

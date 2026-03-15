@@ -77,10 +77,28 @@ services:
       DB_HOST: postgres
       REDIS_HOST: redis
       REDIS_PORT: 6379
+    volumes:
+      - ./exports:/app/apps/worker-service/exports
     depends_on:
       - postgres
       - redis
 
+  report-analytics-service:
+    build:
+      context: .
+      dockerfile: apps/report-analytics-service/Dockerfile
+    container_name: report-analytics-service
+    expose:
+      - '4006'
+    env_file:
+      - apps/report-analytics-service/.env
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
   # web-app:
   #   build:
   #     context: .
@@ -100,6 +118,7 @@ services:
       - appointment-service
       - clinical-service
       - worker-service
+      - report-analytics-service
 
   postgres:
     image: postgres:15

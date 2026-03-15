@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 import { useClinicalStore } from '@/store/clinical/clinical.store';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Props {
   open: boolean;
@@ -72,13 +73,13 @@ export default function ConsultationModal({
             onChange={(e) => setDiagnosis(e.target.value)}
           />
 
-          <Input
+          <Textarea
             placeholder="Prescription"
             value={prescriptions}
             onChange={(e) => setPrescriptions(e.target.value)}
           />
 
-          <Input
+          <Textarea
             placeholder="Doctor Notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

@@ -10,6 +10,8 @@ export default function TopNavbar() {
   const logoutStore = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
 
+  const role = user?.roles?.[0]
+
   const [dark, setDark] = useState(
     document.documentElement.classList.contains("dark")
   );
@@ -34,9 +36,9 @@ export default function TopNavbar() {
           Clinical Intelligence System
         </h1>
 
-        {user?.role && (
+        {role && (
           <span className="role-badge">
-            {user.role.toUpperCase()}
+            {role.toUpperCase()}
           </span>
         )}
       </div>

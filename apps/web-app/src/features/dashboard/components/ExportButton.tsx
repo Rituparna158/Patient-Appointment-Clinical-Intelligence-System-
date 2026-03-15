@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
 import { Download } from "lucide-react"
 import { useState } from "react"
  
 export default function ExportButton() {
- 
+  const { toast } = useToast()
   const [open,setOpen] = useState(false)
   const [range,setRange] = useState<string | null>(null)
  
@@ -16,8 +17,11 @@ export default function ExportButton() {
     await fetch(
       `/api/reports-analytics/report/export?range=${range}&delivery=email`
     )
- 
-    alert("Report will be sent to your email")
+
+    toast({
+        title: 'Email sent',
+        description: 'Check your email......',
+      });
  
     setOpen(false)
     setRange(null)
@@ -26,7 +30,8 @@ export default function ExportButton() {
   function handleDownload(){
  
     window.open(
-      `/api/reports-analytics/report/export?range=${range}&delivery=download`
+      `/api/reports-analytics/report/export?range=${range}&delivery=download`, "_blank"
+
     )
  
     setOpen(false)
@@ -48,26 +53,43 @@ export default function ExportButton() {
  
       {open && (
  
-        <div className="absolute right-0 mt-2 bg-white border rounded shadow w-48 p-2 space-y-2">
+        <div className="date-filter-list">
  
           {!range && (
  
             <>
-              <button onClick={()=>chooseRange("today")} className="block w-full text-left px-3 py-2 hover:bg-gray-100">
+              <button
+                type="button"
+                onClick={() => chooseRange("today")}
+                className="date-filter"
+              >
                 Today
               </button>
- 
-              <button onClick={()=>chooseRange("week")} className="block w-full text-left px-3 py-2 hover:bg-gray-100">
+              
+              <button
+                type="button"
+                onClick={() => chooseRange("week")}
+                className="date-filter"
+              >
                 Weekly
               </button>
- 
-              <button onClick={()=>chooseRange("month")} className="block w-full text-left px-3 py-2 hover:bg-gray-100">
+              
+              <button
+                type="button"
+                onClick={() => chooseRange("month")}
+                className="date-filter"
+              >
                 Monthly
               </button>
- 
-              <button onClick={()=>chooseRange("year")} className="block w-full text-left px-3 py-2 hover:bg-gray-100">
+              
+              <button
+                type="button"
+                onClick={() => chooseRange("year")}
+                className="date-filter"
+              >
                 Yearly
               </button>
+              
             </>
  
           )}
@@ -78,7 +100,7 @@ export default function ExportButton() {
               <button
               type="button"
                 onClick={handleDownload}
-                className="block w-full text-left px-3 py-2 hover:bg-gray-100"
+                className="export-button"
               >
                 Download here
               </button>
@@ -86,12 +108,11 @@ export default function ExportButton() {
               <button
               type="button"
                 onClick={handleEmail}
-                className="block w-full text-left px-3 py-2 hover:bg-gray-100"
+                className="export-button"
               >
                 Email report
               </button>
             </>
- 
           )}
  
         </div>

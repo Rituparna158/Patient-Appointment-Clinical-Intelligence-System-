@@ -1,0 +1,60 @@
+Date,Doctor,Patient,Status,SlotDate,StartTime,TotalAppointments,CompletedAppointments,CancelledAppointments,MissedAppointments,NewPatients,UniquePatients,FollowUpsScheduled
+Fri Mar 13 2026 06:30:11 GMT+0000 (Coordinated Universal Time),Ritu Rath,Simuna Sanjibita,completed,2026-03-13,15:00:00,1,1,0,0,0,0,0
+Thu Mar 12 2026 09:28:05 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Simuna Sanjibita,confirmed,2026-03-13,15:00:00,1,0,0,0,0,0,0
+Thu Mar 05 2026 07:06:42 GMT+0000 (Coordinated Universal Time),Anand Kumar,Simuna Sanjibita,missed,2026-03-10,10:00:00,1,0,0,1,0,0,0
+Sun Mar 08 2026 00:34:33 GMT+0000 (Coordinated Universal Time),Dr Rishi Nanda,Simuna Sanjibita,completed,2026-03-16,16:00:00,1,1,0,0,0,0,0
+Sat Mar 07 2026 23:45:29 GMT+0000 (Coordinated Universal Time),Ritu Rath,Simuna Sanjibita,confirmed,2026-03-16,15:00:00,1,0,0,0,0,0,0
+Thu Mar 05 2026 00:25:22 GMT+0000 (Coordinated Universal Time),Ritu Rath,Simuna Sanjibita,missed,2026-03-06,16:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 06:00:31 GMT+0000 (Coordinated Universal Time),Manisha Das,Simuna Sanjibita,completed,2026-03-11,14:30:00,1,1,0,0,0,0,0
+Thu Mar 05 2026 05:27:06 GMT+0000 (Coordinated Universal Time),Ritu Rath,Simuna Sanjibita,missed,2026-03-06,14:30:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 04:56:00 GMT+0000 (Coordinated Universal Time),Ritu Rath,Simuna Sanjibita,missed,2026-03-06,08:00:00,1,0,0,1,0,0,0
+Fri Feb 27 2026 05:27:13 GMT+0000 (Coordinated Universal Time),,Simuna Sanjibita,cancelled,,,1,0,1,0,0,0,0
+Thu Feb 26 2026 22:13:42 GMT+0000 (Coordinated Universal Time),,Simuna Sanjibita,cancelled,,,1,0,1,0,0,0,0
+Thu Feb 26 2026 22:06:24 GMT+0000 (Coordinated Universal Time),,Simuna Sanjibita,cancelled,,,1,0,1,0,0,0,0
+Thu Feb 26 2026 21:21:10 GMT+0000 (Coordinated Universal Time),,Simuna Sanjibita,cancelled,,,1,0,1,0,0,0,0
+Thu Feb 26 2026 21:06:12 GMT+0000 (Coordinated Universal Time),,Simuna Sanjibita,cancelled,,,1,0,1,0,0,0,0
+Thu Feb 26 2026 21:05:29 GMT+0000 (Coordinated Universal Time),,Simuna Sanjibita,cancelled,,,1,0,1,0,0,0,0
+Thu Mar 05 2026 06:44:45 GMT+0000 (Coordinated Universal Time),Anand Kumar,Simuna Sanjibita,cancelled,2026-03-09,16:30:00,1,0,1,0,0,0,0
+Tue Mar 03 2026 22:44:50 GMT+0000 (Coordinated Universal Time),Ritu Rath,Biswa Rath,completed,2026-03-04,11:30:00,1,1,0,0,0,0,0
+Thu Feb 26 2026 06:00:27 GMT+0000 (Coordinated Universal Time),,Biswa Rath,cancelled,,,1,0,1,0,0,0,0
+Wed Feb 25 2026 17:22:54 GMT+0000 (Coordinated Universal Time),,Biswa Rath,completed,,,1,1,0,0,0,0,0
+Wed Feb 25 2026 17:04:53 GMT+0000 (Coordinated Universal Time),,Biswa Rath,cancelled,,,1,0,1,0,0,0,0
+Wed Feb 25 2026 11:44:06 GMT+0000 (Coordinated Universal Time),,Biswa Rath,cancelled,,,1,0,1,0,0,0,0
+Wed Feb 25 2026 11:12:59 GMT+0000 (Coordinated Universal Time),,Biswa Rath,cancelled,,,1,0,1,0,0,0,0
+Thu Mar 05 2026 05:55:57 GMT+0000 (Coordinated Universal Time),Ritu Rath,Kaushik Patra,missed,2026-03-06,15:00:00,1,0,0,1,0,0,0
+Mon Mar 02 2026 08:46:07 GMT+0000 (Coordinated Universal Time),Anand Kumar,Kaushik Patra,missed,2026-03-05,10:30:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 07:18:10 GMT+0000 (Coordinated Universal Time),Anand Kumar,Kaushik Patra,missed,2026-03-10,12:00:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 00:53:26 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,missed,2026-03-07,10:00:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 04:22:26 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,completed,2026-03-06,19:00:00,1,1,0,0,0,0,0
+Wed Mar 11 2026 12:19:53 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,missed,2026-03-12,18:00:00,1,0,0,1,0,0,0
+Fri Feb 27 2026 09:34:05 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,missed,2026-02-28,10:30:00,1,0,0,1,0,0,0
+Fri Feb 27 2026 08:34:24 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,missed,2026-02-28,10:00:00,1,0,0,1,0,0,0
+Fri Feb 27 2026 10:07:06 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,completed,2026-02-28,10:30:00,1,1,0,0,0,0,0
+Fri Feb 27 2026 06:11:55 GMT+0000 (Coordinated Universal Time),,Kaushik Patra,confirmed,,,1,0,0,0,0,0,0
+Tue Mar 03 2026 09:07:47 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,completed,2026-03-05,02:00:00,1,1,0,0,0,0,0
+Fri Feb 27 2026 05:55:24 GMT+0000 (Coordinated Universal Time),,Kaushik Patra,cancelled,,,1,0,1,0,0,0,0
+Fri Mar 13 2026 06:29:09 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,confirmed,2026-03-13,19:00:00,1,0,0,0,0,0,0
+Thu Mar 05 2026 08:25:04 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,missed,2026-03-12,09:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 08:57:01 GMT+0000 (Coordinated Universal Time),Amrit Kumar,Isha Rath,missed,2026-03-11,15:00:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 07:38:08 GMT+0000 (Coordinated Universal Time),Anand Kumar,Isha Rath,missed,2026-03-11,11:36:00,1,0,0,1,0,0,0
+Sat Mar 07 2026 23:56:52 GMT+0000 (Coordinated Universal Time),Dr Rishi Nanda,Isha Rath,completed,2026-03-16,17:00:00,1,1,0,0,0,0,0
+Thu Mar 05 2026 08:35:31 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,completed,2026-03-12,14:30:00,1,1,0,0,0,0,0
+Wed Mar 04 2026 23:59:16 GMT+0000 (Coordinated Universal Time),Anand Kumar,Isha Rath,missed,2026-03-05,20:30:00,1,0,0,1,0,0,0
+Wed Mar 04 2026 23:21:48 GMT+0000 (Coordinated Universal Time),Anand Kumar,Isha Rath,missed,2026-03-05,08:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 19:43:23 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,missed,2026-03-12,09:12:00,1,0,0,1,0,0,0
+Wed Mar 04 2026 22:40:14 GMT+0000 (Coordinated Universal Time),Ritu Rath,Isha Rath,missed,2026-03-05,19:00:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 08:42:33 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,cancelled,2026-03-12,15:45:00,1,0,1,0,0,0,0
+Thu Mar 05 2026 06:17:15 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,missed,2026-03-09,20:00:00,1,0,0,1,0,0,0
+Fri Mar 06 2026 20:42:25 GMT+0000 (Coordinated Universal Time),Sneha Rath,Isha Rath,confirmed,2026-03-13,12:00:00,1,0,0,0,0,0,0
+Thu Mar 05 2026 06:31:45 GMT+0000 (Coordinated Universal Time),Anand Kumar,Isha Rath,completed,2026-03-10,14:30:00,1,1,0,0,0,0,0
+Thu Mar 05 2026 03:39:22 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,cancelled,2026-03-07,11:00:00,1,0,1,0,0,0,0
+Sat Feb 28 2026 00:36:19 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,completed,2026-02-28,10:00:00,1,1,0,0,0,0,0
+Fri Feb 27 2026 23:38:17 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,cancelled,2026-02-28,11:00:00,1,0,1,0,0,0,0
+Thu Mar 05 2026 05:59:07 GMT+0000 (Coordinated Universal Time),Ritu Rath,Isha Rath,missed,2026-03-08,16:00:00,1,0,0,1,0,0,0
+Thu Mar 05 2026 05:23:41 GMT+0000 (Coordinated Universal Time),Ritu Rath,Isha Rath,missed,2026-03-06,21:00:00,1,0,0,1,0,0,0
+Fri Feb 27 2026 22:58:18 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,completed,2026-02-28,11:00:00,1,1,0,0,0,0,0
+Thu Mar 05 2026 23:25:54 GMT+0000 (Coordinated Universal Time),Sneha Rath,Nisan Roy,missed,2026-03-12,17:00:00,1,0,0,1,0,0,0
+Fri Mar 13 2026 06:26:35 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Arpita Sen,confirmed,2026-03-13,12:00:00,1,0,0,0,0,0,0
+Wed Mar 11 2026 21:26:25 GMT+0000 (Coordinated Universal Time),Anand Kumar,Arpita Sen,missed,2026-03-12,07:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 09:05:24 GMT+0000 (Coordinated Universal Time),Amrit Kumar,Arpita Sen,missed,2026-03-11,15:30:00,1,0,0,1,0,0,0
+Tue Mar 10 2026 08:14:10 GMT+0000 (Coordinated Universal Time),Sneha Rath,Arpita Sen,completed,2026-03-10,18:00:00,1,1,0,0,0,0,0

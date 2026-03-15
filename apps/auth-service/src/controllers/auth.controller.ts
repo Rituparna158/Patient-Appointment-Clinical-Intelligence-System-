@@ -6,7 +6,7 @@ import {
 import { HTTP_STATUS } from '../constants/http-status';
 import { MESSAGES } from '../constants/messages';
 import { redis } from '../config/redis';
-import { trasport } from '../utils/mailer';
+import { transport } from '../utils/mailer';
 import otpGenerator from 'otp-generator';
 import { hashPassword } from '../utils/hash';
 import { Role, User } from '../models';
@@ -168,7 +168,7 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
     });
     await redis.set(`reset:${email}`, otp, 'EX', 600);
     try {
-      await trasport.sendMail({
+      await transport.sendMail({
         from: process.env.MAIL_USER,
         to: email,
         subject: 'Reset password OTP',

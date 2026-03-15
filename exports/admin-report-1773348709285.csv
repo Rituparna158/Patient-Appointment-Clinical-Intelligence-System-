@@ -1,0 +1,14 @@
+Date,Doctor,Patient,Status,SlotDate,StartTime,TotalAppointments,CompletedAppointments,CancelledAppointments,MissedAppointments,NewPatients,UniquePatients,FollowUpsScheduled
+Thu Mar 12 2026 09:28:05 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Simuna Sanjibita,confirmed,2026-03-13,15:00:00,1,0,0,0,0,0,0
+Sun Mar 08 2026 00:34:33 GMT+0000 (Coordinated Universal Time),Dr Rishi Nanda,Simuna Sanjibita,completed,2026-03-16,16:00:00,1,1,0,0,0,0,0
+Sat Mar 07 2026 23:45:29 GMT+0000 (Coordinated Universal Time),Ritu Rath,Simuna Sanjibita,confirmed,2026-03-16,15:00:00,1,0,0,0,0,0,0
+Wed Mar 11 2026 06:00:31 GMT+0000 (Coordinated Universal Time),Manisha Das,Simuna Sanjibita,completed,2026-03-11,14:30:00,1,1,0,0,0,0,0
+Wed Mar 11 2026 12:19:53 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Kaushik Patra,missed,2026-03-12,18:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 08:57:01 GMT+0000 (Coordinated Universal Time),Amrit Kumar,Isha Rath,missed,2026-03-11,15:00:00,1,0,0,1,0,0,0
+Sat Mar 07 2026 23:56:52 GMT+0000 (Coordinated Universal Time),Dr Rishi Nanda,Isha Rath,completed,2026-03-16,17:00:00,1,1,0,0,0,0,0
+Wed Mar 11 2026 19:43:23 GMT+0000 (Coordinated Universal Time),Dr Ram Kumar,Isha Rath,missed,2026-03-12,09:12:00,1,0,0,1,0,0,0
+Fri Mar 06 2026 20:42:25 GMT+0000 (Coordinated Universal Time),Sneha Rath,Isha Rath,confirmed,2026-03-13,12:00:00,1,0,0,0,0,0,0
+Thu Mar 05 2026 23:25:54 GMT+0000 (Coordinated Universal Time),Sneha Rath,Nisan Roy,missed,2026-03-12,17:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 21:26:25 GMT+0000 (Coordinated Universal Time),Anand Kumar,Arpita Sen,missed,2026-03-12,07:00:00,1,0,0,1,0,0,0
+Wed Mar 11 2026 09:05:24 GMT+0000 (Coordinated Universal Time),Amrit Kumar,Arpita Sen,missed,2026-03-11,15:30:00,1,0,0,1,0,0,0
+Tue Mar 10 2026 08:14:10 GMT+0000 (Coordinated Universal Time),Sneha Rath,Arpita Sen,completed,2026-03-10,18:00:00,1,1,0,0,0,0,0

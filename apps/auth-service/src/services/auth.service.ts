@@ -78,7 +78,7 @@ const loginUser = async (data: LoginDTO) => {
   const payload = {
     id: user.id,
     email: user.email,
-    role: roleName,
+    roles: [roleName],
   };
 
   const accessToken = generateToken(payload);
@@ -90,7 +90,7 @@ const loginUser = async (data: LoginDTO) => {
     user: {
       id: user.id,
       email: user.email,
-      role: roleName,
+      roles: [roleName],
     },
     accessToken,
     refreshToken,
@@ -112,6 +112,7 @@ const refreshTokenService = async (refreshToken: string) => {
   const newAccessToken = generateToken({
     id: decode.id,
     email: decode.email,
+    roles: decode.roles,
   });
 
   return newAccessToken;
