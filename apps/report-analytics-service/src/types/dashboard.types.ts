@@ -36,9 +36,15 @@ export interface PaginationQuery {
 export interface TableQueryOptions {
   from?: string;
   to?: string;
-  sortBy?: string;
+  sortBy?: 'date' | 'totalAppointments';
   sortOrder?: 'ASC' | 'DESC';
   days?: number;
+  range?: 'today' | 'week' | 'month' | 'year';
+}
+
+export interface TableResult<T> {
+  total: number;
+  rows: T[];
 }
 
 export interface DoctorDashboardCounters {
@@ -53,7 +59,7 @@ export interface PatientDashboardCounters {
 }
 
 export interface DoctorUpcomingAppointment {
-  appointmentId: string;
+  id: string;
   patientName: string;
   slotDate: Date;
   startTime: string;
@@ -61,9 +67,63 @@ export interface DoctorUpcomingAppointment {
 }
 
 export interface PatientUpcomingAppointment {
-  appointmentId: string;
+  id: string;
   doctorName: string;
   slotDate: Date;
   startTime: string;
   status: string;
 }
+
+export interface DoctorAppointmentRow {
+  id: string;
+  patientName: string;
+  slotDate: Date;
+  startTime: string;
+  status: string;
+}
+
+export interface PatientAppointmentRow {
+  id: string;
+  doctorName: string;
+  slotDate: Date;
+  startTime: string;
+  status: string;
+}
+
+export interface ResolvedRange {
+  start?: Date;
+  end?: Date;
+}
+export type RangeType = 'today' | 'week' | 'month' | 'year';
+
+export interface ResolvedRange {
+  start?: Date;
+  end?: Date;
+}
+
+export interface WorkloadTrendRow {
+  date: Date;
+  totalAppointments: number;
+}
+
+export interface CompletionRate {
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
+export interface PatientTypeStats {
+  newPatients: number;
+  returningPatients: number;
+}
+
+export interface ResolvedRange {
+  start?: Date;
+  end?: Date;
+}
+
+const startOfToday = (): Date => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
