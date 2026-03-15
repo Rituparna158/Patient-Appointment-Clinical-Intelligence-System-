@@ -34,10 +34,11 @@ export default function Login() {
     )
 
     const user = res.user
-    setUser(user)
+    const token = res.token
+    setUser(user,token)
 
-    if (user.role === "admin") navigate("/admin/dashboard")
-    else if (user.role === "doctor") navigate("/doctor/dashboard")
+    if (user.roles.includes("admin")) navigate("/admin/dashboard")
+    else if (user.roles.includes("doctor")) navigate("/doctor/dashboard")
     else navigate("/patient/dashboard")
 
   }
