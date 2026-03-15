@@ -5,45 +5,8 @@ import { Doctor } from '../models/external/doctor.model';
 import { Patient } from '../models/external/patient.model';
 import { User } from '../models/external/user.model';
 import { DoctorSlot } from '../models/external/doctorSlot.model';
-
-type RangeType = 'today' | 'week' | 'month' | 'year';
-
-const resolveRange = (range?: RangeType) => {
-  if (!range) return {};
-
-  const now = new Date();
-
-  if (range === 'today') {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
-
-    return { start, end };
-  }
-
-  if (range === 'week') {
-    const start = new Date();
-    start.setDate(now.getDate() - 7);
-
-    return { start, end: now };
-  }
-
-  if (range === 'month') {
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    return { start, end: now };
-  }
-
-  if (range === 'year') {
-    const start = new Date(now.getFullYear(), 0, 1);
-
-    return { start, end: now };
-  }
-
-  return {};
-};
+import { resolveRange } from '../utils/date-range';
+import { RangeType } from '../types/export.types';
 
 export const findAdminExportRows = async (
   range?: RangeType,
