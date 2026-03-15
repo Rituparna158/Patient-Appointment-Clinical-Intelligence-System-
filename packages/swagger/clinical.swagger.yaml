@@ -1,0 +1,298 @@
+openapi: 3.0.0
+
+info:
+  title: Clinical Service API
+  version: 1.0.0
+  description: Clinical Records and Consultation Notes Service
+
+servers:
+  - url: http://localhost:8080
+    description: API Gateway
+
+paths:
+
+  /api/clinical/notes:
+    post:
+      summary: Create consultation note
+      tags: [Consultation]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - appointmentId
+                - symptoms
+                - diagnosis
+                - prescriptions
+              properties:
+                appointmentId:
+                  type: string
+                  example: "9eabdd54-9f1a-4df3-bac7-67f3bb1f5e10"
+                symptoms:
+                  type: string
+                  example: "High fever and headache"
+                diagnosis:
+                  type: string
+                  example: "Viral fever"
+                prescriptions:
+                  type: string
+                  example: "Paracetamol 500mg twice daily"
+                notes:
+                  type: string
+                  example: "Patient advised to rest"
+                followUpDate:
+                  type: string
+                  format: date
+                  example: "2026-04-01"
+
+      responses:
+        "201":
+          description: Consultation note created
+        "400":
+          description: Validation error
+        "401":
+          description: Unauthorized
+
+  /api/clinical/notes/{noteId}:
+    patch:
+      summary: Update consultation note
+      tags: [Consultation]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                symptoms:
+                  type: string
+                  example: "Fever and cough"
+                diagnosis:
+                  type: string
+                  example: "Seasonal flu"
+                prescriptions:
+                  type: string
+                  example: "Ibuprofen 200mg"
+                notes:
+                  type: string
+                  example: "Drink plenty of fluids"
+                followUpDate:
+                  type: string
+                  format: date
+
+      responses:
+        "200":
+          description: Consultation note updated
+        "404":
+          description: Note not found
+        "401":
+          description: Unauthorized
+
+  /api/clinical/notes/{appointmentId}:
+    get:
+      summary: Get consultation note by appointment
+      tags: [Consultation]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: appointmentId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Consultation notes
+        "404":
+          description: Appointment not found
+
+  /api/clinical/doctor/me:
+    get:
+      summary: Doctor consultation dashboard
+      tags: [Doctor]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 10
+        - name: search
+          in: query
+          schema:
+            type: string
+            example: fever
+        - name: from
+          in: query
+          schema:
+            type: string
+            example: 2026-01-01
+        - name: to
+          in: query
+          schema:
+            type: string
+            example: 2026-12-31
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            example: createdAt
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+
+      responses:
+        "200":
+          description: Doctor consultations list
+
+  /api/clinical/patient/me:
+    get:
+      summary: Patient consultation timeline
+      tags: [Patient]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+
+      responses:
+        "200":
+          description: Patient consultation timeline
+
+  /api/clinical/admin:
+    get:
+      summary: Get all clinical records (Admin)
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+
+      responses:
+        "200":
+          description: Clinical records list
+
+  /api/clinical/doctor/patient/{patientId}:
+    get:
+      summary: Get patient consultation profile for doctor
+      tags: [Doctor]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Patient profile with consultations
+        "404":
+          description: Patient history not found
+
+  /api/clinical/notification/me:
+    get:
+      summary: Get user notifications
+      tags: [Notification]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 10
+
+      responses:
+        "200":
+          description: Notifications list
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

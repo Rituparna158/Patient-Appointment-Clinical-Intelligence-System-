@@ -1,0 +1,336 @@
+openapi: 3.0.0
+
+info:
+  title: Dashboard & Analytics Service API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Gateway
+
+paths:
+
+  /api/reports-analytics/analytics/admin/dashboard/counters:
+    get:
+      summary: Get admin dashboard counters
+      tags: [Admin Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [today, week, month, year]
+      responses:
+        '200':
+          description: Dashboard counters returned
+        '401':
+          description: Unauthorized
+
+  /api/reports-analytics/analytics/admin/dashboard/status:
+    get:
+      summary: Get appointment status statistics
+      tags: [Admin Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+      responses:
+        '200':
+          description: Appointment status stats
+
+  /api/reports-analytics/analytics/admin/dashboard/trend:
+    get:
+      summary: Get appointment trend
+      tags: [Admin Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+      responses:
+        '200':
+          description: Appointment trend data
+
+  /api/reports-analytics/analytics/admin/dashboard/daily:
+    get:
+      summary: Daily analytics table
+      tags: [Admin Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 10
+
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-01
+
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-08
+
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [date, totalAppointments]
+            example: date
+
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+
+      responses:
+        '200':
+          description: Daily analytics data
+
+  /api/reports-analytics/analytics/doctor/dashboard:
+    get:
+      summary: Doctor dashboard overview
+      tags: [Doctor Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+      responses:
+        '200':
+          description: Doctor dashboard counters and upcoming appointments
+        '401':
+          description: Unauthorized
+        '404':
+          description: Doctor not found
+
+  /api/reports-analytics/analytics/doctor/dashboard/table:
+    get:
+      summary: Doctor appointments table
+      tags: [Doctor Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 10
+
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-01
+
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-08
+
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [slotDate, status]
+
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [ASC, DESC]
+
+      responses:
+        '200':
+          description: Doctor appointments table
+
+  /api/reports-analytics/analytics/patient/dashboard:
+    get:
+      summary: Patient dashboard overview
+      tags: [Patient Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+      responses:
+        '200':
+          description: Patient dashboard data
+        '404':
+          description: Patient not found
+
+  /api/reports-analytics/analytics/patient/dashboard/table:
+    get:
+      summary: Patient appointments table
+      tags: [Patient Dashboard]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            example: 10
+
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-01
+
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-08
+
+      responses:
+        '200':
+          description: Patient appointments table
+
+  /api/reports-analytics/analytics/doctor/charts/workload:
+    get:
+      summary: Doctor workload trend
+      tags: [Doctor Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+
+      responses:
+        '200':
+          description: Workload trend data
+
+  /api/reports-analytics/analytics/doctor/charts/completion-rate:
+    get:
+      summary: Doctor completion rate
+      tags: [Doctor Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+
+      responses:
+        '200':
+          description: Completion rate data
+
+  /api/reports-analytics/analytics/doctor/charts/patient-types:
+    get:
+      summary: Doctor patient type statistics
+      tags: [Doctor Analytics]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+
+      responses:
+        '200':
+          description: Patient type stats
+
+  /api/reports-analytics/report/export:
+    get:
+      summary: Export analytics report
+      tags: [Export]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, year]
+
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-01
+
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-03-08
+
+        - name: delivery
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [download, email]
+
+      responses:
+        '200':
+          description: CSV downloaded
+        '202':
+          description: Export queued for email
+        '403':
+          description: Export not allowed
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
