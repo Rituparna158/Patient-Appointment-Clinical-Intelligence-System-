@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { HTTP_STATUS } from '../constants/http-status';
+import { HTTP_STATUS } from '@repo/shared-constants';
 
 const router = Router();
 router.get('/', (req, res) => {

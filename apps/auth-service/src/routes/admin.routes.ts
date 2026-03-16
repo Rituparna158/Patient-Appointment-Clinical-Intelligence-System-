@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { createDoctor, createAdmin } from '../controllers/admin.controller';
 import { requireAuth } from '../middleware/auth.middleware';
-import { requirePermission } from '../middleware/permission.middleware';
+import { requirePermission } from '@repo/shared-middleware';
 
 const router = Router();
 

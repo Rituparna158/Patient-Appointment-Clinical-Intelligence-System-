@@ -1,5 +1,10 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.middleware';
+import {
+  loginLimiter,
+  forgotPasswordLimiter,
+  resetPasswordLimiter,
+} from '@repo/shared-middleware';
 import { requireRole, requireAnyRole } from '../middleware/role.middleware';
 import {
   register,
@@ -10,12 +15,11 @@ import {
   forgotPassword,
   resetPassword,
 } from '../controllers/auth.controller';
-import { HTTP_STATUS } from '../constants/http-status';
-import { ROLES } from '../constants/roles';
+import { HTTP_STATUS } from '@repo/shared-constants';
 
 const router = Router();
 router.post('/register', register);
-router.post('/login', login);
+router.post('/login', loginLimiter, login);
 router.post('/refresh', refreshTok);
 router.post('/logout', logout);
 router.get('/me', requireAuth, me);
@@ -39,6 +43,6 @@ router.get(
     });
   }
 );
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
+router.post('/reset-password', resetPasswordLimiter, resetPassword);
 export default router;
