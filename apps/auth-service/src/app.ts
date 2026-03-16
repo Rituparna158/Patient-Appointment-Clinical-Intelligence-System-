@@ -2,7 +2,10 @@ import express from 'express';
 import authRoutes from './routes/auth.routes';
 import healthRoutes from './routes/health.routes';
 import adminRoutes from './routes/admin.routes';
+import { globalRateLimiter } from './middleware/rateLimiter.middleware';
 import { errorHandler } from './middleware/error.middleware';
+import { corsMiddleware } from './middleware/cors.middleware';
+import { notFoundHandler } from './middleware/notFound.middleware';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 import cookieParser from 'cookie-parser';
@@ -10,15 +13,10 @@ import cors from 'cors';
 import path from 'path';
 
 const app = express();
-app.use(
-  cors({
-    //origin: ['http://localhost:5173', 'http://localhost:8080'],
-    origin: true,
-    credentials: true,
-  })
-);
 app.use(express.json());
 app.use(cookieParser());
+app.use(globalRateLimiter);
+app.use(corsMiddleware);
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -91,5 +89,6 @@ app.use(
     },
   })
 );
+app.use(notFoundHandler);
 app.use(errorHandler);
 export default app;
