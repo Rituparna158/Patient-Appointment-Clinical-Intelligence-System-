@@ -1,5 +1,5 @@
 import { WhereOptions, Op, Order } from 'sequelize';
-import { Appointment } from '../models/appointment.model';
+import { Appointment } from '@repo/shared-database';
 import {
   CreateAppointmentData,
   AppointmentStatus,
@@ -7,9 +7,9 @@ import {
   AdminSearchAppointmentsInput,
 } from '../types/appointment.types';
 
-import { Doctor, DoctorSlot } from '../models';
-import { User } from '../models/external/user.model';
-import { Patient } from '../models/external/patient.model';
+import { Doctor, DoctorSlot } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
 
 function buildSort(sortBy: string, sortOrder: 'ASC' | 'DESC'): Order {
   if (sortBy === 'doctor') {
@@ -118,8 +118,6 @@ function buildInclude(fromDate?: string, toDate?: string) {
   ];
 }
 
-/* ---------------- CREATE ---------------- */
-
 export const createAppointment = async (data: CreateAppointmentData) => {
   const appointment = await Appointment.create({
     ...data,
@@ -132,28 +130,20 @@ export const createAppointment = async (data: CreateAppointmentData) => {
   });
 };
 
-/* ---------------- FIND BY ID ---------------- */
-
 export const findAppointmentById = (id: string) =>
   Appointment.findByPk(id, {
     include: buildInclude(),
   });
-
-/* ---------------- UPDATE STATUS ---------------- */
 
 export const updateAppointmentStatus = (
   appointment: Appointment,
   status: AppointmentStatus
 ) => appointment.update({ status });
 
-/* ---------------- UPDATE PAYMENT ---------------- */
-
 export const updatePaymentStatus = (
   appointment: Appointment,
   paymentStatus: PaymentStatus
 ) => appointment.update({ paymentStatus });
-
-/* ---------------- PATIENT APPOINTMENTS ---------------- */
 
 export const findAppointmentsByPatient = async (
   patientId: string,
@@ -197,8 +187,6 @@ export const findAppointmentsByPatient = async (
     subQuery: false,
   });
 };
-
-/* ---------------- DOCTOR APPOINTMENTS ---------------- */
 
 export const findAppointmentsByDoctor = async (
   doctorId: string,

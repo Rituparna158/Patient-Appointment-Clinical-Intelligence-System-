@@ -1,4 +1,4 @@
-import { DoctorSlot } from '../models/doctorSlot.model';
+import { DoctorSlot } from '@repo/shared-database';
 
 export const findSlotById = (slotId: string) =>
   DoctorSlot.findOne({

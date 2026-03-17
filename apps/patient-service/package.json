@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
-    "build": "pnpm exec tsc",
+    "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev src/index.ts"
+    "dev": "tsx watch src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +22,13 @@
     "pg": "^8.18.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "@repo/shared-utils": "workspace:*",
+    "@repo/shared-error": "workspace:*",
+    "@repo/shared-constants": "workspace:*",
+    "@repo/shared-types": "workspace:*",
+    "@repo/shared-middleware": "workspace:*",
+    "@repo/shared-database": "workspace:*"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",

@@ -4,8 +4,9 @@ import * as doctorRepo from '../repositories/doctor.repository';
 import * as branchRepo from '../repositories/branch.repository';
 import * as slotRepo from '../repositories/doctorSlot.repository';
 import * as appointmentRepo from '../repositories/appointment.repository';
-import { HTTP_STATUS } from '../constants/http_status';
-import { AppError } from '../utils/app-error';
+import { HTTP_STATUS } from '@repo/shared-constants';
+import { AppError } from '@repo/shared-error';
+import { logger } from '@repo/shared-utils';
 
 import {
   BookAppointmentInput,
@@ -20,7 +21,7 @@ import {
   GetDoctorAppointmentsByUserInput,
 } from '../types/appointment.types';
 
-import { DoctorSlot } from '../models/doctorSlot.model';
+import { DoctorSlot } from '@repo/shared-database';
 import { processFakePayment } from '../utils/payment.util';
 
 import { appointmentQueue } from '../queues/appointment.producer';
@@ -128,8 +129,6 @@ export const confirmPayment = async ({
   }
   await appointmentRepo.updatePaymentStatus(appointment, 'paid');
   await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
-
-  console.log('Adding job:', appointment.id);
 
   await appointmentQueue.add('appointment.confirmed', {
     appointmentId: appointment.id,

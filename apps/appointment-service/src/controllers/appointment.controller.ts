@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as appointmentService from '../services/appointment.service';
 import { AppointmentStatus, PaymentStatus } from '../types/appointment.types';
-import { HTTP_STATUS } from '../constants/http_status';
+import { HTTP_STATUS } from '@repo/shared-constants';
 
 const extractParam = (
   param: string | string[] | undefined,

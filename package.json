@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "build": "turbo run build",
     "format": "prettier --write .",
     "prepare": "husky install"
   },
@@ -25,6 +27,8 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "sequelize-cli": "^6.6.5",
+    "tsx": "^4.21.0",
+    "turbo": "^2.8.17",
     "typescript": "^5.9.3"
   },
   "lint-staged": {

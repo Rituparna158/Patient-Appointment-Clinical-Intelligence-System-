@@ -15,10 +15,7 @@ import {
   createSlotSchema,
   createBranchSchema,
 } from '../validators/appointment.validator';
-import {
-  validateBody,
-  validateQuery,
-} from '../middlewares/validate.middleware';
+import { validateBody, validateQuery } from '@repo/shared-middleware';
 
 const router = Router();
 
