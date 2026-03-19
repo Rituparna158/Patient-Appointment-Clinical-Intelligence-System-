@@ -11,13 +11,13 @@ export function TableFilters({
 
   return (
 
-    <div className="table-filters flex gap-3 items-center">
+    <div className="table-filters flex gap-3 items-center flex-wrap">
 
       {status !== undefined && setStatus && (
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="border rounded px-2 py-1"
+          className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
         >
           <option value="">All Status</option>
           <option value="requested">Requested</option>
@@ -33,7 +33,7 @@ export function TableFilters({
         type="date"
         value={fromDate ?? ""}
         onChange={(e) => setFromDate(e.target.value)}
-        className="border rounded px-2 py-1"
+        className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
       />
 
       {/* To Date */}
@@ -41,7 +41,7 @@ export function TableFilters({
         type="date"
         value={toDate ?? ""}
         onChange={(e) => setToDate(e.target.value)}
-        className="border rounded px-2 py-1"
+        className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
       />
 
     </div>
