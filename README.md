@@ -24,6 +24,7 @@ The architecture separates responsibilities across services so each component ca
 
 # 📁 Project Structure
 
+```
 clinic-system
 │
 ├── docker-compose.yml
@@ -58,6 +59,8 @@ clinic-system
 │ ├── auth.swagger.yaml
 │ ├── patient.swagger.yaml
 │ └── appointment.swagger.yaml
+
+```
 
 # 🧰 Tech Stack
 
@@ -117,6 +120,7 @@ Each service has its own `.env` file.
 
 Example `.env.example`:
 
+```
 PORT=4001
 
 DB_HOST=localhost
@@ -135,6 +139,7 @@ MAIL_USER=your_email@gmail.com
 MAIL_PASS=your_email_app_password
 
 FRONTEND_URL=http://localhost:8080
+```
 
 Copy and configure:
 
