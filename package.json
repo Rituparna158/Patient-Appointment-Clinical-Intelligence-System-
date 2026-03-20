@@ -19,6 +19,7 @@
     "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^20.4.1",
     "@rollup/rollup-win32-x64-msvc": "4.57.1",
+    "@types/dotenv": "^8.2.3",
     "@typescript-eslint/eslint-plugin": "^8.55.0",
     "@typescript-eslint/parser": "^8.55.0",
     "eslint": "^9.39.2",
@@ -44,6 +45,7 @@
     ]
   },
   "dependencies": {
+    "dotenv": "^17.3.1",
     "es-object-atoms": "^1.1.1",
     "husky": "^9.1.7"
   }
