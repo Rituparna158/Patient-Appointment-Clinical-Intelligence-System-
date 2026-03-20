@@ -25,3 +25,16 @@ export interface Props {
   patientId: string | null;
   onClose: () => void;
 }
+export interface ProfileUser {
+  id: string;
+  full_name: string;
+  email: string;
+  phone?: string | null;
+  gender?: string | null;
+  date_of_birth?: string | null;
+  role?: string;
+}
+
+export interface AuthMeResponse {
+  data: ProfileUser;
+}

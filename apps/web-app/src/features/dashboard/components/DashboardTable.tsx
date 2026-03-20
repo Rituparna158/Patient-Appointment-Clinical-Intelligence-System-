@@ -36,7 +36,7 @@ export default function DashboardTable() {
     fetchAdminTable()
 
  
-  }, [ page , sortBy , sortOrder , from , to])
+  }, [fetchAdminTable, page , sortBy , sortOrder , from , to])
  
   const columns = [
  

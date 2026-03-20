@@ -39,11 +39,12 @@ export default function CreateAdmin() {
       });
 
       reset();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const message= error instanceof Error ? error.message: "Failed to create admin"
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: err.message,
+        description: message,
       });
     }
   }

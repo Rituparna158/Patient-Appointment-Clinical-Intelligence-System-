@@ -18,7 +18,6 @@ export async function api(endpoint: string, options: RequestInit = {}) {
   }
 
   if (!res.ok) {
-    console.log('Backend error:', data);
     throw new Error(data.message || 'Request failed');
   }
 

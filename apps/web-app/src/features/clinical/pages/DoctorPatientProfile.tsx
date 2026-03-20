@@ -7,6 +7,7 @@ import { ClinicalService } from "@/services/clinical.service"
 import { DataTable } from "@/features/shared/table/components/DataTable"
 import TableSkeleton from "@/features/shared/components/TableSkeleton"
 import type { ConsultationRow } from "../../../types/clinical.types"
+import type { Patient } from "@/types/patientProfile.types"
 
 
 export default function DoctorPatientProfile() {
@@ -15,7 +16,7 @@ export default function DoctorPatientProfile() {
 
   const [loading, setLoading] = useState(true)
 
-  const [patient, setPatient] = useState<any>(null)
+  const [patient, setPatient] = useState<Patient | null>(null)
 
   const [consultations, setConsultations] = useState<ConsultationRow[]>([])
 
@@ -91,7 +92,7 @@ export default function DoctorPatientProfile() {
 
           <>
 
-            <div className="border rounded-lg p-4 bg-white">
+            <div className="border rounded-lg p-4 bg-card text-card-foreground">
 
               <h2 className="text-lg font-semibold">
                 Patient Profile

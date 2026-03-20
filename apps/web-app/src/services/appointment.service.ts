@@ -6,6 +6,8 @@ import type {
   AppointmentStatus,
   ApiResponse,
   PaginatedAppointments,
+  Doctor,
+  Branch,
 } from '@/types/appointment.types';
 
 function buildQuery(query: AppointmentTableQuery) {
@@ -15,14 +17,10 @@ function buildQuery(query: AppointmentTableQuery) {
   params.append('limit', query.limit.toString());
 
   if (query.search?.trim()) params.append('search', query.search);
-
   if (query.sortBy) params.append('sortBy', query.sortBy);
   if (query.sortOrder) params.append('sortOrder', query.sortOrder);
-
   if (query.status) params.append('status', query.status);
-
   if (query.branchId) params.append('branchId', query.branchId);
-
   if (query.fromDate) params.append('fromDate', query.fromDate);
   if (query.toDate) params.append('toDate', query.toDate);
 
@@ -57,11 +55,9 @@ export const AppointmentService = {
     query: AppointmentTableQuery
   ): Promise<PaginatedAppointments> {
     const qs = buildQuery(query);
-
     const res: ApiResponse<PaginatedAppointments> = await api(
       `/appointments/me?${qs}`
     );
-
     return res.data;
   },
 
@@ -69,11 +65,9 @@ export const AppointmentService = {
     query: AppointmentTableQuery
   ): Promise<PaginatedAppointments> {
     const qs = buildQuery(query);
-
     const res: ApiResponse<PaginatedAppointments> = await api(
       `/appointments/doctor/me?${qs}`
     );
-
     return res.data;
   },
 
@@ -96,11 +90,9 @@ export const AppointmentService = {
     query: AppointmentTableQuery
   ): Promise<PaginatedAppointments> {
     const qs = buildQuery(query);
-
     const res: ApiResponse<PaginatedAppointments> = await api(
       `/appointments?${qs}`
     );
-
     return res.data;
   },
 
@@ -121,23 +113,30 @@ export const AppointmentService = {
     return res.data;
   },
 
-  async getAvailableSlots(doctorId: string, date: string): Promise<Slot[]> {
+  async getAvailableSlots(
+    doctorId: string,
+    branchId: string,
+    date: string
+  ): Promise<Slot[]> {
+    const params = new URLSearchParams({
+      doctorId,
+      branchId,
+      date,
+    });
+
     const res: ApiResponse<Slot[]> = await api(
-      `/appointments/slots?doctorId=${doctorId}&date=${date}`
+      `/appointments/slots?${params.toString()}`
     );
 
     return res.data;
   },
-
-  async getDoctors() {
-    const res = await api('/appointments/doctors');
-
+  async getDoctors(): Promise<Doctor[]> {
+    const res: ApiResponse<Doctor[]> = await api('/appointments/doctors');
     return res.data;
   },
 
-  async getBranches() {
-    const res = await api('/appointments/branches');
-
+  async getBranches(): Promise<Branch[]> {
+    const res: ApiResponse<Branch[]> = await api('/appointments/branches');
     return res.data;
   },
 

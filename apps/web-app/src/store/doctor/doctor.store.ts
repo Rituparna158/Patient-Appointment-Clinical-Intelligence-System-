@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import type { PatientState } from '@/types/patient.types';
+import type { DoctorState } from '@/types/doctor.types';
 import { PatientService } from '@/services/patient.service';
 
-export const usePatientStore = create<PatientState>((set, get) => ({
-  patients: [],
+export const useDoctorStore = create<DoctorState>((set, get) => ({
+  doctors: [],
   total: 0,
   page: 1,
   limit: 10,
@@ -14,7 +14,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
 
   setSearch: (value) => set({ search: value, page: 1 }),
 
-  fetchPatients: async () => {
+  fetchDoctors: async () => {
     const { page, limit, search } = get();
 
     if (get().loading) return;
@@ -22,18 +22,18 @@ export const usePatientStore = create<PatientState>((set, get) => ({
     set({ loading: true });
 
     try {
-      const data = await PatientService.searchPatient({
+      const data = await PatientService.searchDoctor({
         page,
         limit,
         ...(search ? { search } : {}),
       });
 
       set({
-        patients: data.patients,
+        doctors: data.doctors,
         total: data.total,
       });
     } catch (error) {
-      console.error({ error }, 'Pateint fetch error:');
+      console.error({ error }, 'Doctor fetch error:');
     } finally {
       set({ loading: false });
     }

@@ -21,6 +21,7 @@ export default function PatientTimelinePage() {
     to,
     sortBy,
     sortOrder,
+    loading,
     setPage,
     setSearch,
     setFrom,
@@ -29,14 +30,12 @@ export default function PatientTimelinePage() {
     fetchPatientTimeline
   } = useClinicalStore()
 
-  const [loading, setLoading] = useState(false)
   const [selectedNote, setSelectedNote] = useState<ConsultationNote | null>(null)
     const [drawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    setLoading(true)
-    fetchPatientTimeline().finally(() => setLoading(false))
-  }, [page, search, from, to, sortBy, sortOrder])
+    fetchPatientTimeline()
+  }, [fetchPatientTimeline,page, search, from, to, sortBy, sortOrder])
    const openDrawer = (note: ConsultationNote) => {
 
     setSelectedNote(note)

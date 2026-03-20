@@ -38,11 +38,12 @@ export default function CreatePatientProfile() {
       });
 
       navigate('/patient/profile');
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const message= error instanceof Error ? error.message: "Failed to create profile"
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: err.message,
+        description: message,
       });
     }
   }

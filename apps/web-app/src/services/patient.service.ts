@@ -46,7 +46,11 @@ export const PatientService = {
     return res.message;
   },
 
-  async search(params: { search?: string; page: number; limit: number }) {
+  async searchPatient(params: {
+    search?: string;
+    page: number;
+    limit: number;
+  }) {
     const query = new URLSearchParams({
       page: String(params.page),
       limit: String(params.limit),
@@ -55,7 +59,21 @@ export const PatientService = {
       query.append('search', params.search);
     }
 
-    const res = await api(`/patient?${query.toString()}`);
+    const res = await api(`/patient/patient-search?${query.toString()}`);
+
+    return res.data;
+  },
+
+  async searchDoctor(params: { search?: string; page: number; limit: number }) {
+    const query = new URLSearchParams({
+      page: String(params.page),
+      limit: String(params.limit),
+    });
+    if (params.search) {
+      query.append('search', params.search);
+    }
+
+    const res = await api(`/patient/doctor-search?${query.toString()}`);
 
     return res.data;
   },

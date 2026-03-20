@@ -54,6 +54,7 @@ export default function DoctorAppointments() {
     fetchDoctorAppointments()
 
   }, [
+    fetchDoctorAppointments,
     page,
     search,
     status,

@@ -1,45 +1,45 @@
-export interface PatientProfile {
+export interface DoctorProfile {
   id: string;
   userId: string;
-  address?: string;
-  emergencyContact: string;
-  isActive: boolean;
+  specialization: string;
+  consultation_fee: number;
+  is_active: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface PatientSearchResponse {
+export interface DoctorSearchResponse {
   total: number;
   page: number;
   limit: number;
-  patients: PatientProfile[];
+  doctors: DoctorProfile[];
 }
 
-export interface PatientUser {
+export interface DoctorUser {
   id: string;
   full_name: string;
   email: string;
 }
 
-export interface Patient {
+export interface Doctor {
   id: string;
   userId: string;
-  address: string | null;
-  emergencyContact: string;
-  isActive: boolean;
+  specialization: string;
+  consultation_fee: number;
+  is_active: boolean;
   createdAt: string;
   updatedAt: string;
-  user: PatientUser;
+  user: DoctorUser;
 }
 
-export interface PatientSearchParams {
+export interface DoctorSearchParams {
   page: number;
   limit: number;
   search?: string;
 }
 
-export interface PatientState {
-  patients: Patient[];
+export interface DoctorState {
+  doctors: Doctor[];
   total: number;
   page: number;
   limit: number;
@@ -48,5 +48,5 @@ export interface PatientState {
 
   setPage: (page: number) => void;
   setSearch: (value: string) => void;
-  fetchPatients: () => Promise<void>;
+  fetchDoctors: () => Promise<void>;
 }

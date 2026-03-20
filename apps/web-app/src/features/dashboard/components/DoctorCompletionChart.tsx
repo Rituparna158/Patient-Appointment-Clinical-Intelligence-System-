@@ -25,7 +25,7 @@ export default function DoctorCompletionChart({ data }: CompletionRateProps) {
 
   return (
 
-    <div className="border rounded-lg p-4 bg-white">
+    <div className="border rounded-lg p-4 bg-card text-card-foreground">
 
       <h3 className="font-semibold mb-4">
         Appointment Completion

@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/auth/auth.store';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema } from '@/schemas/auth.schema';
 import type { z } from "zod"
+import FormField from '@/components/ui/FormField';
 
 type LoginFormData = z.infer<typeof loginSchema>
 
@@ -53,20 +54,28 @@ export default function Login() {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          <FormField
+            label="Email"
+            required
+            error={errors.email?.message}
+            >
           <Input
-            placeholder="Email"
+            placeholder="Enter your registered email"
             {...register("email")}
           />
+          </FormField>
 
-          {errors.email && <p className="auth-error">{errors.email.message}</p>}
-
+          <FormField
+            label="Password"
+            required
+            error={errors.password?.message}
+            >
           <Input
-            placeholder="Password"
+            placeholder="Enter your password"
             type="password"
             {...register("password")}
           />
-
-          {errors.password && <p className="auth-error">{errors.password.message}</p>}
+          </FormField>
 
           <p className="text-body">
             <Link to="/forgot-password" className="auth-link">
