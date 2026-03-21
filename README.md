@@ -79,7 +79,6 @@ clinic-system
 - React.js
 - TypeScript
 - React Router
-- Axios
 - Tailwind CSS / UI components
 
 ## Infrastructure
@@ -176,16 +175,7 @@ This will start:
 - PostgreSQL
 - Redis
 - Backend services
-
-## 5. Run Services (Development)
-
-Example:
-
-cd services/auth-service
-npm run dev
-
-Do the same for other services.
-
+  
 # 📚 API Documentation
 
 Swagger documentation is available via:
@@ -197,18 +187,8 @@ Multiple API specs are aggregated for:
 - Auth service
 - Patient service
 - Appointment service
-
-# 🧪 Testing
-
-Testing is currently implemented partially in the **auth service** using:
-
-- Vitest
-
-Future improvements include:
-
-- Integration tests for all services
-- Frontend component testing
-- End-to-end API tests
+- Reports and Analytics Service
+- Clinical Service
 
 # ⚡ Background Jobs
 
@@ -234,15 +214,13 @@ Queue system powered by **BullMQ + Redis**.
 # 📈 Future Improvements
 
 - API gateway layer
-- Distributed tracing and logging
-- Full test coverage
-- Centralized configuration service
-- Kubernetes deployment
+- Multi Branch performance in single Dashboard
+- Payment gateway integration
 
-# 👩‍💻 Development Guidelines
 
-- Follow TypeScript strict mode
-- Use conventional commits
-- Maintain service isolation
-- Write tests for new features
-- Keep Swagger documentation updated
+
+<img width="1920" height="1080" alt="Screenshot (12)" src="https://github.com/user-attachments/assets/4c04679e-3f63-4ff1-9dcb-c33d8f6cad16" />
+<img width="1920" height="1080" alt="Screenshot (13)" src="https://github.com/user-attachments/assets/6e5ee7ec-d622-4058-87da-4f7973da53da" />
+<img width="1920" height="1080" alt="Screenshot (15)" src="https://github.com/user-attachments/assets/5aadede5-755e-46f0-808e-2f071ae49609" />
+<img width="1920" height="1080" alt="Screenshot (17)" src="https://github.com/user-attachments/assets/4c557033-ef9b-4c5b-817c-79562d2ba26b" />
+
