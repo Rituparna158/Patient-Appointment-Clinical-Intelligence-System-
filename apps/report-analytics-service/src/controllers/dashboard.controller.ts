@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as service from '../services/dashboard.service';
-import { Doctor } from '../models/external/doctor.model';
-import { Patient } from '../models/external/patient.model';
+import { Doctor } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
 import { RangeType } from '../types/dashboard.types';
 
 export const getCounters = async (

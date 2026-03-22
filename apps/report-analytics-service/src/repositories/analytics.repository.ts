@@ -1,16 +1,15 @@
-import { Op, Order, WhereOptions } from 'sequelize';
-import { AnalyticsDaily } from '../models/analyticsDailyMetric.model';
-import { Appointment } from '../models/external/appointment.model';
-import { DoctorSlot } from '../models/external/doctorSlot.model';
-import { Patient } from '../models/external/patient.model';
-import { Doctor } from '../models/external/doctor.model';
-import { User } from '../models/external/user.model';
+import { Op, Order, WhereOptions, fn, col, literal, cast } from 'sequelize';
+import { AnalyticsDaily } from '@repo/shared-database';
+import { Appointment } from '@repo/shared-database';
+import { DoctorSlot } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
+import { Doctor } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
 
 import {
   CompletionRate,
   PatientTypeStats,
   RangeType,
-  ResolvedRange,
   TableQueryOptions,
   WorkloadTrendRow,
 } from '../types/dashboard.types';
@@ -19,12 +18,23 @@ import {
   resolveDateRange,
   startOfToday,
 } from '../utils/date-range';
-import { id } from 'zod/v4/locales';
+
+type WorkloadTrendAggregateRow = {
+  date: string;
+  totalAppointments: string | number;
+};
+
+type DoctorPatientTypeAggregateRow = {
+  patientId: string;
+  visitCount: string | number;
+};
 
 export const findCounters = async (range?: RangeType) => {
   const dateFilter = buildDateWhere(undefined, undefined, range);
   const where: WhereOptions = {};
+
   if (dateFilter) where['date'] = dateFilter;
+
   return AnalyticsDaily.findAll({ where });
 };
 
@@ -41,7 +51,9 @@ export const findAnalyticsRange = async (from: string, to: string) => {
 export const findAppointmentStatus = async (range?: RangeType) => {
   const dateFilter = buildDateWhere(undefined, undefined, range);
   const where: WhereOptions = {};
+
   if (dateFilter) where['date'] = dateFilter;
+
   return AnalyticsDaily.findAll({
     attributes: [
       'confirmedAppointments',
@@ -56,7 +68,9 @@ export const findAppointmentStatus = async (range?: RangeType) => {
 export const findAppointmentTrend = async (range?: RangeType) => {
   const dateFilter = buildDateWhere(undefined, undefined, range);
   const where: WhereOptions = {};
+
   if (dateFilter) where['date'] = dateFilter;
+
   return AnalyticsDaily.findAll({
     attributes: ['date', 'totalAppointments'],
     where,
@@ -72,9 +86,12 @@ export const findDailyAnalytics = async (
   const offset = (page - 1) * limit;
   const where: WhereOptions = {};
   const dateFilter = buildDateWhere(options.from, options.to, options.range);
+
   if (dateFilter) where['date'] = dateFilter;
+
   const sortBy = options.sortBy ?? 'date';
   const sortOrder = options.sortOrder ?? 'DESC';
+
   return AnalyticsDaily.findAndCountAll({
     where,
     limit,
@@ -87,44 +104,62 @@ export const findDoctorCounters = async (doctorId: string) => {
   const today = startOfToday();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-  const todayAppointments = await Appointment.count({
-    where: { doctorId },
-    include: [
-      {
-        model: DoctorSlot,
-        as: 'slot',
-        where: {
-          slotDate: {
-            [Op.between]: [today, tomorrow],
+
+  const [statusCounts, todayAppointments] = await Promise.all([
+    Appointment.findOne({
+      where: { doctorId },
+      attributes: [
+        [
+          fn(
+            'SUM',
+            literal(`CASE WHEN status = 'completed' THEN 1 ELSE 0 END`)
+          ),
+          'completedAppointments',
+        ],
+        [
+          fn(
+            'SUM',
+            literal(`CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END`)
+          ),
+          'cancelledAppointments',
+        ],
+      ],
+      raw: true,
+    }),
+    Appointment.count({
+      where: { doctorId },
+      include: [
+        {
+          model: DoctorSlot,
+          as: 'slot',
+          attributes: [],
+          required: true,
+          where: {
+            slotDate: {
+              [Op.between]: [today, tomorrow],
+            },
           },
         },
-      },
-    ],
-  });
-
-  const completedAppointments = await Appointment.count({
-    where: {
-      doctorId,
-      status: 'completed',
-    },
-  });
-
-  const cancelledAppointments = await Appointment.count({
-    where: {
-      doctorId,
-      status: 'cancelled',
-    },
-  });
+      ],
+    }),
+  ]);
 
   return {
     todayAppointments,
-    completedAppointments,
-    cancelledAppointments,
+    completedAppointments: Number(
+      (statusCounts as { completedAppointments?: string | number } | null)
+        ?.completedAppointments ?? 0
+    ),
+    cancelledAppointments: Number(
+      (statusCounts as { cancelledAppointments?: string | number } | null)
+        ?.cancelledAppointments ?? 0
+    ),
   };
 };
 
 export const findDoctorUpcomingAppointments = async (doctorId: string) => {
   const today = startOfToday();
+
   return Appointment.findAll({
     where: {
       doctorId,
@@ -132,10 +167,12 @@ export const findDoctorUpcomingAppointments = async (doctorId: string) => {
         [Op.in]: ['requested', 'confirmed'],
       },
     },
+    attributes: ['id', 'status'],
     include: [
       {
         model: Patient,
         as: 'patient',
+        attributes: ['id'],
         include: [
           {
             model: User,
@@ -148,6 +185,7 @@ export const findDoctorUpcomingAppointments = async (doctorId: string) => {
         model: DoctorSlot,
         as: 'slot',
         attributes: ['slotDate', 'startTime'],
+        required: true,
         where: {
           slotDate: {
             [Op.gte]: today,
@@ -155,8 +193,12 @@ export const findDoctorUpcomingAppointments = async (doctorId: string) => {
         },
       },
     ],
-    order: [[{ model: DoctorSlot, as: 'slot' }, 'slotDate', 'ASC']],
+    order: [
+      [{ model: DoctorSlot, as: 'slot' }, 'slotDate', 'ASC'],
+      [{ model: DoctorSlot, as: 'slot' }, 'startTime', 'ASC'],
+    ],
     limit: 5,
+    subQuery: false,
   });
 };
 
@@ -170,21 +212,34 @@ export const findDoctorAppointmentsTable = async (
   sortOrder: 'ASC' | 'DESC' = 'ASC'
 ) => {
   const offset = (page - 1) * limit;
-  const slotWhere: any = {};
+  const slotDateWhere: Record<symbol, Date> = {} as Record<symbol, Date>;
 
-  if (from) slotWhere[Op.gte] = new Date(from);
-  if (to) slotWhere[Op.lte] = new Date(to);
+  if (from) slotDateWhere[Op.gte] = new Date(from);
+  if (to) slotDateWhere[Op.lte] = new Date(to);
 
   const order: Order =
     sortBy === 'slotDate'
-      ? [[{ model: DoctorSlot, as: 'slot' }, 'slotDate', sortOrder]]
+      ? [
+          [{ model: DoctorSlot, as: 'slot' }, 'slotDate', sortOrder],
+          [{ model: DoctorSlot, as: 'slot' }, 'startTime', sortOrder],
+        ]
       : [['status', sortOrder]];
+
   return Appointment.findAndCountAll({
     where: { doctorId },
+    attributes: [
+      'id',
+      'status',
+      'doctorId',
+      'patientId',
+      'slotId',
+      'createdAt',
+    ],
     include: [
       {
         model: Patient,
         as: 'patient',
+        attributes: ['id'],
         include: [
           {
             model: User,
@@ -193,48 +248,61 @@ export const findDoctorAppointmentsTable = async (
           },
         ],
       },
-
       {
         model: DoctorSlot,
         as: 'slot',
         attributes: ['slotDate', 'startTime'],
-        where: Object.keys(slotWhere).length
-          ? { slotDate: slotWhere }
-          : undefined,
+        required: Object.keys(slotDateWhere).length > 0,
+        where:
+          Object.keys(slotDateWhere).length > 0
+            ? { slotDate: slotDateWhere }
+            : undefined,
       },
     ],
+    distinct: true,
     limit,
     offset,
     order,
+    subQuery: false,
   });
 };
 
 export const findPatientCounters = async (patientId: string) => {
-  const today = startOfToday();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  const upcomingAppointments = await Appointment.count({
-    where: {
-      patientId,
-      status: {
-        [Op.in]: ['requested', 'confirmed'],
-      },
-    },
+  const counters = await Appointment.findOne({
+    where: { patientId },
+    attributes: [
+      [
+        fn(
+          'SUM',
+          literal(
+            `CASE WHEN status IN ('requested', 'confirmed') THEN 1 ELSE 0 END`
+          )
+        ),
+        'upcomingAppointments',
+      ],
+      [
+        fn('SUM', literal(`CASE WHEN status = 'completed' THEN 1 ELSE 0 END`)),
+        'completedAppointments',
+      ],
+    ],
+    raw: true,
   });
-  const completedAppointments = await Appointment.count({
-    where: {
-      patientId,
-      status: 'completed',
-    },
-  });
+
   return {
-    upcomingAppointments,
-    completedAppointments,
+    upcomingAppointments: Number(
+      (counters as { upcomingAppointments?: string | number } | null)
+        ?.upcomingAppointments ?? 0
+    ),
+    completedAppointments: Number(
+      (counters as { completedAppointments?: string | number } | null)
+        ?.completedAppointments ?? 0
+    ),
   };
 };
 
 export const findPatientUpcomingAppointments = async (patientId: string) => {
   const today = startOfToday();
+
   return Appointment.findAll({
     where: {
       patientId,
@@ -242,11 +310,13 @@ export const findPatientUpcomingAppointments = async (patientId: string) => {
         [Op.in]: ['requested', 'confirmed'],
       },
     },
+    attributes: ['id', 'status'],
     include: [
       {
         model: DoctorSlot,
         as: 'slot',
         attributes: ['slotDate', 'startTime'],
+        required: true,
         where: {
           slotDate: {
             [Op.gte]: today,
@@ -256,6 +326,7 @@ export const findPatientUpcomingAppointments = async (patientId: string) => {
       {
         model: Doctor,
         as: 'doctor',
+        attributes: ['id'],
         include: [
           {
             model: User,
@@ -265,8 +336,12 @@ export const findPatientUpcomingAppointments = async (patientId: string) => {
         ],
       },
     ],
-    order: [[{ model: DoctorSlot, as: 'slot' }, 'slotDate', 'ASC']],
+    order: [
+      [{ model: DoctorSlot, as: 'slot' }, 'slotDate', 'ASC'],
+      [{ model: DoctorSlot, as: 'slot' }, 'startTime', 'ASC'],
+    ],
     limit: 5,
+    subQuery: false,
   });
 };
 
@@ -280,29 +355,44 @@ export const findPatientAppointmentsTable = async (
   sortOrder: 'ASC' | 'DESC' = 'ASC'
 ) => {
   const offset = (page - 1) * limit;
-  const slotWhere: any = {};
-  if (from) slotWhere[Op.gte] = new Date(from);
+  const slotDateWhere: Record<symbol, Date> = {} as Record<symbol, Date>;
 
-  if (to) slotWhere[Op.lte] = new Date(to);
+  if (from) slotDateWhere[Op.gte] = new Date(from);
+  if (to) slotDateWhere[Op.lte] = new Date(to);
+
   const order: Order =
     sortBy === 'slotDate'
-      ? [[{ model: DoctorSlot, as: 'slot' }, 'slotDate', sortOrder]]
+      ? [
+          [{ model: DoctorSlot, as: 'slot' }, 'slotDate', sortOrder],
+          [{ model: DoctorSlot, as: 'slot' }, 'startTime', sortOrder],
+        ]
       : [['status', sortOrder]];
 
   return Appointment.findAndCountAll({
     where: { patientId },
+    attributes: [
+      'id',
+      'status',
+      'doctorId',
+      'patientId',
+      'slotId',
+      'createdAt',
+    ],
     include: [
       {
         model: DoctorSlot,
         as: 'slot',
         attributes: ['slotDate', 'startTime'],
-        where: Object.keys(slotWhere).length
-          ? { slotDate: slotWhere }
-          : undefined,
+        required: Object.keys(slotDateWhere).length > 0,
+        where:
+          Object.keys(slotDateWhere).length > 0
+            ? { slotDate: slotDateWhere }
+            : undefined,
       },
       {
         model: Doctor,
         as: 'doctor',
+        attributes: ['id'],
         include: [
           {
             model: User,
@@ -312,9 +402,11 @@ export const findPatientAppointmentsTable = async (
         ],
       },
     ],
+    distinct: true,
     limit,
     offset,
     order,
+    subQuery: false,
   });
 };
 
@@ -323,84 +415,40 @@ export const findDoctorWorkloadTrend = async (
   range?: RangeType
 ): Promise<WorkloadTrendRow[]> => {
   const resolved = resolveDateRange(range);
-
-  const slotWhere: any = {};
+  const slotWhere: WhereOptions = {};
 
   if (resolved.start && resolved.end) {
-    slotWhere.slotDate = {
+    slotWhere['slotDate'] = {
       [Op.between]: [resolved.start, resolved.end],
     };
   }
 
-  const appointments = await Appointment.findAll({
+  const rows = await Appointment.findAll({
     where: { doctorId },
+    attributes: [
+      [col('slot.slotDate'), 'date'],
+      [fn('COUNT', col('Appointment.id')), 'totalAppointments'],
+    ],
     include: [
       {
         model: DoctorSlot,
         as: 'slot',
-        attributes: ['slotDate'],
+        attributes: [],
+        required: true,
         where: Object.keys(slotWhere).length ? slotWhere : undefined,
       },
     ],
+    group: [col('slot.slotDate')],
+    order: [[col('slot.slotDate'), 'ASC']],
+    raw: true,
   });
 
-  const map = new Map<string, number>();
+  const typedRows = rows as unknown as WorkloadTrendAggregateRow[];
 
-  appointments.forEach((a) => {
-    const slotDate = a.slot?.slotDate;
-    if (!slotDate) return;
-
-    const key = new Date(slotDate).toISOString().split('T')[0];
-
-    map.set(key, (map.get(key) ?? 0) + 1);
-  });
-
-  const rows: WorkloadTrendRow[] = [];
-
-  map.forEach((count, date) => {
-    rows.push({
-      date: new Date(date),
-      totalAppointments: count,
-    });
-  });
-
-  rows.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-  return rows;
-};
-export const findDoctorCompletionRate = async (
-  doctorId: string,
-  range?: RangeType
-): Promise<CompletionRate> => {
-  const resolved = resolveDateRange(range);
-
-  const where: any = { doctorId };
-
-  if (resolved.start && resolved.end) {
-    where.createdAt = {
-      [Op.between]: [resolved.start, resolved.end],
-    };
-  }
-  const appointments = await Appointment.findAll({ where });
-
-  let completed = 0;
-  let pending = 0;
-  let cancelled = 0;
-
-  appointments.forEach((a) => {
-    if (a.status === 'completed') {
-      completed++;
-    } else if (a.status === 'cancelled') {
-      cancelled++;
-    } else {
-      pending++;
-    }
-  });
-  return {
-    completed,
-    pending,
-    cancelled,
-  };
+  return typedRows.map((row) => ({
+    date: new Date(row.date),
+    totalAppointments: Number(row.totalAppointments),
+  }));
 };
 
 export const findDoctorPatientTypes = async (
@@ -408,28 +456,88 @@ export const findDoctorPatientTypes = async (
   range?: RangeType
 ): Promise<PatientTypeStats> => {
   const resolved = resolveDateRange(range);
-
-  const where: any = { doctorId };
+  const where: WhereOptions = { doctorId };
 
   if (resolved.start && resolved.end) {
-    where.createdAt = {
+    where['createdAt'] = {
       [Op.between]: [resolved.start, resolved.end],
     };
   }
-  const appointments = await Appointment.findAll({ where });
 
-  const uniquePatients = new Set<string>();
-  let returningPatients = 0;
-
-  appointments.forEach((a) => {
-    if (uniquePatients.has(a.patientId)) {
-      returningPatients++;
-    }
-    uniquePatients.add(a.patientId);
+  const rows = await Appointment.findAll({
+    where,
+    attributes: ['patientId', [fn('COUNT', col('id')), 'visitCount']],
+    group: ['patientId'],
+    raw: true,
   });
 
+  const typedRows = rows as unknown as DoctorPatientTypeAggregateRow[];
+
+  let newPatients = 0;
+  let returningPatients = 0;
+
+  for (const row of typedRows) {
+    const visitCount = Number(row.visitCount);
+
+    newPatients += 1;
+
+    if (visitCount > 1) {
+      returningPatients += 1;
+    }
+  }
+
   return {
-    newPatients: uniquePatients.size,
+    newPatients,
     returningPatients,
+  };
+};
+
+export const findDoctorCompletionRate = async (
+  doctorId: string,
+  range?: RangeType
+): Promise<CompletionRate> => {
+  const resolved = resolveDateRange(range);
+  const where: WhereOptions = { doctorId };
+
+  if (resolved.start && resolved.end) {
+    where['createdAt'] = {
+      [Op.between]: [resolved.start, resolved.end],
+    };
+  }
+
+  const result = await Appointment.findOne({
+    where,
+    attributes: [
+      [
+        fn('SUM', literal(`CASE WHEN status = 'completed' THEN 1 ELSE 0 END`)),
+        'completed',
+      ],
+      [
+        fn('SUM', literal(`CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END`)),
+        'cancelled',
+      ],
+      [
+        fn(
+          'SUM',
+          literal(
+            `CASE WHEN status NOT IN ('completed', 'cancelled') THEN 1 ELSE 0 END`
+          )
+        ),
+        'pending',
+      ],
+    ],
+    raw: true,
+  });
+
+  const row = result as unknown as {
+    completed?: string | number;
+    cancelled?: string | number;
+    pending?: string | number;
+  } | null;
+
+  return {
+    completed: Number(row?.completed ?? 0),
+    cancelled: Number(row?.cancelled ?? 0),
+    pending: Number(row?.pending ?? 0),
   };
 };

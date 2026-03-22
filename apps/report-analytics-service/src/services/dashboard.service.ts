@@ -63,7 +63,7 @@ export const getAppointmentTrend = async (
   const rows = await repo.findAppointmentTrend(range);
 
   return rows.map((row) => ({
-    date: row.date,
+    date: new Date(row.date),
     totalAppointments: row.totalAppointments,
   }));
 };

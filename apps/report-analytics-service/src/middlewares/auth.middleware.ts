@@ -9,10 +9,6 @@ export interface JwtPayload {
   //userId: string;
 }
 
-// export interface AuthenticatedRequest extends Request {
-//   user?: JwtPayload;
-// }
-
 export const authenticate = (
   req: Request,
   res: Response,
@@ -34,7 +30,6 @@ export const authenticate = (
       process.env.JWT_SECRET as string
     ) as JwtPayload;
 
-    console.log('decode jwt:', decoded);
     req.user = {
       userId: decoded.id,
       email: decoded.email,

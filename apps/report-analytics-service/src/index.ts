@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 import app from './app';
-import './models';
+import '@repo/shared-database';
 import { sequelize } from './config/database';
-//import './schedulers/appointment.scheduler';
+import { logger } from '@repo/shared-utils';
 
 const PORT = process.env.PORT || 4006;
 const startServer = async () => {
@@ -12,17 +12,16 @@ const startServer = async () => {
   while (retries) {
     try {
       await sequelize.authenticate();
-      console.log('Database connected');
+      logger.info('Database connected');
       break;
     } catch (err) {
-      console.log('DB not ready, retrying in 5 seconds...');
+      logger.info('DB not ready, retrying in 5 seconds...');
       retries--;
       await new Promise((res) => setTimeout(res, 5000));
-      //console.error('DB connection failed:', err);
     }
   }
   app.listen(PORT, () => {
-    console.log(`Appointment service is running on port ${PORT}`);
+    logger.info(`Appointment service is running on port ${PORT}`);
   });
 };
 startServer();

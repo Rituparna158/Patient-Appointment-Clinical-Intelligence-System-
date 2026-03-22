@@ -26,7 +26,6 @@
     "@repo/shared-utils": "workspace:*",
     "@repo/shared-error": "workspace:*",
     "@repo/shared-constants": "workspace:*",
-    "@repo/shared-types": "workspace:*",
     "@repo/shared-middleware": "workspace:*",
     "@repo/shared-database": "workspace:*"
   },
