@@ -465,6 +465,11 @@
     @apply block w-full text-left px-3 py-2 hover:bg-muted rounded text-foreground transition;
   }
 
+  .top-navbar {
+    @apply h-16 bg-card border-b border-border flex items-center justify-between px-6;
+    
+  }
+
   .status-requested {
     @apply border;
     background-color: hsl(var(--warning-bg));

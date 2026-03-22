@@ -1,25 +1,48 @@
+import { AppError } from '@/lib/error';
+import { handleApiError } from '@/lib/handleApiError';
+
 const API_BASE = '/api';
 
+const controllers = new Map<string, AbortController>();
+
 export async function api(endpoint: string, options: RequestInit = {}) {
-  const clearEndpoint = endpoint.replace(/\/\?/, '?');
-  const res = await fetch(`${API_BASE}${clearEndpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    ...options,
-  });
-  let data;
-
   try {
-    data = await res.json();
-  } catch {
-    throw new Error('Server did not return json');
-  }
+    if (controllers.has(endpoint)) {
+      controllers.get(endpoint)?.abort();
+    }
 
-  if (!res.ok) {
-    throw new Error(data.message || 'Request failed');
-  }
+    const controller = new AbortController();
+    controllers.set(endpoint, controller);
 
-  return data;
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      signal: controller.signal,
+      ...options,
+    });
+
+    let data = null;
+
+    try {
+      data = await res.json();
+    } catch {
+      // allow empty response
+    }
+
+    if (!res.ok) {
+      throw new AppError(data?.message || 'Request failed', res.status, 'api');
+    }
+
+    return data;
+  } catch (error: unknown) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new AppError('Request cancelled', undefined, 'network');
+    }
+
+    handleApiError(error);
+  } finally {
+    controllers.delete(endpoint);
+  }
 }

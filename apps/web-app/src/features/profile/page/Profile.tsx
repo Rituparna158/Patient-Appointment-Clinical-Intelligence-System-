@@ -12,7 +12,6 @@ export default function Profile() {
   useEffect(() => {
     async function fetchProfile() {
       const res = await api('/auth/me');
-      //const response = res as AuthMeResponse
 
       setUser(res);
     }

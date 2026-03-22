@@ -12,9 +12,9 @@ const now = '2026-03-22T10:00:00.000Z';
 export const mockNotifications: Notification[] = [
   {
     id: '1',
-    type: 'reminder', // ✅ correct enum
+    type: 'reminder',
     message: 'Appointment confirmed',
-    status: 'pending', // ✅ correct enum
+    status: 'pending',
     scheduledAt: now,
     sentAt: null,
   },

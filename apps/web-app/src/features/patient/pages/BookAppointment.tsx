@@ -143,7 +143,7 @@ export default function BookAppointment() {
               required  
           >
           <select
-            className="border rounded-md p-2 w-full"
+            className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
             value={doctorId}
             onChange={(e) => {
               setDoctorId(e.target.value);
@@ -166,13 +166,14 @@ export default function BookAppointment() {
               required  
           >
           <select
-            className="border rounded-md p-2 w-full"
+            className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
             value={branchId}
             onChange={(e) => {
               setBranchId(e.target.value);
               setSlots([]);
               setSelectedSlot('');
             }}
+
           >
             <option value="">Select Branch</option>
             {branches.map((branch) => (
