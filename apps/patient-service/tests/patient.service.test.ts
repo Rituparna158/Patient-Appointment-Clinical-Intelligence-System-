@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as repo from '../src/repositories/patient.repository';
 import * as service from '../src/services/patient.service';
-import { AppError } from '../src/utils/app-error';
-import { Patient } from '../src/models/patient.model';
+import { AppError } from '@repo/shared-error';
+import { Patient } from '@repo/shared-database';
 
 describe('patient.service', () => {
   beforeEach(() => {

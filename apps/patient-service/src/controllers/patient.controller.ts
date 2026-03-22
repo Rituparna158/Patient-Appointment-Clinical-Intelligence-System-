@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as service from '../services/patient.service';
-import { HTTP_STATUS } from '../constants/http_status';
-import { MESSAGES } from '../constants/messages';
+import { HTTP_STATUS } from '@repo/shared-constants';
+import { MESSAGES } from '@repo/shared-constants';
 
 const createProfile = async (
   req: Request,
@@ -94,7 +94,11 @@ const deleteProfile = async (
   }
 };
 
-const adminSearch = async (req: Request, res: Response, next: NextFunction) => {
+const adminSearchPatient = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.user) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -126,4 +130,47 @@ const adminSearch = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createProfile, getProfile, updateProfile, deleteProfile, adminSearch };
+const adminSearchDoctor = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    const query = req.query;
+
+    const search = typeof query.search === 'string' ? query.search : undefined;
+
+    const page =
+      typeof query.page === 'number' ? query.page : Number(query.page);
+
+    const limit =
+      typeof query.limit === 'number' ? query.limit : Number(query.limit);
+
+    const result = await service.adminSearchDoctors({
+      search,
+      page,
+      limit,
+    });
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  createProfile,
+  getProfile,
+  updateProfile,
+  deleteProfile,
+  adminSearchPatient,
+  adminSearchDoctor,
+};

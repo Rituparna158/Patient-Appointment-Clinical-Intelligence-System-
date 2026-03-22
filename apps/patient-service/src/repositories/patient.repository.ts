@@ -1,10 +1,11 @@
 import { Op, where } from 'sequelize';
-import { Patient } from '../models/patient.model';
-import { User } from '../models/rbac/user.model';
+import { Doctor, Patient } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
 import {
   CreatePatientDTO,
   UpdatePatientDTO,
   PatientSearchQuery,
+  DoctorSearchQuery,
 } from '../validators/patient.validators';
 
 export const findByUserId = (userId: string) =>
@@ -31,43 +32,115 @@ export const searchPatients = async ({
   page,
   limit,
 }: PatientSearchQuery) => {
-  const offset = (page - 1) * limit;
+  const safePage = Number(page) > 0 ? Number(page) : 1;
+  const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
+  const offset = (safePage - 1) * safeLimit;
 
-  const userWhere = search
+  const searchText = search?.trim();
+
+  const userWhere = searchText
     ? {
         [Op.or]: [
           {
             full_name: {
-              [Op.iLike]: `%${search}%`,
+              [Op.iLike]: `%${searchText}%`,
             },
           },
           {
             email: {
-              [Op.iLike]: `%${search}%`,
+              [Op.iLike]: `%${searchText}%`,
             },
           },
         ],
       }
     : undefined;
 
-  const { rows, count } = await Patient.findAndCountAll({
-    include: [
-      {
-        model: User,
-        as: 'user',
-        attributes: ['id', 'full_name', 'email'],
-        where: userWhere,
-      },
-    ],
-    limit,
+  const include = [
+    {
+      model: User,
+      as: 'user',
+      attributes: ['id', 'full_name', 'email'],
+      where: userWhere,
+      required: Boolean(searchText),
+    },
+  ];
+
+  const total = await Patient.count({
+    include,
+    distinct: true,
+    col: 'id',
+  });
+
+  const patients = await Patient.findAll({
+    include,
+    limit: safeLimit,
     offset,
     order: [['createdAt', 'DESC']],
   });
 
   return {
-    total: count,
-    page,
-    limit,
-    patients: rows,
+    total,
+    page: safePage,
+    limit: safeLimit,
+    patients,
+  };
+};
+
+export const searchDoctors = async ({
+  search,
+  page,
+  limit,
+}: DoctorSearchQuery) => {
+  const safePage = Number(page) > 0 ? Number(page) : 1;
+  const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
+  const offset = (safePage - 1) * safeLimit;
+
+  const searchText = search?.trim();
+
+  const userWhere = searchText
+    ? {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.iLike]: `%${searchText}%`,
+            },
+          },
+          {
+            email: {
+              [Op.iLike]: `%${searchText}%`,
+            },
+          },
+        ],
+      }
+    : undefined;
+
+  const include = [
+    {
+      model: User,
+      as: 'user',
+      attributes: ['id', 'full_name', 'email'],
+      where: userWhere,
+      required: Boolean(searchText),
+    },
+  ];
+
+  const total = await Doctor.count({
+    include,
+    distinct: true,
+    col: 'id',
+  });
+
+  const doctors = await Doctor.findAll({
+    include,
+    limit: safeLimit,
+    offset,
+    order: [['createdAt', 'DESC']],
+  });
+
+  return {
+    total,
+    page: safePage,
+    limit: safeLimit,
+    doctors,
   };
 };

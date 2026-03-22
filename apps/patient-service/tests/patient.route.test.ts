@@ -2,7 +2,7 @@ import request from 'supertest';
 import { describe, it, expect, vi } from 'vitest';
 import app from '../src/app';
 import * as service from '../src/services/patient.service';
-import { Patient } from '../src/models/patient.model';
+import { Patient } from '@repo/shared-database';
 import { NextFunction } from 'express';
 
 vi.mock('../src/middlewares/auth.middleware', () => ({

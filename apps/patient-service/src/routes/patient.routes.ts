@@ -7,15 +7,13 @@ import {
   authorizePermission,
 } from '../middlewares/rbac.middleware';
 
-import {
-  validateBody,
-  validateQuery,
-} from '../middlewares/validate.middleware';
+import { validateBody, validateQuery } from '@repo/shared-middleware';
 
 import {
   createPatientSchema,
   updatePatientSchema,
   searchPatientSchema,
+  searchDoctorSchema,
 } from '../validators/patient.validators';
 
 const router = Router();
@@ -51,11 +49,18 @@ router.delete(
 );
 
 router.get(
-  '/',
+  '/patient-search',
   authenticate,
   authorizePermission('manage_users'),
   validateQuery(searchPatientSchema),
-  controller.adminSearch
+  controller.adminSearchPatient
 );
 
+router.get(
+  '/doctor-search',
+  authenticate,
+  authorizePermission('manage_users'),
+  validateQuery(searchDoctorSchema),
+  controller.adminSearchDoctor
+);
 export default router;

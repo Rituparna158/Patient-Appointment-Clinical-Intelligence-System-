@@ -1,7 +1,7 @@
-import { UserRole } from '../models/rbac/userRole.model';
-import { Role } from '../models/rbac/role.model';
-import { RolePermission } from '../models/rbac/rolePermission.model';
-import { Permission } from '../models/rbac/permission.model';
+import { UserRole } from '@repo/shared-database';
+import { Role } from '@repo/shared-database';
+import { RolePermission } from '@repo/shared-database';
+import { Permission } from '@repo/shared-database';
 
 const getUserRole = (userId: string) => UserRole.findOne({ where: { userId } });
 

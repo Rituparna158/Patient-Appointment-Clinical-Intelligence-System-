@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { createProfile } from '../src/controllers/patient.controller';
 import * as service from '../src/services/patient.service';
 import { HTTP_STATUS } from '../src/constants/http_status';
-import { Patient } from '../src/models/patient.model';
+import { Patient } from '@repo/shared-database';
 
 function createMockRes() {
   const res = {
