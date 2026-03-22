@@ -104,11 +104,6 @@ src/
 
 ### 1. Clone the repository
 
-```bash
-git clone https://github.com/your-username/lifeline.git
-cd lifeline
-```
-
 ### 2. Install dependencies
 
 ```bash
