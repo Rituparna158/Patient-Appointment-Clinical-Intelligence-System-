@@ -1,6 +1,6 @@
 import cors from 'cors';
 
-const allowedOrigins = [process.env.FRONTEND_URL];
+const allowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
 
 export const corsMiddleware = cors({
   origin: (origin, callback) => {

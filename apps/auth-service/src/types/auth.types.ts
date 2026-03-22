@@ -1,4 +1,4 @@
-import { ROLES } from '../constants/roles';
+import { ROLES } from '@repo/shared-constants';
 interface RegisterDTO {
   full_name: string;
   email: string;

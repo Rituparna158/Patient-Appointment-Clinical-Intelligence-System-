@@ -4,7 +4,7 @@ import {
   createAdminSchema,
 } from '../validators/admin.validator';
 import { createDoctorUser, createAdminUser } from '../services/admin.service';
-import { HTTP_STATUS } from '../constants/http-status';
+import { HTTP_STATUS } from '@repo/shared-constants';
 
 const createDoctor: RequestHandler = async (req, res, next) => {
   try {
@@ -19,7 +19,7 @@ const createDoctor: RequestHandler = async (req, res, next) => {
         email: user.email,
         full_name: user.full_name,
         phone: user.phone,
-        specializat: doctorProfile.specialization,
+        specialization: doctorProfile.specialization,
         licence_no: doctorProfile.licence_no,
         consultation_fee: doctorProfile.consultation_fee,
         is_active: doctorProfile.is_active,

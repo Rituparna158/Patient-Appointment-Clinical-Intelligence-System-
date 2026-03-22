@@ -1,8 +1,8 @@
-import { hashPassword } from '../utils/hash';
-import { AppError } from '../utils/app-error';
-import { HTTP_STATUS } from '../constants/http-status';
-import { MESSAGES } from '../constants/messages';
-import { User, UserRole, Doctor, Role } from '../models';
+import { hashPassword } from '@repo/shared-utils';
+import { AppError } from '@repo/shared-error';
+import { HTTP_STATUS } from '@repo/shared-constants';
+import { MESSAGES } from '@repo/shared-constants';
+import { User, UserRole, Doctor, Role } from '@repo/shared-database';
 import { CreateDoctorDTO, CreateAdminDTO } from '../types/admin.types';
 import { generateTempPassword } from '../utils/generate-password';
 import { redis } from '../config/redis';

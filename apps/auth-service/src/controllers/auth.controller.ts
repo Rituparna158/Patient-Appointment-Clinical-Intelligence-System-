@@ -3,20 +3,15 @@ import {
   loginUser,
   refreshTokenService,
 } from '../services/auth.service';
-import { HTTP_STATUS } from '../constants/http-status';
-import { MESSAGES } from '../constants/messages';
+import { HTTP_STATUS } from '@repo/shared-constants';
+import { MESSAGES } from '@repo/shared-constants';
 import { redis } from '../config/redis';
 import { transport } from '../utils/mailer';
 import otpGenerator from 'otp-generator';
-import { hashPassword } from '../utils/hash';
-import { Role, User } from '../models';
+import { hashPassword } from '@repo/shared-utils';
+import { Role, User } from '@repo/shared-database';
 
-import { RegisterDTO } from '../types/auth.types';
-import {
-  verifyRefreshToken,
-  generateRefreshToken,
-  generateToken,
-} from '../utils/jwt';
+import { verifyRefreshToken } from '../utils/jwt';
 import { RequestHandler } from 'express';
 import { registerSchema, loginSchema } from '../validators/auth.validator';
 import { validateHeaderValue } from 'node:http';
@@ -44,15 +39,15 @@ const login: RequestHandler = async (req, res, next) => {
 
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      secure: false,
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', result.refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      secure: false,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(HTTP_STATUS.OK).json({
@@ -72,7 +67,7 @@ const refreshTok: RequestHandler = async (req, res, next) => {
 
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 15 * 60 * 1000,
     });
 

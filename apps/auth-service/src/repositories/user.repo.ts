@@ -1,5 +1,4 @@
-import { ROLES } from '../constants/roles';
-import { User } from '../models/user.model';
+import { User } from '@repo/shared-database';
 
 const findByEmail = async (email: string) => {
   return User.findOne({
