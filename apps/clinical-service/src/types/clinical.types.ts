@@ -1,6 +1,6 @@
-import { ConsultaionNote } from '../models/consultationNote.model';
-import { Appointment } from '../models/external/appointment.model';
-import { Patient } from '../models/external/patient.model';
+import { ConsultaionNote } from '@repo/shared-database';
+import { Appointment } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
 
 export interface CreateConsultationNoteInput {
   appointmentId: string;

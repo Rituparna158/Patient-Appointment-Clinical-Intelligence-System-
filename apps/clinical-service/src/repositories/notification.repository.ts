@@ -1,4 +1,4 @@
-import { Notification } from '../models/external/notification.model';
+import { Notification } from '@repo/shared-database';
 
 export const findUserNotifications = async (
   userId: string,

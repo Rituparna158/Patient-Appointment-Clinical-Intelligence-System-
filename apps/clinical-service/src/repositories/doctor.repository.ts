@@ -1,4 +1,4 @@
-import { Doctor } from '../models/external/doctor.model';
+import { Doctor } from '@repo/shared-database';
 
 export const findDoctorByUserId = (userId: string) => {
   return Doctor.findOne({

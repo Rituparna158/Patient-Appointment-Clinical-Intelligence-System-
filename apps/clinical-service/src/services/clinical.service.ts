@@ -1,10 +1,9 @@
-import { Notification } from '../models/external/notification.model';
 import * as appointmentRepo from '../repositories/appointment.repository';
 import * as doctorRepo from '../repositories/doctor.repository';
 import * as consultationRepo from '../repositories/consultation.repository';
 import * as patientRepo from '../repositories/patient.repository';
 import * as rbacRepo from '../repositories/rbac.repository';
-import { AppError } from '../utils/app-error';
+import { AppError } from '@repo/shared-error';
 import {
   CreateConsultationNoteInput,
   GetAllClinicalRecordsInput,
@@ -15,7 +14,7 @@ import {
 } from '../types/clinical.types';
 
 import { clinicalQueue } from '../queues/clinical.producer';
-import { HTTP_STATUS } from '../constants/http_status';
+import { HTTP_STATUS } from '@repo/shared-constants';
 
 export const createNote = async (
   doctorUserId: string,

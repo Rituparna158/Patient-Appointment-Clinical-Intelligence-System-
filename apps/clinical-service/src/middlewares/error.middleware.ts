@@ -1,10 +1,11 @@
 import { ErrorRequestHandler } from 'express';
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/app-error';
+import { AppError } from '@repo/shared-error';
 import { HTTP_STATUS } from '../constants/http_status';
+import { logger } from '@repo/shared-utils';
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.error('FULL error:', err);
+  logger.error({ err }, 'FULL error:');
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({ message: err.message });
   }

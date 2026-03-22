@@ -1,11 +1,11 @@
 import { Op, WhereOptions, Order, Includeable } from 'sequelize';
 
-import { ConsultaionNote } from '../models/consultationNote.model';
-import { Appointment } from '../models/external/appointment.model';
-import { Doctor } from '../models/external/doctor.model';
-import { Patient } from '../models/external/patient.model';
-import { DoctorSlot } from '../models/external/doctorSlot.model';
-import { User } from '../models/external/user.model';
+import { ConsultaionNote } from '@repo/shared-database';
+import { Appointment } from '@repo/shared-database';
+import { Doctor } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
+import { DoctorSlot } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
 
 function buildSort(sortBy: string, sortOrder: 'ASC' | 'DESC'): Order {
   if (sortBy === 'doctor') {
@@ -32,7 +32,7 @@ function buildSort(sortBy: string, sortOrder: 'ASC' | 'DESC'): Order {
     ];
   }
 
-  if (sortBy === 'slot') {
+  if (sortBy === 'slot' || sortBy === 'slotDate') {
     return [
       [
         { model: Appointment, as: 'appointment' },
@@ -57,20 +57,11 @@ function buildInclude(from?: string, to?: string) {
         }
       : undefined;
 
-  const slotInclude = {
-    model: DoctorSlot,
-    as: 'slot',
-    attributes: ['slotDate', 'startTime', 'endTime'],
-    required: Boolean(from || to),
-    where: slotWhere,
-  };
-
   return [
     {
       model: Appointment,
       as: 'appointment',
       required: true,
-
       include: [
         {
           model: Doctor,
@@ -96,7 +87,13 @@ function buildInclude(from?: string, to?: string) {
           ],
         },
 
-        slotInclude,
+        {
+          model: DoctorSlot,
+          as: 'slot',
+          attributes: ['slotDate', 'startTime', 'endTime'],
+          required: Boolean(from || to),
+          where: slotWhere,
+        },
       ],
     },
   ];
@@ -138,25 +135,74 @@ export const findDoctorConsultations = async (
   sortBy = 'createdAt',
   sortOrder: 'ASC' | 'DESC' = 'DESC'
 ) => {
+  // CHANGED: replaced findAndCountAll with count + findAll
   const offset = (page - 1) * limit;
+  const where = buildWhere(search);
 
-  const { rows, count } = await ConsultaionNote.findAndCountAll({
-    where: buildWhere(search),
-
-    include: [
-      {
-        ...buildInclude(from, to)[0],
-        where: {
-          doctorId,
-        },
+  const include = [
+    {
+      model: Appointment,
+      as: 'appointment',
+      required: true,
+      where: {
+        doctorId,
       },
-    ],
+      include: [
+        {
+          model: Doctor,
+          as: 'doctor',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'full_name', 'email'],
+            },
+          ],
+        },
 
+        {
+          model: Patient,
+          as: 'patient',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'full_name', 'email'],
+            },
+          ],
+        },
+
+        {
+          model: DoctorSlot,
+          as: 'slot',
+          attributes: ['slotDate', 'startTime', 'endTime'],
+          required: Boolean(from || to),
+          where:
+            from || to
+              ? {
+                  slotDate: {
+                    ...(from ? { [Op.gte]: new Date(from) } : {}),
+                    ...(to ? { [Op.lte]: new Date(to) } : {}),
+                  },
+                }
+              : undefined,
+        },
+      ],
+    },
+  ];
+
+  const count = await ConsultaionNote.count({
+    where,
+    include,
+    distinct: true,
+  });
+
+  const rows = await ConsultaionNote.findAll({
+    where,
+    include,
     limit,
     offset,
-
     order: buildSort(sortBy, sortOrder),
-
     subQuery: false,
   });
 
@@ -173,25 +219,74 @@ export const findPatientTimeline = async (
   sortBy = 'createdAt',
   sortOrder: 'ASC' | 'DESC' = 'DESC'
 ) => {
+  // CHANGED: replaced findAndCountAll with count + findAll
   const offset = (page - 1) * limit;
+  const where = buildWhere(search);
 
-  const { rows, count } = await ConsultaionNote.findAndCountAll({
-    where: buildWhere(search),
-
-    include: [
-      {
-        ...buildInclude(from, to)[0],
-        where: {
-          patientId,
-        },
+  const include = [
+    {
+      model: Appointment,
+      as: 'appointment',
+      required: true,
+      where: {
+        patientId,
       },
-    ],
+      include: [
+        {
+          model: Doctor,
+          as: 'doctor',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'full_name', 'email'],
+            },
+          ],
+        },
 
+        {
+          model: Patient,
+          as: 'patient',
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'full_name', 'email'],
+            },
+          ],
+        },
+
+        {
+          model: DoctorSlot,
+          as: 'slot',
+          attributes: ['slotDate', 'startTime', 'endTime'],
+          required: Boolean(from || to),
+          where:
+            from || to
+              ? {
+                  slotDate: {
+                    ...(from ? { [Op.gte]: new Date(from) } : {}),
+                    ...(to ? { [Op.lte]: new Date(to) } : {}),
+                  },
+                }
+              : undefined,
+        },
+      ],
+    },
+  ];
+
+  const count = await ConsultaionNote.count({
+    where,
+    include,
+    distinct: true,
+  });
+
+  const rows = await ConsultaionNote.findAll({
+    where,
+    include,
     limit,
     offset,
-
     order: buildSort(sortBy, sortOrder),
-
     subQuery: false,
   });
 
@@ -207,28 +302,28 @@ export const findAllClinicalRecords = async (
   sortBy = 'createdAt',
   sortOrder: 'ASC' | 'DESC' = 'DESC'
 ) => {
+  // CHANGED: replaced findAndCountAll with count + findAll
   const offset = (page - 1) * limit;
+  const where = buildWhere(search);
+  const include = buildInclude(from, to);
 
-  const { rows, count } = await ConsultaionNote.findAndCountAll({
-    where: buildWhere(search),
+  const count = await ConsultaionNote.count({
+    where,
+    include,
+    distinct: true,
+  });
 
-    include: [
-      {
-        ...buildInclude(from, to)[0],
-      },
-    ],
-
+  const rows = await ConsultaionNote.findAll({
+    where,
+    include,
     limit,
     offset,
-
     order: buildSort(sortBy, sortOrder),
-
     subQuery: false,
   });
 
   return { rows, count };
 };
-
 export const findByAppointmentId = (appointmentId: string) =>
   ConsultaionNote.findAll({
     where: { appointmentId },
