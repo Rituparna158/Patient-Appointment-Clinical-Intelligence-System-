@@ -1,73 +1,185 @@
-# React + TypeScript + Vite
+# 🏥 LifeLine — Clinical Intelligence System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-featured **Patient Appointment & Clinic Management Platform** designed to streamline healthcare operations across multiple roles including **Admin, Doctor, and Patient**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+### 👤 Authentication & Authorization
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Role-based access control (Admin / Doctor / Patient)
+- Secure login & registration
+- Protected routes
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🧑‍⚕️ Patient Module
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Create & manage patient profile
+- Book appointments with doctors
+- View appointment history
+- Secure payment integration
+- View clinical timeline (consultation notes)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### 👨‍⚕️ Doctor Module
+
+- Manage appointments
+- Add consultation notes
+- Track patient history
+
+---
+
+### 🛠️ Admin Module
+
+- Manage doctors, patients, and branches
+- View analytics dashboard
+- Monitor system activities
+
+---
+
+### 🔔 Notifications
+
+- Real-time-like notification system
+- Notification dropdown with unread count
+
+---
+
+### 📊 Dashboard & Analytics
+
+- Appointment trends
+- Patient statistics
+- Revenue insights
+
+---
+
+### 📋 Reusable Components
+
+- Generic DataTable with:
+  - Sorting
+  - Pagination
+  - Filtering
+  - Search
+
+- Form components with validation
+- Modal & Drawer components
+
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+
+- React (with TypeScript)
+- React Router
+- Zustand (State Management)
+- React Hook Form + Zod (Validation)
+- Tailwind CSS
+- ShadCN UI
+- Lucide Icons
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+│
+├── app/ # Layout & routing
+├── components/ # Reusable UI components
+├── features/ # Feature-based modules
+├── hooks/ # Custom hooks
+├── services/ # API service layer
+├── store/ # Zustand stores
+├── types/ # TypeScript types
+├── schemas/ # Zod schemas
+└── pages/ # Route pages
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+## ⚙️ Installation & Setup
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/lifeline.git
+cd lifeline
 ```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Run development server
+
+```bash
+npm run dev
+```
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file:
+
+```
+VITE_API_URL=http://localhost:3000/api
+```
+
+---
+
+## 📡 API Integration
+
+- Centralized API service layer
+- Token-based authentication
+- Error handling with toast notifications
+
+---
+
+## 🧪 Validation
+
+- Form validation using **Zod**
+- Integrated with **React Hook Form**
+
+---
+
+## 📌 Key Highlights
+
+- Modular & scalable architecture
+- Clean separation of concerns
+- Reusable UI system
+- Optimized state management with Zustand
+- Fully typed with TypeScript
+
+---
+
+## 🚧 Future Improvements
+
+- Real-time notifications (WebSocket)
+- Advanced analytics dashboard
+- Role-based UI customization
+- Performance optimizations
+- Accessibility improvements
+
+---
+
+## 👨‍💻 Author
+
+**Rituparna Rath**
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+---
+
+## ⭐ If you like this project
+
+Give it a ⭐ on GitHub!
