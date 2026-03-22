@@ -14,3 +14,5 @@ export { Branch } from './models/branch.model';
 export { Notification } from './models/notification.model';
 
 import './associations';
+
+import { sequelize } from './config/database';
