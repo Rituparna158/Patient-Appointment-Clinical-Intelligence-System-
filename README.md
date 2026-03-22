@@ -45,8 +45,18 @@ clinic-system
 │ │ └── .env.example
 │ │
 │ ├── appointment-service
+| | ├── src
+│ │ ├── .env
+│ │ └── .env.example
+│ ├── report-analytics-service
+| | ├── src
+│ │ ├── .env
+│ │ └── .env.example
 │ │
 │ ├── clinical-service
+|   ├── src
+│ │ ├── .env
+│ │ └── .env.example
 │ │
 │ ├── worker-service
 │ │
@@ -147,9 +157,6 @@ cp .env.example .env
 # 🚀 Local Development Setup
 
 ## 1. Clone the Repository
-
-git clone https://github.com/yourusername/clinic-system.git
-cd clinic-system
 
 ## 2. Install Dependencies
 
