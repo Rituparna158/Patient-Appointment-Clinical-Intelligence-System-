@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import { AppError } from '../utils/app-error';
+import { AppError } from '@repo/shared-error';
 import { HTTP_STATUS } from '../constants/http_status';
 import { logger } from '@repo/shared-utils';
 

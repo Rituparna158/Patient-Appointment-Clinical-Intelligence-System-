@@ -1,3 +1,5 @@
+import { FindOptions, Transaction } from 'sequelize';
+
 export interface PaginationQuery {
   page: number;
   limit: number;
@@ -67,6 +69,7 @@ export interface GetDoctorAppointmentsByUserInput
   fromDate?: string;
   toDate?: string;
 }
+
 export interface AdminSearchAppointmentsInput
   extends PaginationQuery, TableQueryOptions {
   branchId?: string;
@@ -77,6 +80,7 @@ export interface AdminSearchAppointmentsInput
 
 export interface GetAvailableSlotsInput {
   doctorId: string;
+  branchId: string;
   date: string;
 }
 
@@ -91,4 +95,12 @@ export interface CreateBranchInput {
   name: string;
   address: string;
   phone: string;
+}
+
+export interface RepositoryOptions {
+  transaction?: Transaction;
+}
+
+export interface RepositoryLockOptions extends RepositoryOptions {
+  lock?: FindOptions['lock'];
 }

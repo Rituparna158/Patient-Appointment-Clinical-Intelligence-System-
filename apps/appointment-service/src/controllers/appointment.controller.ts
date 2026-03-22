@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as appointmentService from '../services/appointment.service';
-import { AppointmentStatus, PaymentStatus } from '../types/appointment.types';
+import { AppointmentStatus } from '../types/appointment.types';
 import { HTTP_STATUS } from '@repo/shared-constants';
 
 const extractParam = (
@@ -20,10 +20,11 @@ export const bookAppointment = async (
 ) => {
   try {
     const userId = req.user?.userId;
+
     if (!userId) {
       return res
         .status(HTTP_STATUS.UNAUTHORIZED)
-        .json({ message: 'Unauthorized' });
+        .json({ success: false, message: 'Unauthorized' });
     }
 
     const { doctorId, branchId, slotId, appointmentReason } = req.body;
@@ -74,20 +75,25 @@ export const confirmPayment = async (
   next: NextFunction
 ) => {
   try {
-    const { appointmentId, paymentStatus } = req.body as {
-      appointmentId: string;
-      paymentStatus: PaymentStatus;
-    };
+    console.log('CONTROLLER START /appointments/pay');
+    console.log('BODY:', req.body);
+
+    const { appointmentId } = req.body as { appointmentId: string };
+
+    console.log('BEFORE SERVICE CALL', appointmentId);
 
     const result = await appointmentService.confirmPayment({
       appointmentId,
     });
+
+    console.log('AFTER SERVICE CALL', result?.id);
 
     return res.status(HTTP_STATUS.OK).json({
       success: true,
       data: result,
     });
   } catch (error) {
+    console.error('CONTROLLER ERROR', error);
     next(error);
   }
 };
@@ -102,19 +108,17 @@ export const getMyAppointments = async (
 
     if (!userId) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
         message: 'Unauthorized',
       });
     }
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-
     const search = req.query.search as string | undefined;
     const status = req.query.status as AppointmentStatus | undefined;
-
     const fromDate = req.query.fromDate as string | undefined;
     const toDate = req.query.toDate as string | undefined;
-
     const sortBy = (req.query.sortBy as string) || 'createdAt';
     const sortOrder = (req.query.sortOrder as 'ASC' | 'DESC') || 'DESC';
 
@@ -148,18 +152,18 @@ export const getDoctorAppointments = async (
     const userId = req.user?.userId;
 
     if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        message: 'Unauthorized',
+      });
     }
 
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-
     const search = req.query.search as string | undefined;
     const status = req.query.status as AppointmentStatus | undefined;
-
     const fromDate = req.query.fromDate as string | undefined;
     const toDate = req.query.toDate as string | undefined;
-
     const sortBy = (req.query.sortBy as string) || 'createdAt';
     const sortOrder = (req.query.sortOrder as 'ASC' | 'DESC') || 'DESC';
 
@@ -175,7 +179,7 @@ export const getDoctorAppointments = async (
       sortOrder,
     });
 
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       data: result,
     });
@@ -193,13 +197,10 @@ export const adminSearchAppointments = async (
     const branchId = req.query.branchId as string | undefined;
     const status = req.query.status as AppointmentStatus | undefined;
     const search = req.query.search as string | undefined;
-
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
-
     const sortBy = (req.query.sortBy as string) || 'createdAt';
     const sortOrder = (req.query.sortOrder as 'ASC' | 'DESC') || 'DESC';
-
     const fromDate = req.query.fromDate as string | undefined;
     const toDate = req.query.toDate as string | undefined;
 
@@ -231,10 +232,19 @@ export const getAvailableSlots = async (
 ) => {
   try {
     const doctorId = req.query.doctorId as string;
+    const branchId = req.query.branchId as string;
     const date = req.query.date as string;
+
+    if (!doctorId || !branchId || !date) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: 'doctorId, branchId and date are required',
+      });
+    }
 
     const result = await appointmentService.getAvailableSlots({
       doctorId,
+      branchId,
       date,
     });
 
@@ -262,7 +272,7 @@ export const createSlot = async (
       endTime,
     });
 
-    return res.status(201).json({
+    return res.status(HTTP_STATUS.CREATED).json({
       success: true,
       data: slot,
     });
@@ -272,14 +282,14 @@ export const createSlot = async (
 };
 
 export const getAllDoctors = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const doctors = await appointmentService.getAllDoctors();
 
-    res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       data: doctors,
     });
@@ -306,14 +316,14 @@ export const createBranch = async (
 };
 
 export const getAllBranches = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const branches = await appointmentService.getAllBranches();
 
-    res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       data: branches,
     });
@@ -331,7 +341,7 @@ export const cancelWithRefund = async (
     const appointmentId = req.params.id;
 
     if (!appointmentId || Array.isArray(appointmentId)) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: 'Invalid appointment id',
       });
@@ -358,7 +368,7 @@ export const reschedule = async (
     const appointmentId = req.params.id;
 
     if (!appointmentId || Array.isArray(appointmentId)) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: 'Invalid appointment id',
       });
@@ -367,7 +377,7 @@ export const reschedule = async (
     const { newSlotId } = req.body as { newSlotId?: string };
 
     if (!newSlotId) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: 'newSlotId is required',
       });
