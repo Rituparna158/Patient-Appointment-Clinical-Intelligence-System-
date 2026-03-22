@@ -1,98 +1,104 @@
 import { Op } from 'sequelize';
-
-import { Appointment } from '../../models/external/appointment.model';
-import { ConsultaionNote } from '../../models/external/consultationNote.model';
-import { User } from '../../models/external/user.model';
-import { Role } from '../../models/external/role.model';
-
-import { AnalyticsDaily } from '../../models/external/analyticsDailyMetric.model';
-import { DoctorSlot } from '../../models/external/doctorSlot.model';
+import {
+  Appointment,
+  ConsultaionNote,
+  User,
+  Role,
+  AnalyticsDaily,
+  DoctorSlot,
+} from '@repo/shared-database';
+import { logger } from '@repo/shared-utils';
 
 export const generateDailyAnalytics = async () => {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
+  try {
+    const todayStr = new Date().toLocaleDateString('en-CA', {
+      timeZone: 'Asia/Kolkata',
+    });
 
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
+    const start = new Date(`${todayStr}T00:00:00+05:30`);
+    const end = new Date(`${todayStr}T23:59:59+05:30`);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const appointments = await Appointment.findAll({
-    include: [
-      {
-        model: DoctorSlot,
-        as: 'slot',
-        attributes: ['slotDate'],
-        where: {
-          slotDate: {
-            [Op.between]: [start, end],
+    const appointments = await Appointment.findAll({
+      include: [
+        {
+          model: DoctorSlot,
+          as: 'slot',
+          attributes: ['slotDate'],
+          where: {
+            slotDate: {
+              [Op.eq]: todayStr,
+            },
           },
         },
+      ],
+    });
+
+    const totalAppointments = appointments.length;
+
+    let confirmedAppointments = 0;
+    let completedAppointments = 0;
+    let cancelledAppointments = 0;
+    let missedAppointments = 0;
+
+    const patientSet = new Set<string>();
+
+    appointments.forEach((a) => {
+      if (a.status === 'confirmed') confirmedAppointments++;
+      else if (a.status === 'completed') completedAppointments++;
+      else if (a.status === 'cancelled') cancelledAppointments++;
+      else if (a.status === 'missed') missedAppointments++;
+
+      if (a.patientId) patientSet.add(a.patientId);
+    });
+
+    const uniquePatients = patientSet.size;
+
+    const followUpsScheduled = await ConsultaionNote.count({
+      where: {
+        createdAt: {
+          [Op.between]: [start, end],
+        },
+        followUpDate: {
+          [Op.not]: null,
+        },
       },
-    ],
-  });
+    });
 
-  const totalAppointments = appointments.length;
-
-  const confirmedAppointments = appointments.filter(
-    (a) => a.status === 'confirmed'
-  ).length;
-
-  const completedAppointments = appointments.filter(
-    (a) => a.status === 'completed'
-  ).length;
-
-  const cancelledAppointments = appointments.filter(
-    (a) => a.status === 'cancelled'
-  ).length;
-
-  const missedAppointments = appointments.filter(
-    (a) => a.status === 'missed'
-  ).length;
-
-  const uniquePatients = new Set(appointments.map((a) => a.patientId)).size;
-
-  const followUpsScheduled = await ConsultaionNote.count({
-    where: {
-      createdAt: {
-        [Op.between]: [start, end],
+    const newPatients = await User.count({
+      include: [
+        {
+          model: Role,
+          as: 'roles',
+          where: { name: 'patient' },
+          attributes: [],
+        },
+      ],
+      where: {
+        createdAt: {
+          [Op.between]: [start, end],
+        },
       },
-      followUpDate: {
-        [Op.not]: null,
-      },
-    },
-  });
+    });
 
-  const newPatients = await User.count({
-    include: [
-      {
-        model: Role,
-        as: 'roles',
-        where: { name: 'patient' },
-        attributes: [],
-      },
-    ],
-    where: {
-      createdAt: {
-        [Op.between]: [start, end],
-      },
-    },
-  });
+    await AnalyticsDaily.upsert({
+      date: todayStr,
+      branchId: null,
+      doctorId: null,
 
-  await AnalyticsDaily.upsert({
-    date: today,
-    totalAppointments,
-    confirmedAppointments,
-    completedAppointments,
-    cancelledAppointments,
-    missedAppointments,
-    newPatients,
-    uniquePatients,
-    totalRevenue: 0,
-    avgConsultationFee: 0,
-    followUpsScheduled,
-  });
+      totalAppointments,
+      confirmedAppointments,
+      completedAppointments,
+      cancelledAppointments,
+      missedAppointments,
 
-  console.log('Daily analytics generated:', today);
+      totalRevenue: 0,
+      avgConsultationFee: 0,
+
+      newPatients,
+      uniquePatients,
+      followUpsScheduled,
+    });
+  } catch (error) {
+    logger.error({ error });
+  }
 };

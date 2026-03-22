@@ -1,8 +1,8 @@
 import { sendEmail } from '../../utils/email.util';
-import { ConsultaionNote } from '../../models/external/consultationNote.model';
-import { Appointment } from '../../models/external/appointment.model';
-import { Patient } from '../../models';
-import { User } from '../../models/external/user.model';
+import { ConsultaionNote } from '@repo/shared-database';
+import { Appointment } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
 
 export const sendFollowupReminder = async (consultationId: string) => {
   const note = await ConsultaionNote.findByPk(consultationId, {
@@ -41,6 +41,4 @@ export const sendFollowupReminder = async (consultationId: string) => {
     <p>This is your follow-up reminder.</p>
     `
   );
-
-  console.log('FOLLOWUP EMAIL SENT');
 };

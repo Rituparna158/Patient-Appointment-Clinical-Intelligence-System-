@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
-import { Notification } from '../../models/external/notification.model';
+import { Notification } from '@repo/shared-database';
+import { logger } from '@repo/shared-utils';
 
 export const processNotification = async () => {
   const now = new Date();
@@ -14,7 +15,7 @@ export const processNotification = async () => {
   });
 
   for (const notification of pendingNotifications) {
-    console.log(
+    logger.info(
       `Sending ${notification.type} notification to ${notification.userId}`
     );
     notification.status = 'sent';

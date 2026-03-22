@@ -4,9 +4,10 @@ import { cancelUnpaidAppointments } from '../jobs/cron-jobs/appointment-expiry.j
 import { markMissedAppointments } from '../jobs/cron-jobs/appointment-missed.job';
 import { processNotification } from '../jobs/cron-jobs/notification.job';
 import { generateDailyAnalytics } from '../jobs/cron-jobs/analytics.job';
+import { logger } from '@repo/shared-utils';
 export const startScheduler = () => {
   cron.schedule('* * * * *', async () => {
-    console.log('worker tick.......');
+    logger.info('worker tick.......');
 
     await cancelUnpaidAppointments();
     await markMissedAppointments();
@@ -17,5 +18,5 @@ export const startScheduler = () => {
     await generateDailyAnalytics();
   });
 
-  console.log('Scheduler started for daily analytics');
+  logger.info('Scheduler started for daily analytics');
 };

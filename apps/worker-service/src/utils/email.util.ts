@@ -1,3 +1,4 @@
+import { logger } from '@repo/shared-utils';
 import { transporter } from '../config/mail';
 
 export const sendEmail = async (
@@ -22,9 +23,7 @@ export const sendEmail = async (
         : [],
     };
     await transporter.sendMail(mailOptions);
-    console.log('EMAIL sent successfully');
-    console.log('email sent to:', to);
   } catch (error) {
-    console.error('email error:', error);
+    logger.error({ error }, 'email error:');
   }
 };

@@ -1,9 +1,6 @@
 import cron from 'node-cron';
 import { Op } from 'sequelize';
-import { Appointment } from '../../models/external/appointment.model';
-import { DoctorSlot } from '../../models/external/doctorSlot.model';
-import { app } from '../../app';
-
+import { Appointment } from '@repo/shared-database';
 export const cancelUnpaidAppointments = async () => {
   const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
@@ -21,7 +18,5 @@ export const cancelUnpaidAppointments = async () => {
     appointment.status = 'cancelled';
     appointment.paymentStatus = 'failed';
     await appointment.save();
-
-    console.log(` Cancelled unpaid appointment : ${appointment.id}`);
   }
 };

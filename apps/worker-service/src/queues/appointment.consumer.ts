@@ -8,8 +8,9 @@ import {
   sendAppointmentReminder,
 } from '../jobs/queue-jobs/appointment.jobs';
 
-import { Appointment } from '../models/external/appointment.model';
-import { DoctorSlot } from '../models/external/doctorSlot.model';
+import { Appointment } from '@repo/shared-database';
+import { DoctorSlot } from '@repo/shared-database';
+import { logger } from '@repo/shared-utils';
 
 const appointmentQueue = new Queue<AppointmentJobData>('appointment-queue', {
   connection: redisConnection,
@@ -44,7 +45,7 @@ export const appointmentWorker = new Worker<AppointmentJobData>(
         { delay }
       );
 
-      console.log('Reminder scheduled in 1 minute');
+      logger.info('Reminder scheduled in 1 minute');
     }
 
     if (job.name === 'appointment.reminder') {
