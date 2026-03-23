@@ -1,41 +1,3 @@
-// import { defineConfig, type PluginOption } from 'vite';
-// import react from '@vitejs/plugin-react';
-// import * as path from 'path';
-// import { analyzer } from 'vite-bundle-analyzer';
-
-// export default defineConfig(() => {
-//   const plugins: PluginOption[] = [react()];
-
-//   if (process.env.ANALYZE === 'true') {
-//     plugins.push(analyzer());
-//   }
-
-//   return {
-//     plugins,
-//     resolve: {
-//       alias: {
-//         '@': path.resolve(__dirname, './src'),
-//       },
-//     },
-//     test: {
-//       globals: true,
-//       environment: 'jsdom',
-//       setupFiles: './src/test/setup.ts'
-//     },
-//     build: {
-//       sourcemap: false,
-//       rollupOptions: {
-//         output: {
-//           manualChunks: {
-//             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-//             charts: ['recharts'],
-//             motion: ['framer-motion'],
-//           },
-//         },
-//       },
-//     },
-//   };
-// });
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
@@ -52,7 +14,7 @@ export default defineConfig(() => {
         ? [
             visualizer({
               filename: 'stats.html',
-              open: shouldOpen, // ✅ controlled open
+              open: shouldOpen,
               gzipSize: true,
               brotliSize: true,
             }),
