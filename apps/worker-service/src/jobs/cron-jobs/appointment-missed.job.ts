@@ -1,5 +1,5 @@
-import { Appointment } from '../../models/external/appointment.model';
-import { DoctorSlot } from '../../models/external/doctorSlot.model';
+import { Appointment } from '@repo/shared-database';
+import { DoctorSlot } from '@repo/shared-database';
 
 export const markMissedAppointments = async () => {
   const confirmedAppointments = await Appointment.findAll({
@@ -14,7 +14,6 @@ export const markMissedAppointments = async () => {
     if (slotEnd < new Date()) {
       appointment.status = 'missed';
       await appointment.save();
-      console.log(`Marked missed ${appointment.id}`);
     }
   }
 };

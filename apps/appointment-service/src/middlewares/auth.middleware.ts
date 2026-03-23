@@ -4,12 +4,11 @@ import { HTTP_STATUS } from '../constants/http_status';
 
 export interface JwtPayload {
   id: string;
+  email: string;
+  roles: string[];
+
   //userId: string;
 }
-
-// export interface AuthenticatedRequest extends Request {
-//   user?: JwtPayload;
-// }
 
 export const authenticate = (
   req: Request,
@@ -34,6 +33,8 @@ export const authenticate = (
 
     req.user = {
       userId: decoded.id,
+      email: decoded.email,
+      roles: decoded.roles,
     };
 
     next();

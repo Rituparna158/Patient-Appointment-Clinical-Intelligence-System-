@@ -1,7 +1,7 @@
 import { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { HTTP_STATUS } from '../constants/http-status';
-import { AppError } from '../utils/app-error';
+import { AppError } from '@repo/shared-error';
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof ZodError) {
@@ -14,7 +14,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     });
   }
   if (err instanceof AppError) {
-    return res.status(err.status).json({
+    return res.status(err.statusCode).json({
       error: err.message,
     });
   }

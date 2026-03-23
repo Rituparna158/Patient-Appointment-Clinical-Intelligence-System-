@@ -50,7 +50,6 @@ export default function DoctorDashboardCounters({ data }: DoctorDashboardCounter
             <Card className={`border-l-4 ${c.color}`}>
               <CardContent className="p-4 flex items-center justify-between">
  
-                {/* TEXT */}
                 <div>
                   <p className="text-sm text-muted-foreground">
                     {c.label}
@@ -61,7 +60,6 @@ export default function DoctorDashboardCounters({ data }: DoctorDashboardCounter
                   </p>
                 </div>
  
-                {/* ICON */}
                 <div className="p-2 rounded-lg bg-muted/40">
                   <Icon className={`w-6 h-6 ${c.iconColor}`} />
                 </div>

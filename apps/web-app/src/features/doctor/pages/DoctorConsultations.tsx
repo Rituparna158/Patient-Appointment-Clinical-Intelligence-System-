@@ -28,7 +28,7 @@ export default function DoctorConsultationsPage() {
     to,
     sortBy,
     sortOrder,
-
+    loading,
     setPage,
     setSearch,
     setFrom,
@@ -39,19 +39,14 @@ export default function DoctorConsultationsPage() {
 
   } = useClinicalStore()
 
-  const [loading, setLoading] = useState(false)
-
   const [patientId, setPatientId] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
 
-    setLoading(true)
-
     fetchDoctorConsultations()
-      .finally(() => setLoading(false))
 
-  }, [page, search, from, to, sortBy, sortOrder])
+  }, [fetchDoctorConsultations,page, search, from, to, sortBy, sortOrder])
 
 
   const openProfile = (row: ConsultationNote) => {

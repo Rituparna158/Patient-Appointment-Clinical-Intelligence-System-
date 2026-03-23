@@ -1,11 +1,12 @@
 import * as repo from '../repositories/patient.repository';
-import { AppError } from '../utils/app-error';
-import { HTTP_STATUS } from '../constants/http_status';
+import { AppError } from '@repo/shared-error';
+import { HTTP_STATUS } from '@repo/shared-constants';
 import { MESSAGES } from '../constants/messages';
 import {
   CreatePatientDTO,
   UpdatePatientDTO,
   PatientSearchQuery,
+  DoctorSearchQuery,
 } from '../validators/patient.validators';
 
 const createProfile = async (userId: string, data: CreatePatientDTO) => {
@@ -52,10 +53,15 @@ const adminSearchPatients = async (query: PatientSearchQuery) => {
   return repo.searchPatients(query);
 };
 
+const adminSearchDoctors = async (query: DoctorSearchQuery) => {
+  return repo.searchDoctors(query);
+};
+
 export {
   createProfile,
   getProfile,
   updateProfile,
   deleteProfile,
   adminSearchPatients,
+  adminSearchDoctors,
 };

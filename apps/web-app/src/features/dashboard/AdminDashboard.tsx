@@ -9,6 +9,7 @@ import AppointmentTrendChart from "./components/AppointmentTrendChart"
 import AppointmentStatusChart from "./components/AppointmentStatusChart"
 import DashboardTable from "./components/DashboardTable"
 import ExportButton from "./components/ExportButton"
+import type { RangeType } from "@/types/dashboard.types"
  
 export default function AdminDashboard() {
  
@@ -17,11 +18,6 @@ export default function AdminDashboard() {
     status,
     trend,
     range,
-    page,
-    sortBy,
-    sortOrder,
-    from,
-    to,
     setRange,
     fetchAdminDashboard
   } = useDashboardStore()
@@ -30,7 +26,7 @@ export default function AdminDashboard() {
  
     fetchAdminDashboard()
  
-  }, [ range, page , sortBy , sortOrder , from , to])
+  }, [ fetchAdminDashboard,range])
  
   return (
  
@@ -50,8 +46,8 @@ export default function AdminDashboard() {
 
           <select
             value={range}
-            onChange={(e) => setRange(e.target.value as any)}
-            className="border rounded px-3 py-1 text-sm"
+            onChange={(e) => setRange(e.target.value as RangeType)}
+            className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
           >
             <option value="today">Today</option>
             <option value="week">Weekly</option>

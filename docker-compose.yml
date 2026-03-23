@@ -1,11 +1,14 @@
+version: "3.9"
+
 services:
+
   auth-service:
     build:
       context: .
       dockerfile: apps/auth-service/Dockerfile
     container_name: auth-service
     expose:
-      - '4001'
+      - "4001"
     env_file:
       - apps/auth-service/.env
     environment:
@@ -13,8 +16,12 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
 
   patient-service:
     build:
@@ -22,13 +29,16 @@ services:
       dockerfile: apps/patient-service/Dockerfile
     container_name: patient-service
     expose:
-      - '4002'
+      - "4002"
     env_file:
       - apps/patient-service/.env
     environment:
       DB_HOST: postgres
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 
   appointment-service:
     build:
@@ -36,7 +46,7 @@ services:
       dockerfile: apps/appointment-service/Dockerfile
     container_name: appointment-service
     expose:
-      - '4003'
+      - "4003"
     env_file:
       - apps/appointment-service/.env
     environment:
@@ -44,8 +54,12 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
 
   clinical-service:
     build:
@@ -53,7 +67,7 @@ services:
       dockerfile: apps/clinical-service/Dockerfile
     container_name: clinical-service
     expose:
-      - '4004'
+      - "4004"
     env_file:
       - apps/clinical-service/.env
     environment:
@@ -61,8 +75,12 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
 
   worker-service:
     build:
@@ -70,7 +88,7 @@ services:
       dockerfile: apps/worker-service/Dockerfile
     container_name: worker-service
     expose:
-      - '4005'
+      - "4005"
     env_file:
       - apps/worker-service/.env
     environment:
@@ -78,10 +96,14 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     volumes:
-      - ./exports:/app/apps/worker-service/exports
+      - ${EXPORTS_PATH}:/app/apps/worker-service/exports
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
 
   report-analytics-service:
     build:
@@ -89,7 +111,7 @@ services:
       dockerfile: apps/report-analytics-service/Dockerfile
     container_name: report-analytics-service
     expose:
-      - '4006'
+      - "4006"
     env_file:
       - apps/report-analytics-service/.env
     environment:
@@ -97,13 +119,12 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
-      - postgres
-      - redis
-  # web-app:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/web-app/Dockerfile
-  #   container_name: clinic-frontend
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
 
   nginx:
     build:
@@ -111,7 +132,7 @@ services:
       dockerfile: apps/web-app/Dockerfile
     container_name: clinic-nginx
     ports:
-      - '8080:80'
+      - "8080:80"
     depends_on:
       - auth-service
       - patient-service
@@ -119,6 +140,8 @@ services:
       - clinical-service
       - worker-service
       - report-analytics-service
+    restart: unless-stopped
+
 
   postgres:
     image: postgres:15
@@ -128,15 +151,20 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: clinic_db
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
 
   redis:
     image: redis:latest
     container_name: clinic-redis
     ports:
-      - '6379:6379'
-
-volumes:
-  postgres_data:
+      - "6379:6379"
+    restart: unless-stopped

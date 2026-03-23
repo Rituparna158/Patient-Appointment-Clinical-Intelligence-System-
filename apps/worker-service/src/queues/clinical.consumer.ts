@@ -4,10 +4,10 @@ import { redisConnection } from '../config/redis';
 import { ClinicalJobData } from '../types/clinical.job.types';
 
 import { sendFollowupReminder } from '../jobs/queue-jobs/clinical.job';
-import { Patient } from '../models';
-import { Notification } from '../models/external/notification.model';
-import { ConsultaionNote } from '../models';
-import { Appointment } from '../models';
+import { Patient } from '@repo/shared-database';
+import { Notification } from '@repo/shared-database';
+import { ConsultaionNote } from '@repo/shared-database';
+import { Appointment } from '@repo/shared-database';
 
 export const clinicalWorker = new Worker<ClinicalJobData>(
   'clinical-queue',

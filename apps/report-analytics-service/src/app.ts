@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { globalRateLimiter } from './middlewares/rateLimiter.middleware';
 import { errorHandler } from './middlewares/error.middleware';
 //import healthRoutes from './routes/health-appointment.routes';
+import healthRoutes from './routes/health-report.route';
 import analyticsRoutes from './routes/dashboard.routes';
 import reportRoutes from './routes/export.eoutes';
 
@@ -14,6 +15,7 @@ app.use(morgan('dev'));
 app.use(globalRateLimiter);
 app.use(express.json());
 app.use(cookieParser());
+app.use('/api/reports-analytics/health-report', healthRoutes);
 app.use('/api/reports-analytics/analytics', analyticsRoutes);
 app.use('/api/reports-analytics/report', reportRoutes);
 app.use(errorHandler);

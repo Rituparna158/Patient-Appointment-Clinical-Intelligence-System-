@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AuthService } from '@/services/auth.service';
+import FormField from '@/components/ui/FormField';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -36,8 +37,9 @@ export default function ResetPassword() {
       setMessage(res.message || 'Password reset successful');
       localStorage.removeItem('resetEmail');
       navigate('/login');
-    } catch (err: any) {
-      setError(err.message || 'Reset Failed');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Reset failed';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -56,17 +58,28 @@ export default function ResetPassword() {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          <FormField
+            label="OTP"
+            required
+            >
           <Input
             placeholder="Enter OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
           />
+          </FormField>
+
+          <FormField
+            label="New Password"
+            required
+            >
           <Input
             placeholder="Enter New Password"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
+          </FormField>
 
           {error && <p className="auth-error">{error}</p>}
           {message && <p className="auth-message">{message}</p>}

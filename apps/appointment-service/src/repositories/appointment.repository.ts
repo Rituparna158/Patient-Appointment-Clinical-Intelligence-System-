@@ -1,15 +1,19 @@
-import { WhereOptions, Op, Order } from 'sequelize';
-import { Appointment } from '../models/appointment.model';
+import { FindOptions, Op, Order, Transaction, WhereOptions } from 'sequelize';
 import {
-  CreateAppointmentData,
-  AppointmentStatus,
-  PaymentStatus,
+  Appointment,
+  Doctor,
+  DoctorSlot,
+  Patient,
+  User,
+} from '@repo/shared-database';
+import {
   AdminSearchAppointmentsInput,
+  AppointmentStatus,
+  CreateAppointmentData,
+  PaymentStatus,
+  RepositoryLockOptions,
+  RepositoryOptions,
 } from '../types/appointment.types';
-
-import { Doctor, DoctorSlot } from '../models';
-import { User } from '../models/external/user.model';
-import { Patient } from '../models/external/patient.model';
 
 function buildSort(sortBy: string, sortOrder: 'ASC' | 'DESC'): Order {
   if (sortBy === 'doctor') {
@@ -49,40 +53,57 @@ function buildSort(sortBy: string, sortOrder: 'ASC' | 'DESC'): Order {
   return [['createdAt', sortOrder]];
 }
 
-/* ---------------- BASE INCLUDE ---------------- */
-
 function buildInclude(fromDate?: string, toDate?: string) {
   const slotInclude: {
     model: typeof DoctorSlot;
-    as: string;
-    attributes: string[];
+    as: 'slot';
+    attributes: [
+      'id',
+      'doctorId',
+      'branchId',
+      'slotDate',
+      'startTime',
+      'endTime',
+      'isBooked',
+      'isActive',
+    ];
     required: boolean;
     where?: WhereOptions;
   } = {
     model: DoctorSlot,
     as: 'slot',
-    attributes: ['slotDate', 'startTime', 'endTime'],
+    attributes: [
+      'id',
+      'doctorId',
+      'branchId',
+      'slotDate',
+      'startTime',
+      'endTime',
+      'isBooked',
+      'isActive',
+    ],
     required: false,
   };
 
   if (fromDate || toDate) {
-    const slotWhere: WhereOptions = {};
+    const slotDateFilter: {
+      [Op.gte]?: Date;
+      [Op.lte]?: Date;
+    } = {};
 
-    if (fromDate && !isNaN(Date.parse(fromDate))) {
-      slotWhere['slotDate'] = {
-        ...(slotWhere['slotDate'] || {}),
-        [Op.gte]: new Date(fromDate),
-      };
+    if (fromDate && !Number.isNaN(Date.parse(fromDate))) {
+      slotDateFilter[Op.gte] = new Date(fromDate);
     }
 
-    if (toDate && !isNaN(Date.parse(toDate))) {
-      slotWhere['slotDate'] = {
-        ...(slotWhere['slotDate'] || {}),
-        [Op.lte]: new Date(toDate),
-      };
+    if (toDate && !Number.isNaN(Date.parse(toDate))) {
+      slotDateFilter[Op.lte] = new Date(toDate);
     }
 
-    slotInclude.where = slotWhere;
+    if (Object.keys(slotDateFilter).length > 0) {
+      slotInclude.where = {
+        slotDate: slotDateFilter,
+      };
+    }
   }
 
   return [
@@ -99,7 +120,6 @@ function buildInclude(fromDate?: string, toDate?: string) {
         },
       ],
     },
-
     {
       model: Patient,
       as: 'patient',
@@ -113,47 +133,72 @@ function buildInclude(fromDate?: string, toDate?: string) {
         },
       ],
     },
-
     slotInclude,
   ];
 }
 
-/* ---------------- CREATE ---------------- */
-
-export const createAppointment = async (data: CreateAppointmentData) => {
-  const appointment = await Appointment.create({
-    ...data,
-    status: 'requested',
-    paymentStatus: 'pending',
-  });
+export const createAppointment = async (
+  data: CreateAppointmentData,
+  options: RepositoryOptions = {}
+) => {
+  const appointment = await Appointment.create(
+    {
+      ...data,
+      status: 'requested',
+      paymentStatus: 'pending',
+    },
+    {
+      transaction: options.transaction,
+    }
+  );
 
   return Appointment.findByPk(appointment.id, {
     include: buildInclude(),
+    transaction: options.transaction,
   });
 };
 
-/* ---------------- FIND BY ID ---------------- */
-
-export const findAppointmentById = (id: string) =>
+export const findAppointmentById = (
+  id: string,
+  options: RepositoryOptions = {}
+) =>
   Appointment.findByPk(id, {
     include: buildInclude(),
+    transaction: options.transaction,
   });
 
-/* ---------------- UPDATE STATUS ---------------- */
+export const findAppointmentByIdForUpdate = (
+  id: string,
+  options: RepositoryLockOptions = {}
+) =>
+  Appointment.findByPk(id, {
+    transaction: options.transaction,
+    lock: options.lock,
+  });
 
 export const updateAppointmentStatus = (
   appointment: Appointment,
-  status: AppointmentStatus
-) => appointment.update({ status });
-
-/* ---------------- UPDATE PAYMENT ---------------- */
+  status: AppointmentStatus,
+  options: RepositoryOptions = {}
+) =>
+  appointment.update(
+    { status },
+    {
+      transaction: options.transaction,
+    }
+  );
 
 export const updatePaymentStatus = (
   appointment: Appointment,
-  paymentStatus: PaymentStatus
-) => appointment.update({ paymentStatus });
-
-/* ---------------- PATIENT APPOINTMENTS ---------------- */
+  paymentStatus: PaymentStatus,
+  options: RepositoryOptions = {}
+) =>
+  appointment.update(
+    { paymentStatus },
+    {
+      transaction: options.transaction,
+    }
+  );
 
 export const findAppointmentsByPatient = async (
   patientId: string,
@@ -163,7 +208,7 @@ export const findAppointmentsByPatient = async (
   status?: string,
   fromDate?: string,
   toDate?: string,
-  sortBy: string = 'createdAt',
+  sortBy = 'createdAt',
   sortOrder: 'ASC' | 'DESC' = 'DESC'
 ) => {
   const offset = (page - 1) * limit;
@@ -174,11 +219,14 @@ export const findAppointmentsByPatient = async (
     baseWhere['status'] = status;
   }
 
-  const searchCondition = search
+  const searchCondition: WhereOptions = search
     ? {
         [Op.or]: [
-          { '$doctor.user.full_name$': { [Op.iLike]: `%${search}%` } },
-          //{ appointmentReason: { [Op.iLike]: `%${search}%` } }
+          {
+            '$doctor.user.full_name$': {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ],
       }
     : {};
@@ -186,19 +234,17 @@ export const findAppointmentsByPatient = async (
   const order = buildSort(sortBy, sortOrder);
 
   return Appointment.findAndCountAll({
-    where: { ...baseWhere, ...searchCondition },
-
+    where: {
+      ...baseWhere,
+      ...searchCondition,
+    },
     include: buildInclude(fromDate, toDate),
-
     limit,
     offset,
     order,
-
     subQuery: false,
   });
 };
-
-/* ---------------- DOCTOR APPOINTMENTS ---------------- */
 
 export const findAppointmentsByDoctor = async (
   doctorId: string,
@@ -208,7 +254,7 @@ export const findAppointmentsByDoctor = async (
   status?: string,
   fromDate?: string,
   toDate?: string,
-  sortBy: string = 'createdAt',
+  sortBy = 'createdAt',
   sortOrder: 'ASC' | 'DESC' = 'DESC'
 ) => {
   const offset = (page - 1) * limit;
@@ -219,11 +265,19 @@ export const findAppointmentsByDoctor = async (
     baseWhere['status'] = status;
   }
 
-  const searchCondition = search
+  const searchCondition: WhereOptions = search
     ? {
         [Op.or]: [
-          { '$patient.user.full_name$': { [Op.iLike]: `%${search}%` } },
-          { appointmentReason: { [Op.iLike]: `%${search}%` } },
+          {
+            '$patient.user.full_name$': {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            appointmentReason: {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ],
       }
     : {};
@@ -231,19 +285,17 @@ export const findAppointmentsByDoctor = async (
   const order = buildSort(sortBy, sortOrder);
 
   return Appointment.findAndCountAll({
-    where: { ...baseWhere, ...searchCondition },
-
+    where: {
+      ...baseWhere,
+      ...searchCondition,
+    },
     include: buildInclude(fromDate, toDate),
-
     limit,
     offset,
     order,
-
     subQuery: false,
   });
 };
-
-/* ---------------- ADMIN SEARCH ---------------- */
 
 export const adminSearchAppointments = ({
   branchId,
@@ -265,14 +317,27 @@ export const adminSearchAppointments = ({
 
   const baseWhere: WhereOptions = {};
 
-  if (branchId) baseWhere['branchId'] = branchId;
-  if (status) baseWhere['status'] = status;
+  if (branchId) {
+    baseWhere['branchId'] = branchId;
+  }
 
-  const searchCondition = search
+  if (status) {
+    baseWhere['status'] = status;
+  }
+
+  const searchCondition: WhereOptions = search
     ? {
         [Op.or]: [
-          { '$doctor.user.full_name$': { [Op.iLike]: `%${search}%` } },
-          { '$patient.user.full_name$': { [Op.iLike]: `%${search}%` } },
+          {
+            '$doctor.user.full_name$': {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
+          {
+            '$patient.user.full_name$': {
+              [Op.iLike]: `%${search}%`,
+            },
+          },
         ],
       }
     : {};
@@ -280,22 +345,27 @@ export const adminSearchAppointments = ({
   const order = buildSort(sortBy, sortOrder);
 
   return Appointment.findAndCountAll({
-    where: { ...baseWhere, ...searchCondition },
-
+    where: {
+      ...baseWhere,
+      ...searchCondition,
+    },
     include: buildInclude(fromDate, toDate),
-
     limit,
     offset,
     order,
-
     subQuery: false,
   });
 };
 
-/* ---------------- RESCHEDULE ---------------- */
-
 export const updateAppointmentSlot = (
   appointment: Appointment,
   slotId: string,
-  status: string
-) => appointment.update({ slotId, status });
+  status: AppointmentStatus,
+  options: RepositoryOptions = {}
+) =>
+  appointment.update(
+    { slotId, status },
+    {
+      transaction: options.transaction,
+    }
+  );

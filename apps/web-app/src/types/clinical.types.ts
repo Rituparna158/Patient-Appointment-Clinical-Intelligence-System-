@@ -58,6 +58,7 @@ export interface ClinicalTableQuery {
 export interface ClinicalState {
   notes: ConsultationNote[];
   total: number;
+  loading: boolean;
 
   page: number;
   limit: number;

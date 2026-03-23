@@ -7,7 +7,6 @@ import { useToast } from '@/hooks/use-toast';
 import { api } from '@/services/api';
 
 import { useForm } from 'react-hook-form';
-//import { zodResolver } from "@hookform/resolvers/zod";
 import { baseUserSchema } from '@/schemas/user.schema';
 import { z } from 'zod';
 
@@ -22,7 +21,6 @@ export default function CreateAdmin() {
     formState: { errors },
     reset,
   } = useForm<AdminForm>({
-    //resolver: zodResolver(baseUserSchema),
     mode: 'onBlur',
   });
 
@@ -39,11 +37,12 @@ export default function CreateAdmin() {
       });
 
       reset();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const message= error instanceof Error ? error.message: "Failed to create admin"
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: err.message,
+        description: message,
       });
     }
   }

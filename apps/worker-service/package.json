@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pnpm exec tsc",
+    "test": "vitest",
+    "build": "tsc",
     "start": "node dist/worker.js",
-    "dev": "ts-node-dev src/worker.ts"
+    "dev": "tsx watch src/worker.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,10 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1005.0",
     "@fast-csv/format": "^5.0.5",
+    "@repo/shared-constants": "workspace:*",
+    "@repo/shared-database": "workspace:*",
+    "@repo/shared-error": "workspace:*",
+    "@repo/shared-utils": "workspace:*",
     "bullmq": "^5.70.1",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
@@ -35,9 +39,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.3.3",
     "@types/nodemailer": "^7.0.10",
+    "@types/supertest": "^7.2.0",
     "sequelize-cli": "^6.6.5",
+    "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

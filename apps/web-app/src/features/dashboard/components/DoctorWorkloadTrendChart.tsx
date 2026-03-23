@@ -13,7 +13,7 @@ export default function DoctorWorkloadTrendChart({ data }: WorkloadRowProps) {
 
   return (
 
-    <div className="border rounded-lg p-4 bg-white">
+    <div className="border rounded-lg p-4 bg-card text-card-foreground">
 
       <h3 className="font-semibold mb-4">
         Workload Trend

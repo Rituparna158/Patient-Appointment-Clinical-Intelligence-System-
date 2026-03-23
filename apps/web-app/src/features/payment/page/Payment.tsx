@@ -27,7 +27,7 @@ export default function PaymentPage() {
       });
       navigate('/patient/my-appointments');
     }
-  }, [appointmentId]);
+  }, [appointmentId, navigate, toast]);
 
   const {
     register,
@@ -38,7 +38,7 @@ export default function PaymentPage() {
     mode: 'onBlur',
   });
 
-  async function onSubmit(_data: PaymentForm) {
+  async function onSubmit() {
     try {
       if (!appointmentId) return;
 
@@ -55,11 +55,12 @@ export default function PaymentPage() {
       });
 
       navigate('/patient/my-appointments');
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const message= error instanceof Error ? error.message: "Failed to process payment"
       toast({
         variant: 'destructive',
-        title: 'Payment Failed',
-        description: err.message,
+        title: 'Payment failed',
+        description: message,
       });
     }
   }
@@ -68,6 +69,7 @@ export default function PaymentPage() {
 
   return (
     <DashboardLayout>
+      <div className="max-w-2xl mx-auto w-full px-4 sm:px-0">
       <Card className="form-card">
         <div className="form-header">
           <h2 className="form-title">Secure Payment</h2>
@@ -86,7 +88,7 @@ export default function PaymentPage() {
               />
             </FormField>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-grid grid-cols-1 sm:grid-cols-2 gap-6">
               <FormField
                 label="Expiry (MM/YY)"
                 required
@@ -106,6 +108,7 @@ export default function PaymentPage() {
           </form>
         </div>
       </Card>
+      </div>
     </DashboardLayout>
   );
 }

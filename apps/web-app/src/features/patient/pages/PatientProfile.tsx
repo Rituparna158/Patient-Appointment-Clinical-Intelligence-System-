@@ -28,7 +28,7 @@ export default function PatientProfilePage() {
     }
 
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   if (!data) return <div className="dashboard-content">Loading...</div>;
 

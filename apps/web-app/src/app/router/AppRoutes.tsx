@@ -1,44 +1,70 @@
-import { Routes, Route } from 'react-router-dom';
-
-import Home from '@/features/home/Home';
-import Login from '@/features/auth/pages/Login';
-import Register from '@/features/auth/pages/Register';
-
-import PatientDashboard from '@/features/dashboard/PatientDashboard';
-import DoctorDashboard from '@/features/dashboard/DoctorDashboard';
-import AdminDashboard from '@/features/dashboard/AdminDashboard';
+import { lazy, Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import ProtectedRoute from './ProtectedRoute';
-import ForgotPassword from '@/features/auth/pages/ForgotPassword';
-import ResetPassword from '@/features/auth/pages/ResetPassword';
-import Profile from '@/features/profile/page/Profile';
-import CreateDoctor from '@/features/admin/pages/CreateDoctor';
-import CreateAdmin from '@/features/admin/pages/CreateAdmin';
-
-import CreatePatientProfile from '@/features/patient/pages/CreatePatientProfile';
-import PatientProfilePage from '@/features/patient/pages/PatientProfile';
-import PatientListPage from '@/features/patient/pages/PatientListPage';
-import EditPatientProfile from '@/features/patient/pages/EditPatientProfile';
-
-import BookAppointment from '@/features/patient/pages/BookAppointment';
-import MyAppointments from '@/features/patient/pages/MyAppointments';
-import DoctorAppointments from '@/features/doctor/pages/DoctorAppointment';
-import CreateSlot from '@/features/admin/pages/CreateSlot';
-import CreateBranch from '@/features/admin/pages/CreateBranch';
-import AppointmentList from '@/features/admin/pages/AppointmentList';
-
-import Payment from '@/features/payment/page/Payment';
-
-import DoctorConsultations from '@/features/doctor/pages/DoctorConsultations';
-
-import PatientTimeline from '@/features/patient/pages/PatientTimeline';
-import AdminClinicalRecords from '@/features/admin/pages/AdminClinicalRecords';
-
 import AppLayout from '../layout/AppLayout';
-import DoctorPatientProfile from '@/features/clinical/pages/DoctorPatientProfile';
+const  Unauthorized = lazy (() => import('@/pages/Unauthorized'));
+
+const Home = lazy(() => import('@/features/home/Home'));
+const Login = lazy(() => import('@/features/auth/pages/Login'));
+const Register = lazy(() => import('@/features/auth/pages/Register'));
+const ForgotPassword = lazy(() => import('@/features/auth/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/features/auth/pages/ResetPassword'));
+
+const PatientDashboard = lazy(() => import('@/features/dashboard/PatientDashboard'));
+const DoctorDashboard = lazy(() => import('@/features/dashboard/DoctorDashboard'));
+const AdminDashboard = lazy(() => import('@/features/dashboard/AdminDashboard'));
+
+const Profile = lazy(() => import('@/features/profile/page/Profile'));
+
+const CreateDoctor = lazy(() => import('@/features/admin/pages/CreateDoctor'));
+const CreateAdmin = lazy(() => import('@/features/admin/pages/CreateAdmin'));
+const CreateSlot = lazy(() => import('@/features/admin/pages/CreateSlot'));
+const CreateBranch = lazy(() => import('@/features/admin/pages/CreateBranch'));
+const AppointmentList = lazy(() => import('@/features/admin/pages/AppointmentList'));
+const AdminClinicalRecords = lazy(
+  () => import('@/features/admin/pages/AdminClinicalRecords')
+);
+
+const CreatePatientProfile = lazy(
+  () => import('@/features/patient/pages/CreatePatientProfile')
+);
+const PatientProfilePage = lazy(
+  () => import('@/features/patient/pages/PatientProfile')
+);
+const PatientListPage = lazy(() => import('@/features/patient/pages/PatientListPage'));
+const DoctorListPage = lazy(() => import('@/features/admin/pages/DoctorListPage'));
+const EditPatientProfile = lazy(
+  () => import('@/features/patient/pages/EditPatientProfile')
+);
+const BookAppointment = lazy(() => import('@/features/patient/pages/BookAppointment'));
+const MyAppointments = lazy(() => import('@/features/patient/pages/MyAppointments'));
+const PatientTimeline = lazy(() => import('@/features/patient/pages/PatientTimeline'));
+
+const DoctorAppointments = lazy(
+  () => import('@/features/doctor/pages/DoctorAppointment')
+);
+const DoctorConsultations = lazy(
+  () => import('@/features/doctor/pages/DoctorConsultations')
+);
+const DoctorPatientProfile = lazy(
+  () => import('@/features/clinical/pages/DoctorPatientProfile')
+);
+
+const Payment = lazy(() => import('@/features/payment/page/Payment'));
+const NotFound = lazy(() => import('@/pages/notFound'));
+
+function RouteLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
+      Loading...
+    </div>
+  );
+}
 
 export default function AppRoutes() {
   return (
+    <Suspense fallback={<RouteLoader />}>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -117,7 +143,7 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/admin/patient"
+        path="/admin/patient/patient-search"
         element={
           <ProtectedRoute allowedRoles={['admin']}>
             <AppLayout>
@@ -126,6 +152,18 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       /> 
+
+      <Route
+        path="/admin/patient/doctor-search"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AppLayout>
+              <DoctorListPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      /> 
+
       <Route
         path="/patient/edit-profile"
         element={
@@ -226,8 +264,18 @@ export default function AppRoutes() {
 
       <Route
         path="/doctor/patient/:patientId"
-        element={<DoctorPatientProfile/>}
+        element={
+          <ProtectedRoute allowedRoles={['doctor']}>
+            <DoctorPatientProfile/>
+          </ProtectedRoute>
+        }
         />
+
+          <Route path="/unauthorized" element={<Unauthorized/>} />
+
+        <Route path="*" element={<NotFound/>} />
+  
     </Routes>
+    </Suspense>
   );
 }

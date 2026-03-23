@@ -8,7 +8,7 @@ import {
   patientTableQuerySchema,
   trendQuerySchema,
 } from '../validators/dashboard.validator';
-import { validateQuery } from '../middlewares/validate.middleware';
+import { validateQuery } from '@repo/shared-middleware';
 const router = Router();
 
 router.get(

@@ -1,10 +1,10 @@
 import { Op } from 'sequelize';
 
-import { Appointment } from '../models/external/appointment.model';
-import { Doctor } from '../models/external/doctor.model';
-import { Patient } from '../models/external/patient.model';
-import { User } from '../models/external/user.model';
-import { DoctorSlot } from '../models/external/doctorSlot.model';
+import { Appointment } from '@repo/shared-database';
+import { Doctor } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
+import { DoctorSlot } from '@repo/shared-database';
 
 export type RangeType = 'today' | 'week' | 'month' | 'year';
 

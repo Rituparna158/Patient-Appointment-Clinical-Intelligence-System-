@@ -21,6 +21,7 @@ export default function AdminRecordsPage() {
     to,
     sortBy,
     sortOrder,
+    loading,
     setPage,
     setSearch,
     setFrom,
@@ -29,15 +30,14 @@ export default function AdminRecordsPage() {
     fetchAdminRecords
   } = useClinicalStore()
 
-  const [loading, setLoading] = useState(false)
    const [selectedNote, setSelectedNote] = useState<ConsultationNote | null>(null)
     const [drawerOpen, setDrawerOpen] = useState(false)
   
 
   useEffect(() => {
-    setLoading(true)
-    fetchAdminRecords().finally(() => setLoading(false))
-  }, [page, search,from, to, sortBy, sortOrder])
+    
+    fetchAdminRecords()
+  }, [fetchAdminRecords,page, search,from, to, sortBy, sortOrder])
 
   const openDrawer = (note: ConsultationNote) => {
 

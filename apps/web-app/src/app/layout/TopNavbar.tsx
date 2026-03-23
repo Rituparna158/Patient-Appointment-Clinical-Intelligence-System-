@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth/auth.store";
 import { AuthService } from "@/services/auth.service";
@@ -17,6 +17,7 @@ export default function TopNavbar() {
   );
 
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null)
 
   async function handleLogout() {
     await AuthService.logout();
@@ -29,15 +30,38 @@ export default function TopNavbar() {
     setDark(!dark);
   }
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+
   return (
     <header className="navbar sticky top-0 z-50">
-      <div className="navbar-left">
-        <h1 className="navbar-title">
+      <div className="navbar-left min-w-0">
+        <h1 className="navbar-title truncate">
           Clinical Intelligence System
         </h1>
 
         {role && (
-          <span className="role-badge">
+          <span className="role-badge hidden sm:inline">
             {role.toUpperCase()}
           </span>
         )}
@@ -46,46 +70,47 @@ export default function TopNavbar() {
       <div className="navbar-right">
 
         <NotificationBell />
-        {/* <button className="navbar-icon-btn">
-          <Bell size={18} />
-        </button> */}
-
-        <button onClick={toggleTheme} className="navbar-icon-btn">
+        <button
+          onClick={toggleTheme}
+          className="navbar-icon-btn"
+          aria-label="Toggle theme"
+        >
           {dark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <button
-            onClick={() => setOpen(!open)}
+            onClick={() => setOpen((prev) => !prev)}
             className="flex items-center gap-2"
+            aria-label="Open user menu"
           >
-            <span className="navbar-email">
+            <span className="navbar-email hidden sm:block">
               {user?.email}
             </span>
             <ChevronDown size={16} />
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-2 w-40 dropdown-menu">
-              <div
-                className="dropdown-item"
+            <div className="absolute right-0 mt-2 w-40 sm:w-48 dropdown-menu">
+              <button
+                className="dropdown-item w-full text-left"
                 onClick={() => {
                   setOpen(false);
                   navigate("/profile");
                 }}
               >
                 Profile
-              </div>
+              </button>
 
-              <div
-                className="dropdown-item"
+              <button
+                className="dropdown-item w-full text-left"
                 onClick={() => {
                   setOpen(false);
                   handleLogout();
                 }}
               >
                 Logout
-              </div>
+              </button>
             </div>
           )}
         </div>

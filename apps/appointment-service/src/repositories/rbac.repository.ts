@@ -1,7 +1,7 @@
-import { UserRole } from '../models/external/userRole.model';
-import { Role } from '../models/external/role.model';
-import { RolePermission } from '../models/external/rolePermission.model';
-import { Permission } from '../models/external/permission.model';
+import { UserRole } from '@repo/shared-database';
+import { Role } from '@repo/shared-database';
+import { RolePermission } from '@repo/shared-database';
+import { Permission } from '@repo/shared-database';
 
 const getUserRole = (userId: string) => UserRole.findOne({ where: { userId } });
 

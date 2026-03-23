@@ -8,6 +8,7 @@ import type {
 export const useClinicalStore = create<ClinicalState>((set, get) => ({
   notes: [],
   total: 0,
+  loading: false,
 
   page: 1,
   limit: 10,
@@ -56,66 +57,84 @@ export const useClinicalStore = create<ClinicalState>((set, get) => ({
   },
 
   fetchDoctorConsultations: async () => {
-    const state = get();
+    set({ loading: true });
 
-    const query: ClinicalTableQuery = {
-      page: state.page,
-      limit: state.limit,
-      search: state.search,
-      from: state.from,
-      to: state.to,
-      sortBy: state.sortBy,
-      sortOrder: state.sortOrder,
-    };
+    try {
+      const state = get();
 
-    const res = await ClinicalService.getDoctorConsultations(query);
+      const query: ClinicalTableQuery = {
+        page: state.page,
+        limit: state.limit,
+        search: state.search,
+        from: state.from,
+        to: state.to,
+        sortBy: state.sortBy,
+        sortOrder: state.sortOrder,
+      };
 
-    set({
-      notes: res.data,
-      total: res.total,
-    });
+      const res = await ClinicalService.getDoctorConsultations(query);
+
+      set({
+        notes: res.data,
+        total: res.total,
+      });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   fetchPatientTimeline: async () => {
-    const state = get();
+    set({ loading: true });
 
-    const query: ClinicalTableQuery = {
-      page: state.page,
-      limit: state.limit,
-      search: state.search,
-      from: state.from,
-      to: state.to,
-      sortBy: state.sortBy,
-      sortOrder: state.sortOrder,
-    };
+    try {
+      const state = get();
 
-    const res = await ClinicalService.getPatientTimeline(query);
+      const query: ClinicalTableQuery = {
+        page: state.page,
+        limit: state.limit,
+        search: state.search,
+        from: state.from,
+        to: state.to,
+        sortBy: state.sortBy,
+        sortOrder: state.sortOrder,
+      };
 
-    set({
-      notes: res.data,
-      total: res.total,
-    });
+      const res = await ClinicalService.getPatientTimeline(query);
+
+      set({
+        notes: res.data,
+        total: res.total,
+      });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   fetchAdminRecords: async () => {
-    const state = get();
+    set({ loading: true });
 
-    const query: ClinicalTableQuery = {
-      page: state.page,
-      limit: state.limit,
-      search: state.search,
-      from: state.from,
-      to: state.to,
-      sortBy: state.sortBy,
-      sortOrder: state.sortOrder,
-    };
+    try {
+      const state = get();
 
-    const res = await ClinicalService.getAdminRecords(query);
+      const query: ClinicalTableQuery = {
+        page: state.page,
+        limit: state.limit,
+        search: state.search,
+        from: state.from,
+        to: state.to,
+        sortBy: state.sortBy,
+        sortOrder: state.sortOrder,
+      };
 
-    set({
-      notes: res.data,
-      total: res.total,
-    });
+      const res = await ClinicalService.getAdminRecords(query);
+
+      set({
+        notes: res.data,
+        total: res.total,
+      });
+    } finally {
+      set({ loading: false });
+    }
   },
 
   createNote: async (data) => {

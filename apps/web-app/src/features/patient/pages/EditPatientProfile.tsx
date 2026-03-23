@@ -38,7 +38,7 @@ export default function EditPatientProfile() {
     }
 
     fetchProfile();
-  }, []);
+  }, [setValue]);
 
   async function onSubmit(data: PatientProfileForm) {
     try {
@@ -50,11 +50,12 @@ export default function EditPatientProfile() {
       });
 
       navigate('/patient/profile');
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const message= error instanceof Error ? error.message: "Failed to edit profile"
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: err.message,
+        description: message,
       });
     }
   }

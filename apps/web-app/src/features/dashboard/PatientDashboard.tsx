@@ -13,7 +13,7 @@ import { TableFilters } from "@/features/shared/table/components/TableFilters"
 
 import PatientDashboardCounters from "./components/PatientDashboardCounter"
  
-import type { PatientUpcomingAppointment } from "../../types/dashboard.types"
+import type { PatientUpcomingAppointment, RangeType } from "../../types/dashboard.types"
  
  
 export default function PatientDashboard() {
@@ -42,7 +42,7 @@ export default function PatientDashboard() {
  
     fetchPatientDashboard()
  
-  }, [ range, page , sortBy , sortOrder , from , to])
+  }, [fetchPatientDashboard, range, page , sortBy , sortOrder , from , to])
  
  
   const counters = patientDashboard?.counters
@@ -108,8 +108,8 @@ export default function PatientDashboard() {
           </div>
           <select
             value={range}
-            onChange={(e) => setRange(e.target.value as any)}
-            className="border rounded px-3 py-1 text-sm"
+            onChange={(e) => setRange(e.target.value as RangeType)}
+            className="h-10 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus-:ring-2 focus:ring-ring"
           >
             <option value="today">Today</option>
             <option value="week">Weekly</option>

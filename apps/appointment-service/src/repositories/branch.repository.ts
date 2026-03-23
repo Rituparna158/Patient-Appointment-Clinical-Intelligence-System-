@@ -1,4 +1,4 @@
-import { Branch } from '../models/branch.model';
+import { Branch } from '@repo/shared-database';
 
 export const findBranchById = (branchId: string) =>
   Branch.findOne({

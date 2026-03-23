@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as clinicalService from '../services/clinical.service';
-import { HTTP_STATUS } from '../constants/http_status';
-import { success } from 'zod';
+import { HTTP_STATUS } from '@repo/shared-constants';
 
 export const createConsultationNote = async (
   req: Request,

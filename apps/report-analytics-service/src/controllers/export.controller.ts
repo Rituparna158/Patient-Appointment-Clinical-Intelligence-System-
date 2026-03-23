@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as service from '../services/export.service';
-import { Doctor } from '../models/external/doctor.model';
+import { Doctor } from '@repo/shared-database';
 import { AuthUser } from '../types/export.types';
 
 type RangeType = 'today' | 'week' | 'month' | 'year';

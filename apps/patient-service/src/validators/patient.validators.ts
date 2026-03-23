@@ -16,6 +16,13 @@ export const searchPatientSchema = z.object({
   limit: z.coerce.number().min(1),
 });
 
+export const searchDoctorSchema = z.object({
+  search: z.string().optional(),
+  page: z.coerce.number().min(1),
+  limit: z.coerce.number().min(1),
+});
+
 export type CreatePatientDTO = z.infer<typeof createPatientSchema>;
 export type UpdatePatientDTO = z.infer<typeof updatePatientSchema>;
 export type PatientSearchQuery = z.infer<typeof searchPatientSchema>;
+export type DoctorSearchQuery = z.infer<typeof searchDoctorSchema>;

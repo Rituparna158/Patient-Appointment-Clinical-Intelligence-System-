@@ -22,7 +22,6 @@ const requireRole = (role: string): RequestHandler => {
 const requireAnyRole = (roles: string[]): RequestHandler => {
   return (req, res, next) => {
     const user = req.user;
-    console.log('req.user:', req.user);
 
     if (!user || !user.roles) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({

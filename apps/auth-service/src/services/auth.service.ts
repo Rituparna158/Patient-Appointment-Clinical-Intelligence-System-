@@ -1,21 +1,20 @@
 import { RegisterDTO, LoginDTO, IUser } from '../types/auth.types';
-import { hashPassword } from '../utils/hash';
-import { MESSAGES } from '../constants/messages';
+import { hashPassword } from '@repo/shared-utils';
+import { MESSAGES } from '@repo/shared-constants';
 import { findByEmail, saveUser } from '../repositories/user.repo';
-import { comparePassword } from '../utils/compare';
+import { comparePassword } from '@repo/shared-utils';
 import {
   verifyRefreshToken,
   generateToken,
   generateRefreshToken,
 } from '../utils/jwt';
-import { ROLES } from '../constants/roles';
-import { AppError } from '../utils/app-error';
-import { HTTP_STATUS } from '../constants/http-status';
+import { AppError } from '@repo/shared-error';
+import { HTTP_STATUS } from '@repo/shared-constants';
 import { saveRefreshToken } from '../utils/token-store';
-import { Role } from '../models/role.model';
-import { UserRole } from '../models';
+import { Role } from '@repo/shared-database';
+import { UserRole } from '@repo/shared-database';
 import { getRefreshToken } from '../utils/token-store';
-import { User } from '../models/user.model';
+import { User } from '@repo/shared-database';
 
 const registerUser = async (data: RegisterDTO): Promise<User> => {
   const existing = await findByEmail(data.email);

@@ -3,7 +3,6 @@ import cookieParser from 'cookie-parser';
 import healthRoutes from './routes/health-patient.routes';
 import patientRoutes from './routes/patient.routes';
 import { errorHandler } from './middlewares/error.middleware';
-import './models/index';
 
 const app = express();
 app.use(express.json());

@@ -1,19 +1,6 @@
 import { create } from 'zustand';
-import type { Patient } from '@/types/patient.types';
+import type { PatientState } from '@/types/patient.types';
 import { PatientService } from '@/services/patient.service';
-
-interface PatientState {
-  patients: Patient[];
-  total: number;
-  page: number;
-  limit: number;
-  search: string;
-  loading: boolean;
-
-  setPage: (page: number) => void;
-  setSearch: (value: string) => void;
-  fetchPatients: () => Promise<void>;
-}
 
 export const usePatientStore = create<PatientState>((set, get) => ({
   patients: [],
@@ -35,7 +22,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
     set({ loading: true });
 
     try {
-      const data = await PatientService.search({
+      const data = await PatientService.searchPatient({
         page,
         limit,
         ...(search ? { search } : {}),
@@ -46,7 +33,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
         total: data.total,
       });
     } catch (error) {
-      console.error('Pateint fetch error:', error);
+      console.error({ error }, 'Pateint fetch error:');
     } finally {
       set({ loading: false });
     }

@@ -47,6 +47,7 @@ export default function MyAppointments() {
     fetchMyAppointments()
 
   }, [
+    fetchMyAppointments,
     page,
     search,
     status,

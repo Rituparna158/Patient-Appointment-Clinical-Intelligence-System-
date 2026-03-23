@@ -10,10 +10,7 @@ import {
   authorizePermission,
   authorizeRole,
 } from '../middlewares/rbac.middleware';
-import {
-  validateBody,
-  validateQuery,
-} from '../middlewares/validate.middleware';
+import { validateBody, validateQuery } from '@repo/shared-middleware';
 
 const router = Router();
 

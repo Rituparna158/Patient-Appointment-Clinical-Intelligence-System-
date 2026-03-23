@@ -20,8 +20,12 @@ export default function ForgotPassword() {
       await AuthService.forgotPassword(email);
       localStorage.setItem('resetEmail', email);
       navigate('/reset-password');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error) {
+
+      const message = 
+      error instanceof Error ? 
+      error.message: " Failed to send reset instructions"
+      setError(message)
     } finally {
       setLoading(false);
     }

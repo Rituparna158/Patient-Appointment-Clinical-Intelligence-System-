@@ -1,8 +1,8 @@
 import { sendEmail } from '../../utils/email.util';
-import { Appointment } from '../../models/external/appointment.model';
-import { DoctorSlot } from '../../models/external/doctorSlot.model';
-import { Patient } from '../../models/external/patient.model';
-import { User } from '../../models/external/user.model';
+import { Appointment } from '@repo/shared-database';
+import { DoctorSlot } from '@repo/shared-database';
+import { Patient } from '@repo/shared-database';
+import { User } from '@repo/shared-database';
 
 export const sendAppointmentConfirmation = async (appointmentId: string) => {
   const appointment = await Appointment.findByPk(appointmentId, {

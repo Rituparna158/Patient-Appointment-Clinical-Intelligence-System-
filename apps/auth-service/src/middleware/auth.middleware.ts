@@ -1,11 +1,9 @@
 import type { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { verifyToken } from '../utils/jwt';
-import { User } from '../models/user.model';
-import { Role, Permission } from '../models';
+import { User } from '@repo/shared-database';
+import { Role, Permission } from '@repo/shared-database';
 import { HTTP_STATUS } from '../constants/http-status';
-
-//const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
 const requireAuth: RequestHandler = async (req, res, next) => {
   try {

@@ -12,12 +12,15 @@ import {
   House,
   FileText,
   Clock,
+  Hospital,
+  X,
 } from 'lucide-react';
 
 export default function Sidebar() {
   const user = useAuthStore((s) => s.user);
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen , setMobileOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
@@ -30,20 +33,56 @@ export default function Sidebar() {
     const isDoctor = user?.roles.includes("doctor");
     const isPatient = user?.roles.includes("patient")
   return (
+
+    <>
+  
+      <button
+        className="fixed top-4 left-4 z-50 sm:hidden bg-card border p-2 rounded-md"
+        onClick={() => setMobileOpen(true)}
+      >
+        <Menu size={20} />
+      </button>
+ 
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 sm:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
     <aside
-      className={`bg-sidebar text-sidebar-foreground ${
-        collapsed ? 'w-20' : 'w-64'
-      } flex flex-col`}
-    >
-      {/* Header */}
+        className={`
+          sidebar fixed sm:static z-50 h-full
+          ${collapsed ? "w-20" : "w-64"}
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+          sm:translate-x-0
+          transition-transform duration-300
+        `}
+      >
+      
       <div className="sidebar-header justify-between">
         {!collapsed && (
           <span className="font-semibold text-lg">Clinical System</span>
         )}
-        <button onClick={() => setCollapsed(!collapsed)}>
-          <Menu size={20} />
-        </button>
-      </div>
+
+        <div className="flex items-center gap-2">
+            {/* collapse button (desktop) */}
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="hidden sm:block"
+            >
+              <Menu size={20} />
+            </button>
+ 
+            {/* close button (mobile) */}
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="sm:hidden"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+
 
       <nav className="sidebar-nav overflow-y-auto">
         {isAdmin && (
@@ -72,9 +111,14 @@ export default function Sidebar() {
               {!collapsed && 'Create Admin'}
             </Link>
 
-            <Link to="/admin/patient" className={linkClass('/admin/patient')}>
+            <Link to="/admin/patient/patient-search" className={linkClass('/admin/patient/patient-search')}>
               <Users size={18} />
               {!collapsed && 'Patients'}
+            </Link>
+
+            <Link to="/admin/patient/doctor-search" className={linkClass('/admin/patient/doctor-search')}>
+              <Hospital size={18} />
+              {!collapsed && 'Doctors'}
             </Link>
 
             <Link
@@ -184,5 +228,6 @@ export default function Sidebar() {
         )}
       </nav>
     </aside>
+    </>
   );
 }

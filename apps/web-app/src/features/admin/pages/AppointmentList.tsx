@@ -37,7 +37,7 @@ export default function AdminAppointments() {
 
   useEffect(() => {
     fetchAdminAppointments()
-  }, [page, search, status, fromDate, toDate, sortBy, sortOrder])
+  }, [fetchAdminAppointments,page, search, status, fromDate, toDate, sortBy, sortOrder])
 
   const columns = [
 

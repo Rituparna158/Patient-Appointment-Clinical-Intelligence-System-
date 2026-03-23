@@ -19,7 +19,7 @@ export function TableSearch({ value, onChange }: TableSearchProps) {
 
     return () => clearTimeout(timer)
 
-  }, [local])
+  }, [local, onChange])
 
   return (
 

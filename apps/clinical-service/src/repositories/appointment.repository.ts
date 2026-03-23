@@ -1,4 +1,4 @@
-import { Appointment } from '../models/external/appointment.model';
+import { Appointment } from '@repo/shared-database';
 
 export const findAppointmentById = (appointmentId: string) => {
   return Appointment.findByPk(appointmentId);

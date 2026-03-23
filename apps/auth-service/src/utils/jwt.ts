@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
-const REFRESH_TOKEN = process.env.JWT_REFRESH_SECRET || 'dev-ref-secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+const REFRESH_TOKEN = process.env.JWT_REFRESH_SECRET;
 
+if (!JWT_SECRET || !REFRESH_TOKEN) {
+  throw new Error('JWT secretsbare not defined in environmentvariables');
+}
 const generateToken = (payload: object) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
 };

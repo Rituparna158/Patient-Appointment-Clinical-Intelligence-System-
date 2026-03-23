@@ -1,12 +1,14 @@
 import { isBefore, startOfDay } from 'date-fns';
+import { sequelize } from '../config/database';
+import { Transaction } from 'sequelize';
 import * as patientRepo from '../repositories/patient.repository';
 import * as doctorRepo from '../repositories/doctor.repository';
 import * as branchRepo from '../repositories/branch.repository';
 import * as slotRepo from '../repositories/doctorSlot.repository';
 import * as appointmentRepo from '../repositories/appointment.repository';
-import { HTTP_STATUS } from '../constants/http_status';
-import { AppError } from '../utils/app-error';
-
+import { HTTP_STATUS } from '@repo/shared-constants';
+import { AppError } from '@repo/shared-error';
+import { logger } from '@repo/shared-utils';
 import {
   BookAppointmentInput,
   ChangeAppointmentStatusInput,
@@ -19,11 +21,80 @@ import {
   CreateBranchInput,
   GetDoctorAppointmentsByUserInput,
 } from '../types/appointment.types';
-
-import { DoctorSlot } from '../models/doctorSlot.model';
+import { Appointment } from '@repo/shared-database';
 import { processFakePayment } from '../utils/payment.util';
-
 import { appointmentQueue } from '../queues/appointment.producer';
+
+const validateFutureSlotDate = (slotDateValue: Date | string): void => {
+  const today = startOfDay(new Date());
+  const slotDate = startOfDay(new Date(slotDateValue));
+
+  if (isBefore(slotDate, today)) {
+    throw new AppError(
+      'Cannot book appointment in the past',
+      HTTP_STATUS.BAD_REQUEST
+    );
+  }
+};
+
+const validateSlotTimeForCreation = (
+  slotDate: string,
+  start: string,
+  end: string
+): void => {
+  if (start >= end) {
+    throw new AppError('Start time must be before end time', 400);
+  }
+
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  const currentTime = now.toTimeString().slice(0, 8);
+
+  if (slotDate < today) {
+    throw new AppError('Cannot create slot in the past', 400);
+  }
+
+  if (slotDate === today && start <= currentTime) {
+    throw new AppError('Cannot create slot in the past', 400);
+  }
+};
+
+const validatePaymentTransition = (
+  currentStatus: string,
+  nextStatus: string
+): void => {
+  const validTransitions: Record<string, string[]> = {
+    pending: ['paid', 'failed'],
+    paid: ['refunded'],
+    failed: [],
+    refunded: [],
+  };
+
+  const allowed = validTransitions[currentStatus] ?? [];
+
+  if (!allowed.includes(nextStatus)) {
+    throw new AppError(
+      `Invalid payment status transition: ${currentStatus} -> ${nextStatus}`,
+      HTTP_STATUS.BAD_REQUEST
+    );
+  }
+};
+
+const releaseAppointmentSlotIfExists = async (
+  appointment: Appointment,
+  transaction: Transaction
+): Promise<void> => {
+  if (!appointment.slotId) return;
+
+  const slot = await slotRepo.findSlotById(appointment.slotId, {
+    transaction,
+    lock: transaction.LOCK.UPDATE,
+  });
+
+  if (slot) {
+    await slotRepo.releaseSlot(slot, { transaction });
+  }
+};
 
 export const bookAppointment = async ({
   userId,
@@ -32,84 +103,133 @@ export const bookAppointment = async ({
   slotId,
   appointmentReason,
 }: BookAppointmentInput) => {
-  const patient = await patientRepo.findPatientByUserId(userId);
-  if (!patient) {
-    throw new AppError('Patient profile not found', HTTP_STATUS.NOT_FOUND);
-  }
+  return sequelize.transaction(async (transaction) => {
+    const patient = await patientRepo.findPatientByUserId(userId);
+    if (!patient) {
+      throw new AppError('Patient profile not found', HTTP_STATUS.NOT_FOUND);
+    }
 
-  const doctor = await doctorRepo.findDoctorById(doctorId);
-  if (!doctor) {
-    throw new AppError('Doctor not found', HTTP_STATUS.NOT_FOUND);
-  }
+    const doctor = await doctorRepo.findDoctorById(doctorId);
+    if (!doctor) {
+      throw new AppError('Doctor not found', HTTP_STATUS.NOT_FOUND);
+    }
 
-  const branch = await branchRepo.findBranchById(branchId);
-  if (!branch) {
-    throw new AppError('Branch not found', HTTP_STATUS.NOT_FOUND);
-  }
+    const branch = await branchRepo.findBranchById(branchId);
+    if (!branch) {
+      throw new AppError('Branch not found', HTTP_STATUS.NOT_FOUND);
+    }
 
-  const slot = await slotRepo.findSlotById(slotId);
-
-  if (!slot || slot.doctorId !== doctorId || slot.branchId !== branchId) {
-    throw new AppError(
-      'Invalid slot for selected doctor or branch',
-      HTTP_STATUS.BAD_REQUEST
+    const slot = await slotRepo.findValidSlotForBooking(
+      slotId,
+      doctorId,
+      branchId,
+      {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      }
     );
-  }
 
-  if (slot.isBooked) {
-    throw new AppError('Slot already booked', HTTP_STATUS.BAD_REQUEST);
-  }
+    logger.info({
+      msg: 'BOOK_APPOINTMENT_SLOT_DEBUG',
+      doctorId,
+      branchId,
+      slotId,
+      slotFound: !!slot,
+      slotDoctorId: slot?.doctorId,
+      slotBranchId: slot?.branchId,
+      slotIsBooked: slot?.isBooked,
+    });
 
-  const today = startOfDay(new Date());
-  const slotDate = startOfDay(new Date(slot.slotDate));
+    if (!slot) {
+      throw new AppError(
+        'Invalid slot for selected doctor or branch',
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
 
-  if (isBefore(slotDate, today)) {
-    throw new AppError(
-      'Cannot book appointment in the past',
-      HTTP_STATUS.BAD_REQUEST
+    if (slot.isBooked) {
+      throw new AppError('Slot already booked', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    validateFutureSlotDate(slot.slotDate);
+
+    const appointment = await appointmentRepo.createAppointment(
+      {
+        patientId: patient.id,
+        doctorId,
+        branchId,
+        slotId,
+        appointmentReason,
+      },
+      { transaction }
     );
-  }
 
-  const appointment = await appointmentRepo.createAppointment({
-    patientId: patient.id,
-    doctorId,
-    branchId,
-    slotId,
-    appointmentReason,
+    if (!appointment) {
+      throw new AppError(
+        'Failed to create appointment',
+        HTTP_STATUS.INTERNAL_ERROR
+      );
+    }
+
+    await slotRepo.markSlotBooked(slot, { transaction });
+
+    return appointment;
   });
-
-  await slotRepo.markSlotBooked(slot as DoctorSlot);
-
-  return appointment;
 };
 
 export const changeAppointmentStatus = async ({
   appointmentId,
   status,
 }: ChangeAppointmentStatusInput) => {
-  const appointment = await appointmentRepo.findAppointmentById(appointmentId);
+  return sequelize.transaction(async (transaction) => {
+    const appointment = await appointmentRepo.findAppointmentByIdForUpdate(
+      appointmentId,
+      {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      }
+    );
 
-  if (!appointment) {
-    throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
-  }
-
-  const validTransitions: Record<string, string[]> = {
-    requested: ['cancelled'],
-    confirmed: ['completed', 'missed', 'cancelled'],
-  };
-
-  if (!validTransitions[appointment.status]?.includes(status)) {
-    throw new AppError('Invalid status transition', HTTP_STATUS.BAD_REQUEST);
-  }
-
-  if (status === 'cancelled') {
-    const slot = await slotRepo.findSlotById(appointment.slotId);
-    if (slot) {
-      await slotRepo.releaseSlot(slot);
+    if (!appointment) {
+      throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
     }
-  }
 
-  return appointmentRepo.updateAppointmentStatus(appointment, status);
+    const validTransitions: Record<string, string[]> = {
+      requested: ['cancelled', 'confirmed'],
+      confirmed: ['completed', 'missed', 'cancelled'],
+      rescheduled: ['confirmed', 'cancelled'],
+      completed: [],
+      missed: [],
+      cancelled: [],
+    };
+
+    const allowedStatuses = validTransitions[appointment.status] ?? [];
+
+    if (!allowedStatuses.includes(status)) {
+      throw new AppError('Invalid status transition', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    if (status === 'cancelled') {
+      await releaseAppointmentSlotIfExists(appointment, transaction);
+    }
+
+    await appointmentRepo.updateAppointmentStatus(appointment, status, {
+      transaction,
+    });
+
+    const hydrated = await appointmentRepo.findAppointmentById(appointment.id, {
+      transaction,
+    });
+
+    if (!hydrated) {
+      throw new AppError(
+        'Appointment not found after update',
+        HTTP_STATUS.NOT_FOUND
+      );
+    }
+
+    return hydrated;
+  });
 };
 
 export const confirmPayment = async ({
@@ -121,21 +241,27 @@ export const confirmPayment = async ({
     throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
   }
 
-  const paymentSuccess = await processFakePayment();
-
-  if (!paymentSuccess) {
-    throw new AppError('Payment filed', HTTP_STATUS.BAD_REQUEST);
+  if (
+    appointment.paymentStatus === 'paid' &&
+    appointment.status === 'confirmed'
+  ) {
+    return appointment;
   }
-  await appointmentRepo.updatePaymentStatus(appointment, 'paid');
-  await appointmentRepo.updateAppointmentStatus(appointment, 'confirmed');
 
-  console.log('Adding job:', appointment.id);
-
-  await appointmentQueue.add('appointment.confirmed', {
-    appointmentId: appointment.id,
+  await appointment.update({
+    paymentStatus: 'paid',
+    status: 'confirmed',
   });
 
-  return appointment;
+  const hydratedAppointment = await appointmentRepo.findAppointmentById(
+    appointment.id
+  );
+
+  if (!hydratedAppointment) {
+    throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
+  }
+
+  return hydratedAppointment;
 };
 
 export const getPatientAppointments = async (
@@ -176,9 +302,10 @@ export const adminSearchAppointments = async (
 
 export const getAvailableSlots = async ({
   doctorId,
+  branchId,
   date,
 }: GetAvailableSlotsInput) => {
-  return slotRepo.findAvailableSlots(doctorId, date);
+  return slotRepo.findAvailableSlots(doctorId, branchId, date);
 };
 
 export const createSlot = async ({
@@ -191,21 +318,11 @@ export const createSlot = async ({
   const start = startTime.split('T')[1];
   const end = endTime.split('T')[1];
 
-  if (start >= end) {
-    throw new AppError('Start time must be before end time', 400);
-  }
-  const now = new Date();
-
-  const today = now.toISOString().split('T')[0];
-  const currentTime = now.toTimeString().slice(0, 8);
-
-  if (slotDate < today) {
-    throw new AppError('Cannot create slot in the past', 400);
+  if (!slotDate || !start || !end) {
+    throw new AppError('Invalid startTime or endTime format', 400);
   }
 
-  if (slotDate === today && start <= currentTime) {
-    throw new AppError('Cannot create slot in the past', 400);
-  }
+  validateSlotTimeForCreation(slotDate, start, end);
 
   const overlapping = await slotRepo.findOverlappingSlot(
     doctorId,
@@ -228,7 +345,7 @@ export const getDoctorAppointmentsByUser = async (
   const doctor = await doctorRepo.findDoctorByUserId(input.userId);
 
   if (!doctor) {
-    throw new AppError('Doctor not found', 404);
+    throw new AppError('Doctor not found', HTTP_STATUS.NOT_FOUND);
   }
 
   return appointmentRepo.findAppointmentsByDoctor(
@@ -273,74 +390,157 @@ export const getAllBranches = async () => {
 };
 
 export const cancelAppointmentWithRefund = async (appointmentId: string) => {
-  const appointment = await appointmentRepo.findAppointmentById(appointmentId);
-
-  if (!appointment) {
-    throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
-  }
-
-  if (appointment.status === 'completed') {
-    throw new AppError(
-      'Completed appointment cannot be cancelled',
-      HTTP_STATUS.BAD_REQUEST
+  return sequelize.transaction(async (transaction) => {
+    const appointment = await appointmentRepo.findAppointmentByIdForUpdate(
+      appointmentId,
+      {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      }
     );
-  }
 
-  if (appointment.paymentStatus === 'paid') {
-    await appointmentRepo.updatePaymentStatus(appointment, 'refunded');
-  }
+    if (!appointment) {
+      throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
+    }
 
-  const slot = await slotRepo.findSlotById(appointment.slotId);
+    if (appointment.status === 'completed') {
+      throw new AppError(
+        'Completed appointment cannot be cancelled',
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
 
-  if (slot) {
-    await slotRepo.releaseSlot(slot);
-  }
+    if (appointment.status === 'cancelled') {
+      const hydrated = await appointmentRepo.findAppointmentById(
+        appointment.id,
+        {
+          transaction,
+        }
+      );
+      return hydrated ?? appointment;
+    }
 
-  await appointmentRepo.updateAppointmentStatus(appointment, 'cancelled');
+    if (appointment.paymentStatus === 'paid') {
+      validatePaymentTransition('paid', 'refunded');
+      await appointmentRepo.updatePaymentStatus(appointment, 'refunded', {
+        transaction,
+      });
+    }
 
-  return appointment;
+    await releaseAppointmentSlotIfExists(appointment, transaction);
+
+    await appointmentRepo.updateAppointmentStatus(appointment, 'cancelled', {
+      transaction,
+    });
+
+    const hydrated = await appointmentRepo.findAppointmentById(appointment.id, {
+      transaction,
+    });
+
+    if (!hydrated) {
+      throw new AppError(
+        'Appointment not found after cancellation',
+        HTTP_STATUS.NOT_FOUND
+      );
+    }
+
+    return hydrated;
+  });
 };
 
 export const rescheduleAppointment = async (
   appointmentId: string,
   newSlotId: string
 ) => {
-  const appointment = await appointmentRepo.findAppointmentById(appointmentId);
-
-  if (!appointment) {
-    throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
-  }
-
-  if (appointment.status === 'completed') {
-    throw new AppError(
-      'Completed appointment cannot be rescheduled',
-      HTTP_STATUS.BAD_REQUEST
+  return sequelize.transaction(async (transaction) => {
+    const appointment = await appointmentRepo.findAppointmentByIdForUpdate(
+      appointmentId,
+      {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      }
     );
-  }
 
-  const newSlot = await slotRepo.findSlotById(newSlotId);
+    if (!appointment) {
+      throw new AppError('Appointment not found', HTTP_STATUS.NOT_FOUND);
+    }
 
-  if (!newSlot) {
-    throw new AppError('Slot not found', HTTP_STATUS.NOT_FOUND);
-  }
+    if (appointment.status === 'completed') {
+      throw new AppError(
+        'Completed appointment cannot be rescheduled',
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
 
-  if (newSlot.isBooked) {
-    throw new AppError('Slot already booked', HTTP_STATUS.BAD_REQUEST);
-  }
+    if (appointment.status === 'cancelled') {
+      throw new AppError(
+        'Cancelled appointment cannot be rescheduled',
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
 
-  const oldSlot = await slotRepo.findSlotById(appointment.slotId);
+    if (appointment.slotId === newSlotId) {
+      const hydrated = await appointmentRepo.findAppointmentById(
+        appointment.id,
+        {
+          transaction,
+        }
+      );
+      return hydrated ?? appointment;
+    }
 
-  if (oldSlot) {
-    await slotRepo.releaseSlot(oldSlot);
-  }
+    const lockedSlots = await slotRepo.findSlotsByIdsForUpdate(
+      [appointment.slotId, newSlotId].filter(Boolean) as string[],
+      transaction
+    );
 
-  await slotRepo.markSlotBooked(newSlot);
+    const oldSlot = lockedSlots.find((s) => s.id === appointment.slotId);
+    const newSlot = lockedSlots.find((s) => s.id === newSlotId);
 
-  await appointmentRepo.updateAppointmentSlot(
-    appointment,
-    newSlotId,
-    'rescheduled'
-  );
+    if (!newSlot) {
+      throw new AppError('Slot not found', HTTP_STATUS.NOT_FOUND);
+    }
 
-  return appointment;
+    if (newSlot.isBooked) {
+      throw new AppError('Slot already booked', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    validateFutureSlotDate(newSlot.slotDate);
+
+    if (
+      newSlot.doctorId !== appointment.doctorId ||
+      newSlot.branchId !== appointment.branchId
+    ) {
+      throw new AppError(
+        'Invalid slot for selected doctor or branch',
+        HTTP_STATUS.BAD_REQUEST
+      );
+    }
+
+    if (oldSlot) {
+      await slotRepo.releaseSlot(oldSlot, { transaction });
+    }
+
+    await slotRepo.markSlotBooked(newSlot, { transaction });
+
+    await appointmentRepo.updateAppointmentSlot(
+      appointment,
+      newSlotId,
+      'rescheduled',
+      { transaction }
+    );
+
+    const hydrated = await appointmentRepo.findAppointmentById(appointment.id, {
+      transaction,
+    });
+
+    if (!hydrated) {
+      throw new AppError(
+        'Appointment not found after reschedule',
+        HTTP_STATUS.NOT_FOUND
+      );
+    }
+
+    return hydrated;
+  });
 };
