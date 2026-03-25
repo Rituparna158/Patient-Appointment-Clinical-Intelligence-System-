@@ -14,7 +14,7 @@ export const startScheduler = () => {
     await processNotification();
   });
 
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('0 0 * * *', async () => {
     await generateDailyAnalytics();
   });
 
